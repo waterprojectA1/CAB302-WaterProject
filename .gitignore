@@ -1,0 +1,10 @@
+# IntelliJ
+.idea/
+*.iml
+out/
+
+# Maven
+target/
+
+# Environment files
+.env
