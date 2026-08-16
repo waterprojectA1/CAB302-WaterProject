@@ -8,3 +8,6 @@ target/
 
 # Environment files
 .env
+
+#AI-model
+/models/
