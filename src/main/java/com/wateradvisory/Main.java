@@ -13,9 +13,9 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
 
         FXMLLoader fxmlLoader =
-                new FXMLLoader(Main.class.getResource("/main-view.fxml"));
+                new FXMLLoader(Main.class.getResource("/Arjay_FXML/login.fxml"));
 
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 888, 520);
 
         stage.setTitle("Water Advisory Project");
         stage.setScene(scene);
