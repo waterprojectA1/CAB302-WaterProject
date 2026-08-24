@@ -6,7 +6,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Arjay_Root.LoginController">
    <children>
       <Button layoutX="296.0" layoutY="287.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="291.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Login">
@@ -30,6 +29,14 @@
             <Font name="Aptos Bold" size="13.0" />
          </font>
       </Button>
+      
+      <!-- GO TO AI BUTTON ADDED HERE -Charlie -->
+      <Button layoutX="574.0" layoutY="400.0" mnemonicParsing="false" onAction="#handleChatViewNavigation" prefHeight="40.0" prefWidth="280.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Open Chat Window">
+         <font>
+            <Font name="Aptos Bold" size="13.0" />
+         </font>
+      </Button>
+
       <Text layoutX="574.0" layoutY="475.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Tester Login">
          <font>
             <Font name="Aptos" size="25.0" />

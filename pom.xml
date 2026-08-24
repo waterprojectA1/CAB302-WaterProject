@@ -11,10 +11,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>21.0.9</javafx.version>
+        <javafx.version>21.0.12</javafx.version>
     </properties>
 
     <dependencies>
@@ -31,6 +30,23 @@
             <version>${javafx.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.tjake</groupId>
+            <artifactId>jlama-core</artifactId>
+            <version>0.8.4</version>
+        </dependency>
+
+        <!-- Native SIMD library. osx-aarch_64 (Apple Silicon),
+             osx-x86_64 (Intel Mac), linux-x86_64 (Linux), or
+             windows-x86_64 (Windows) if you are on different hardware.
+             -->
+        <dependency>
+            <groupId>com.github.tjake</groupId>
+            <artifactId>jlama-native</artifactId>
+            <classifier>osx-aarch_64</classifier>
+            <version>0.8.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -40,9 +56,67 @@
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
-
                 <configuration>
                     <mainClass>com.wateradvisory.Main</mainClass>
+                    <options>
+                        <option>--add-modules</option>
+                        <option>jdk.incubator.vector</option>
+                    </options>
+                </configuration>
+            </plugin>
+
+            <!-- Alternative launcher that avoids JavaFX's automatic
+                 module-path detection entirely, running everything on
+                 the plain classpath instead. Use this if jlama-native
+                 gets dropped from the module path (its automatic module
+                 name collides with the reserved word "native").
+                 Run with: mvn clean compile exec:exec -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>--add-modules</argument>
+                        <argument>jdk.incubator.vector</argument>
+                        <argument>--enable-native-access=ALL-UNNAMED</argument>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>com.wateradvisory.Launcher</argument>
+                    </arguments>
+                </configuration>
+                <executions>
+                    <!-- Personal testing only: mvn clean compile exec:exec@charlie-preview
+                         Runs Charlie's screens in isolation without needing App_Root
+                         or the login flow finished. Does not affect the default
+                         execution above, which is what the whole team uses. -->
+                    <execution>
+                        <id>charlie-preview</id>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>--add-modules</argument>
+                                <argument>jdk.incubator.vector</argument>
+                                <argument>--enable-native-access=ALL-UNNAMED</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>com.wateradvisory.Charlie_Root.DevPreviewLauncher</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>21</release>
+                    <compilerArgs>
+                        <arg>--add-modules=jdk.incubator.vector</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 

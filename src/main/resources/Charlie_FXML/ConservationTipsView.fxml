@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Arc?>
+<?import javafx.scene.shape.Circle?>
+
+<ScrollPane fitToWidth="true" styleClass="tips-page" stylesheets="@app.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.wateradvisory.Charlie_Root.ConservationTipsController">
+
+    <VBox spacing="0">
+
+        <!-- nav bar -->
+        <HBox alignment="CENTER_LEFT" spacing="8" styleClass="tips-page">
+            <padding>
+                <Insets top="18" right="18" bottom="12" left="18"/>
+            </padding>
+            <Label text="Conservation" styleClass="nav-brand" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <Button text="Open Rippl  &#8594;" styleClass="btn,btn-secondary" onAction="#onOpenChat"/>
+        </HBox>
+
+        <VBox spacing="22" styleClass="tips-page">
+            <padding>
+                <Insets top="4" right="18" bottom="24" left="18"/>
+            </padding>
+
+            <!-- score gauge -->
+            <HBox alignment="CENTER_LEFT" spacing="16" styleClass="score-card">
+                <StackPane maxWidth="96" maxHeight="96" minWidth="96" minHeight="96">
+                    <Circle radius="44" centerX="48" centerY="48" fill="TRANSPARENT"
+                            stroke="#e1eecc" strokeWidth="6"/>
+                    <Arc fx:id="scoreArc" radiusX="44" radiusY="44" centerX="48" centerY="48"
+                         startAngle="90" length="-280.8" type="OPEN"
+                         fill="TRANSPARENT" stroke="#728157" strokeWidth="6" strokeLineCap="ROUND"/>
+                    <Label fx:id="scoreValueLabel" text="78" styleClass="score-value"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Conservation score" styleClass="score-title"/>
+                    <Label fx:id="scoreSubtitleLabel" text="Above average for your household size"
+                           styleClass="text-muted" style="-fx-font-size: 12.5px;"/>
+                </VBox>
+            </HBox>
+
+            <!-- seasonal tip -->
+            <VBox styleClass="seasonal-banner">
+                <HBox spacing="10" alignment="TOP_LEFT">
+                    <Label text="&#128167;" style="-fx-font-size: 16px;"/>
+                    <Label fx:id="seasonalTipLabel" styleClass="seasonal-text" wrapText="true"
+                           text="Seasonal tip: summer irrigation is driving 30% of your usage this month."
+                           HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                </HBox>
+            </VBox>
+
+            <!-- personalised tips -->
+            <VBox spacing="12">
+                <Label text="PERSONALISED TIPS" styleClass="section-label"/>
+                <VBox fx:id="tipsContainer" spacing="12"/>
+            </VBox>
+
+            <!-- resources -->
+            <VBox spacing="12">
+                <Label text="RESOURCES" styleClass="section-label"/>
+                <HBox fx:id="resourcesContainer" spacing="12"/>
+            </VBox>
+
+        </VBox>
+    </VBox>
+</ScrollPane>
