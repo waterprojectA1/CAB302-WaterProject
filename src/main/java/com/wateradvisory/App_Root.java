@@ -1,4 +1,4 @@
 package com.wateradvisory;
 
-public class MainController {
+public class App_Root {
 }

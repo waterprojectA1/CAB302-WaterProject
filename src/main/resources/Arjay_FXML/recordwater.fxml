@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Arjay_Root.RecordWaterController">
+   <children>
+      <Text layoutX="227.0" layoutY="161.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="Record Water Consumption">
+         <font>
+            <Font name="Aptos" size="26.0" />
+         </font>
+      </Text>
+      <Button layoutX="442.0" layoutY="196.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="215.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Manually Record Water Bill" />
+      <Button layoutX="227.0" layoutY="197.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="168.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Upload Water Bill" />
+      <Button layoutX="740.0" layoutY="460.0" mnemonicParsing="false" onAction="#handleLogout" prefHeight="32.0" prefWidth="113.0" styleClass="danger-button" stylesheets="@../css/style1.css" text="Logout" />
+      <Line endX="190.0" layoutX="464.0" layoutY="258.0" startX="-237.0" stroke="WHITE" />
+      <Text layoutX="413.0" layoutY="289.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Water (L)">
+         <font>
+            <Font name="Aptos" size="26.0" />
+         </font>
+      </Text>
+      <Button layoutX="370.0" layoutY="361.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="145.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Submit Data" />
+      <TextField layoutX="370.0" layoutY="307.0" prefHeight="40.0" prefWidth="145.0" />
+   </children>
+</AnchorPane>
