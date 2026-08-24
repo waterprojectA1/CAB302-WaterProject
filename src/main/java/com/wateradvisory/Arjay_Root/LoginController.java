@@ -17,9 +17,15 @@ public class LoginController {
         Parent root = FXMLLoader.load(getClass().getResource("/Arjay_FXML/recordwater.fxml"));
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
+        
+        double width = stage.getWidth();
+        double height = stage.getHeight();
 
+        Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setWidth(width);
+        stage.setHeight(height);
+        
         stage.show();
     }
 
@@ -28,9 +34,15 @@ public class LoginController {
         Parent root = FXMLLoader.load(getClass().getResource("/Charlie_FXML/ChatView.fxml"));
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
+        
+        double width = stage.getWidth();
+        double height = stage.getHeight();
 
+        Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setWidth(width);
+        stage.setHeight(height);
+        
         stage.show();
     }
 }

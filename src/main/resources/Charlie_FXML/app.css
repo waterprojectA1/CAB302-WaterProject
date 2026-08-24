@@ -1,34 +1,34 @@
 .root {
-    -color-bg: #f5ead8;
-    -color-surface: #ebddc5;
-    -color-text: #201e1d;
-    -color-divider: rgba(32, 30, 29, 0.16);
+    -color-bg: #f3ebda;
+    -color-surface: #e9dec8;
+    -color-text: #3b4a4e;
+    -color-divider: rgba(59, 74, 78, 0.16);
 
-    -color-accent: #c67139;
-    -color-accent-100: #fff2eb;
-    -color-accent-200: #ffe1d0;
-    -color-accent-500: #d67f48;
-    -color-accent-600: #b2622d;
-    -color-accent-700: #8c491a;
-    -color-accent-800: #643312;
+    -color-accent: #5670a4;
+    -color-accent-100: #e9f3fc;
+    -color-accent-200: #d5e6f9;
+    -color-accent-500: #5670a4;
+    -color-accent-600: #47608f;
+    -color-accent-700: #3a4f76;
+    -color-accent-800: #2c3d5a;
 
-    -color-accent2: #7a8a5e;
-    -color-accent2-100: #f0fae1;
-    -color-accent2-200: #e1eecc;
-    -color-accent2-500: #8fa073;
-    -color-accent2-600: #728157;
-    -color-accent2-700: #56633f;
-    -color-accent2-800: #3d472b;
+    -color-accent2: #7bb9ef;
+    -color-accent2-100: #e9f3fc;
+    -color-accent2-200: #d6eafb;
+    -color-accent2-500: #7bb9ef;
+    -color-accent2-600: #5a9bd4;
+    -color-accent2-700: #3f7aaf;
+    -color-accent2-800: #2e5c84;
 
-    -color-neutral-100: #f9f4ed;
-    -color-neutral-800: #474238;
+    -color-neutral-100: #fbf7ef;
+    -color-neutral-800: #3b4a4e;
 
     -fx-font-family: "Figtree";
     -fx-background-color: -color-bg;
 }
 
 .heading { -fx-font-family: "Caprasimo"; }
-.text-muted { -fx-text-fill: rgba(32, 30, 29, 0.55); }
+.text-muted { -fx-text-fill: rgba(59, 74, 78, 0.55); }
 
 .btn {
     -fx-font-family: "Caprasimo";
@@ -44,7 +44,7 @@
     -fx-border-radius: 999;
     -fx-text-fill: -color-text;
 }
-.btn-secondary:hover { -fx-background-color: rgba(32, 30, 29, 0.06); }
+.btn-secondary:hover { -fx-background-color: rgba(59, 74, 78, 0.06); }
 .btn-ghost {
     -fx-background-color: transparent;
     -fx-text-fill: -color-accent;
@@ -88,15 +88,16 @@
 .score-title { -fx-font-family: "Caprasimo"; -fx-font-size: 15px; -fx-text-fill: -color-text; }
 .seasonal-banner { -fx-background-color: -color-accent-100; -fx-background-radius: 28; -fx-padding: 18; }
 .seasonal-text { -fx-font-size: 13.5px; -fx-font-style: italic; -fx-text-fill: -color-accent-800; }
-.section-label { -fx-font-size: 11px; -fx-text-fill: rgba(32, 30, 29, 0.55); }
+.section-label { -fx-font-size: 11px; -fx-text-fill: rgba(59, 74, 78, 0.55); }
 .tip-text { -fx-font-size: 13.5px; -fx-text-fill: -color-text; }
 .resource-title { -fx-font-family: "Caprasimo"; -fx-font-size: 14px; -fx-text-fill: -color-text; }
-.resource-body { -fx-font-size: 12px; -fx-text-fill: rgba(32, 30, 29, 0.8); }
+.resource-body { -fx-font-size: 12px; -fx-text-fill: rgba(59, 74, 78, 0.8); }
+.resource-icon { -fx-fill: transparent; -fx-stroke: -color-accent-700; -fx-stroke-width: 2.75; -fx-stroke-line-cap: round; -fx-stroke-line-join: round; }
 
 .chat-page-header { -fx-background-color: -color-bg; }
 .chat-avatar { -fx-background-color: -color-accent2-100; -fx-background-radius: 999; }
 .chat-title { -fx-font-family: "Caprasimo"; -fx-font-size: 19px; -fx-text-fill: -color-text; }
-.chat-scroll, .chat-scroll .viewport { -fx-background-color: transparent; }
+.chat-scroll, .chat-scroll .viewport { -fx-background-color: -color-accent2-100; }
 .chat-container { -fx-background-color: -color-accent2-100; -fx-padding: 16; }
 
 .bubble-ai {
@@ -111,7 +112,18 @@
 .bubble-ai .label { -fx-text-fill: -color-text; -fx-font-size: 13.5px; -fx-wrap-text: true; }
 .bubble-user { -fx-background-color: -color-accent-500; -fx-background-radius: 18 18 4 18; -fx-padding: 10 14; }
 .bubble-user .label { -fx-text-fill: white; -fx-font-size: 13.5px; -fx-wrap-text: true; }
-.bubble-system .label { -fx-text-fill: rgba(32, 30, 29, 0.55); -fx-font-size: 11.5px; -fx-font-style: italic; }
+.bubble-system .label { -fx-text-fill: rgba(59, 74, 78, 0.55); -fx-font-size: 11.5px; -fx-font-style: italic; }
+
+.bubble-typing {
+    -fx-background-color: -color-bg;
+    -fx-border-color: -color-divider;
+    -fx-border-width: 0.5;
+    -fx-background-radius: 18 18 18 4;
+    -fx-border-radius: 18 18 18 4;
+    -fx-padding: 12 16;
+    -fx-effect: dropshadow(gaussian, rgba(46,43,37,0.10), 3, 0, 0, 1);
+}
+.typing-dot { -fx-fill: -color-accent2-600; }
 
 .chat-input-bar { -fx-background-color: -color-accent2-100; -fx-padding: 12 16 16; }
 .chat-input-pill {

@@ -2,10 +2,14 @@ package com.wateradvisory.Charlie_Root;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.SVGPath;
 
 public class ConservationTipsController {
 
@@ -36,8 +40,8 @@ public class ConservationTipsController {
         addTip("Tap usage spikes between 7-8am, consistent with a slow leak pattern.", "medium", "Check fixtures");
         addTip("Outdoor watering is timed well against evaporation for your area.", "low", "Keep it up");
 
-        addResource("Leak checklist", "A 5-minute self-audit for common fixtures.");
-        addResource("Rebate finder", "Local rebates for water-efficient fixtures.");
+        addResource("Leak checklist", "A 5-minute self-audit for common fixtures.", leakChecklistIcon());
+        addResource("Rebate finder", "Local rebates for water-efficient fixtures.", rebateFinderIcon());
     }
 
     /** score out of 100 -- drives both the number and the ring's fill amount */
@@ -94,6 +98,11 @@ public class ConservationTipsController {
 
     /** Adds one resource card (guide, regulation, or product link). */
     public void addResource(String title, String body) {
+        addResource(title, body, null);
+    }
+
+    /** Adds one resource card with a leading icon (guide, regulation, or product link). */
+    public void addResource(String title, String body, Node icon) {
         Label titleLabel = new Label(title);
         titleLabel.getStyleClass().add("resource-title");
 
@@ -101,12 +110,34 @@ public class ConservationTipsController {
         bodyLabel.getStyleClass().add("resource-body");
         bodyLabel.setWrapText(true);
 
-        VBox card = new VBox(8, titleLabel, bodyLabel);
+        VBox card = new VBox(8);
         card.getStyleClass().add("card");
+        if (icon != null) {
+            card.getChildren().add(icon);
+        }
+        card.getChildren().addAll(titleLabel, bodyLabel);
         card.setPrefWidth(150);
         card.setMinWidth(150);
 
         resourcesContainer.getChildren().add(card);
+    }
+
+    private Node leakChecklistIcon() {
+        SVGPath path = new SVGPath();
+        path.setContent("M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z");
+        path.getStyleClass().add("resource-icon");
+        return path;
+    }
+
+    private Node rebateFinderIcon() {
+        SVGPath pin = new SVGPath();
+        pin.setContent("M12 22s8-4.5 8-11.8A8 8 0 0 0 4 10.2C4 17.5 12 22 12 22z");
+        pin.getStyleClass().add("resource-icon");
+
+        Circle dot = new Circle(12, 10, 3);
+        dot.getStyleClass().add("resource-icon");
+
+        return new Group(pin, dot);
     }
 
     /** Clears all tip cards -- useful if you refresh with new data. */

@@ -17,7 +17,7 @@
             fx:controller="com.wateradvisory.Charlie_Root.ChatController">
 
     <top>
-        <VBox styleClass="chat-page-header">
+        <VBox fx:id="headerBox" styleClass="chat-page-header">
 
             <VBox spacing="10">
                 <padding>
@@ -36,14 +36,13 @@
                 </HBox>
             </VBox>
 
-            <!-- wave divider -->
-            <SVGPath content="M0,10 C70,26 140,0 210,12 C280,24 350,4 420,14 L420,28 L0,28 Z"
-                     fill="#f0fae1" scaleX="1.6"/>
+            <!-- wave divider: path data is regenerated in ChatController to match headerBox's actual width -->
+            <SVGPath fx:id="waveDivider" content="M0,14 L420,14 L420,28 L0,28 Z" fill="#e9f3fc"/>
         </VBox>
     </top>
 
     <center>
-        <ScrollPane fx:id="scrollPane" fitToWidth="true" styleClass="chat-scroll">
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" styleClass="chat-scroll">
             <VBox fx:id="conversationContainer" styleClass="chat-container" spacing="14"/>
         </ScrollPane>
     </center>

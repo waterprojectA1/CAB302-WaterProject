@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.SVGPath?>
 
 <ScrollPane fitToWidth="true" styleClass="tips-page" stylesheets="@app.css"
             xmlns="http://javafx.com/javafx/21"
@@ -22,7 +23,10 @@
             <padding>
                 <Insets top="18" right="18" bottom="12" left="18"/>
             </padding>
-            <Label text="Conservation" styleClass="nav-brand" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <HBox alignment="CENTER_LEFT" spacing="8" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <SVGPath content="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" styleClass="resource-icon"/>
+                <Label text="Conservation" styleClass="nav-brand"/>
+            </HBox>
             <Button text="Open Rippl  &#8594;" styleClass="btn,btn-secondary" onAction="#onOpenChat"/>
         </HBox>
 
@@ -35,10 +39,10 @@
             <HBox alignment="CENTER_LEFT" spacing="16" styleClass="score-card">
                 <StackPane maxWidth="96" maxHeight="96" minWidth="96" minHeight="96">
                     <Circle radius="44" centerX="48" centerY="48" fill="TRANSPARENT"
-                            stroke="#e1eecc" strokeWidth="6"/>
+                            stroke="#d6eafb" strokeWidth="6"/>
                     <Arc fx:id="scoreArc" radiusX="44" radiusY="44" centerX="48" centerY="48"
                          startAngle="90" length="-280.8" type="OPEN"
-                         fill="TRANSPARENT" stroke="#728157" strokeWidth="6" strokeLineCap="ROUND"/>
+                         fill="TRANSPARENT" stroke="#5a9bd4" strokeWidth="6" strokeLineCap="ROUND"/>
                     <Label fx:id="scoreValueLabel" text="78" styleClass="score-value"/>
                 </StackPane>
                 <VBox spacing="2">
