@@ -11,4 +11,8 @@ target/
 
 #Claude.md file for Claude AI Code correction
 /.claude/
+<<<<<<< HEAD
 CLAUDE.md
+=======
+CLAUDE.md
+>>>>>>> cb77d9bdcefd6852a5e39d7faa03c1057a2d354f
