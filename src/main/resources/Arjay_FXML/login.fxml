@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Arjay_Root.LoginController">
+<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Arjay_Root.Login">
    <children>
-      <Button layoutX="296.0" layoutY="287.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="291.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Login">
+      <Button layoutX="296.0" layoutY="287.0" mnemonicParsing="false" onAction="#handleLogin" prefHeight="31.0" prefWidth="291.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Login">
          <font>
             <Font name="Aptos Bold" size="12.0" />
          </font>
@@ -18,17 +19,12 @@
             <Font name="Aptos" size="45.0" />
          </font>
       </Text>
-      <TextField layoutX="297.0" layoutY="166.0" prefHeight="31.0" prefWidth="291.0" />
-      <Text layoutX="295.0" layoutY="160.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Username">
+      <TextField fx:id="emailField" layoutX="297.0" layoutY="166.0" prefHeight="31.0" prefWidth="291.0" />
+      <Text layoutX="295.0" layoutY="160.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Email">
          <font>
             <Font name="Aptos Bold" size="16.0" />
          </font>
       </Text>
-      <Button layoutX="717.0" layoutY="448.0" mnemonicParsing="false" onAction="#handleTesterLogin" prefHeight="40.0" prefWidth="137.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Login as Tester">
-         <font>
-            <Font name="Aptos Bold" size="13.0" />
-         </font>
-      </Button>
       
       <!-- GO TO AI BUTTON ADDED HERE -Charlie -->
       <Button layoutX="574.0" layoutY="400.0" mnemonicParsing="false" onAction="#handleChatViewNavigation" prefHeight="40.0" prefWidth="280.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Open Chat Window">
@@ -36,14 +32,7 @@
             <Font name="Aptos Bold" size="13.0" />
          </font>
       </Button>
-
-      <Text layoutX="574.0" layoutY="475.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Tester Login">
-         <font>
-            <Font name="Aptos" size="25.0" />
-         </font>
-      </Text>
-      <TextField layoutX="295.0" layoutY="232.0" prefHeight="31.0" prefWidth="291.0" />
-      <Button layoutX="296.0" layoutY="336.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="291.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Sign Up">
+      <Button fx:id="signupBtn" layoutX="296.0" layoutY="336.0" mnemonicParsing="false" onAction="#handleSignUp" prefHeight="31.0" prefWidth="291.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Sign Up">
          <font>
             <Font name="Aptos Bold" size="12.0" />
          </font>
@@ -53,5 +42,6 @@
             <Font name="Aptos Bold" size="16.0" />
          </font>
       </Text>
+      <PasswordField fx:id="passwordField" layoutX="297.0" layoutY="230.0" prefHeight="40.0" prefWidth="291.0" />
    </children>
 </AnchorPane>
