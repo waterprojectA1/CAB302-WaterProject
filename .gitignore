@@ -8,3 +8,7 @@ target/
 
 # Environment files
 .env
+
+#Claude.md file for Claude AI Code correction
+/.claude/
+CLAUDE.md
