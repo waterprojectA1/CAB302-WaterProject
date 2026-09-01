@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.io.IOException;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -68,6 +69,40 @@ public class AuthService {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public static void logout() {
+
+        String accessToken = UserSession.getAccessToken();
+
+        try {
+            if (accessToken != null) {
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(
+                                SupabaseConfig.SUPABASE_URL + "/auth/v1/logout"
+                        ))
+                        .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                        .header("Authorization", "Bearer " + accessToken)
+                        .POST(HttpRequest.BodyPublishers.noBody())
+                        .build();
+
+                HttpClient client = HttpClient.newHttpClient();
+
+                client.send(
+                        request,
+                        HttpResponse.BodyHandlers.ofString()
+                );
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            UserSession.clear();
+            System.out.println("Logged out successful!");
         }
     }
 
@@ -157,5 +192,84 @@ public class AuthService {
         }
 
         return false;
+    }
+
+    public static void markSetupComplete() throws IOException, InterruptedException {
+
+        String userId = UserSession.getUserId();
+        String accessToken = UserSession.getAccessToken();
+
+        String url = SupabaseConfig.SUPABASE_URL
+                + "/rest/v1/accounts?id=eq."
+                + userId;
+
+        String jsonBody = """
+            {
+                "setup_done": true
+            }
+            """;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Content-Type", "application/json")
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new RuntimeException(
+                    "Failed to update setup status: " + response.body()
+            );
+        }
+    }
+
+    public static String getUsername() {
+
+        try {
+            String userId = UserSession.getUserId();
+            String accessToken = UserSession.getAccessToken();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            SupabaseConfig.SUPABASE_URL
+                                    + "/rest/v1/accounts?id=eq."
+                                    + userId
+                                    + "&select=username"
+                    ))
+                    .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .GET()
+                    .build();
+
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpResponse<String> response = client.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            if (response.statusCode() == 200) {
+
+                JsonArray result = JsonParser
+                        .parseString(response.body())
+                        .getAsJsonArray();
+
+                if (!result.isEmpty()) {
+                    return result.get(0)
+                            .getAsJsonObject()
+                            .get("username")
+                            .getAsString();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "User";
     }
 }

@@ -59,7 +59,7 @@ public class Login {
             String nextPage;
 
             if (AuthService.isSetupComplete()) {
-                nextPage = "/Arjay_FXML/recordwater.fxml";
+                nextPage = "/App_Root-view.fxml";
             } else {
                 nextPage = "/Arjay_FXML/postregister.fxml";
             }

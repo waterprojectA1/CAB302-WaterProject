@@ -1,10 +1,18 @@
 package com.wateradvisory.Arjay_Root;
 
+import com.wateradvisory.database.AuthService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
+
+import java.io.IOException;
 
 public class PostRegister {
 
@@ -24,9 +32,26 @@ public class PostRegister {
     }
 
     @FXML
-    private void handleNoHousehold() {
-        householdDetailsPane.setVisible(true);
-        householdDetailsPane.setManaged(true);
+    private void handleNoHousehold(ActionEvent event) {
+        // move user straight to main screen interface
+        try {
+            AuthService.markSetupComplete();
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/App_Root-view.fxml")
+            );
+
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

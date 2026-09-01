@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.wateradvisory.App_Root"
-            prefHeight="516.0" prefWidth="882.0">
 
+<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.App_Root">
+   <children>
+      <Text layoutX="287.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="App Main Interface" />
+      <Button fx:id="recordWaterBtn" layoutX="82.0" layoutY="348.0" mnemonicParsing="false" onAction="#handleRecordWater" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="Record Water" />
+      <Button fx:id="dashboardBtn" layoutX="276.0" layoutY="348.0" mnemonicParsing="false" onAction="#handleDashboard" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="Dashboard" />
+      <Button fx:id="aichatBtn" layoutX="463.0" layoutY="348.0" mnemonicParsing="false" onAction="#handleChatBot" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="AI Chatbot" />
+      <Button fx:id="leaderboardBtn" layoutX="650.0" layoutY="348.0" mnemonicParsing="false" onAction="#handleLeaderboard" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="Leaderboard" />
+      <Button fx:id="logoutBtn" layoutX="375.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleLogout" prefHeight="35.0" prefWidth="132.0" styleClass="danger-button" stylesheets="@css/style1.css" text="Logout" />
+      <Text fx:id="usernameText" layoutX="357.0" layoutY="127.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Welcome: User not found" />
+   </children>
 </AnchorPane>

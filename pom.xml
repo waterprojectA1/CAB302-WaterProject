@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.github.tjake</groupId>
             <artifactId>jlama-native</artifactId>
-            <classifier>osx-aarch_64</classifier>
+            <classifier>windows-x86_64</classifier>
             <version>0.8.4</version>
         </dependency>
 
