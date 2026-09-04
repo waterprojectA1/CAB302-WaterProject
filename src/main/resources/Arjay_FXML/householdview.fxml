@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Arjay_Root.ViewHousehold">
+   <children>
+      <AnchorPane fx:id="viewHouseholdPane" layoutX="6.0" layoutY="7.0" prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css">
+         <children>
+            <Text layoutX="14.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="View Household" />
+            <Button fx:id="returnToMainBtn1" layoutX="622.0" layoutY="446.0" mnemonicParsing="false" onAction="#handleReturnToMain" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Go Back" />
+            <Text fx:id="householdText" layoutX="180.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Household Name" textAlignment="CENTER" wrappingWidth="522.0" />
+            <Button fx:id="houseSettingsBtn" layoutX="486.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleHouseSettings" styleClass="primary-button" stylesheets="@../css/style1.css" text="Edit Settings" />
+            <Text fx:id="ownerText" layoutX="191.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Owner" textAlignment="CENTER" wrappingWidth="500.947265625" />
+            <Text fx:id="householdTotalText" layoutX="543.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Total Members:" wrappingWidth="153.0" />
+            <ScrollPane fx:id="memberScrollPane" fitToWidth="true" layoutX="188.0" layoutY="192.0" prefHeight="242.0" prefWidth="522.0" styleClass="member-scroll-pane" stylesheets="@../css/style1.css">
+               <content>
+                  <VBox fx:id="memberListBox" prefHeight="242.0" prefWidth="507.0" styleClass="member-list-box" stylesheets="@../css/style1.css" />
+               </content>
+            </ScrollPane>
+            <Text fx:id="joinCodeText" layoutX="191.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Join Code:" wrappingWidth="329.4873046875" />
+            <Button fx:id="leaveHouseholdBtn" layoutX="188.0" layoutY="446.0" mnemonicParsing="false" onAction="#handleLeaveHousehold" styleClass="danger-button" stylesheets="@../css/style1.css" text="Leave Household" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="houseSettings" layoutY="1.0" prefHeight="523.0" prefWidth="888.0" styleClass="root" stylesheets="@../css/style1.css" visible="false">
+         <children>
+            <TextField fx:id="householdNameField" layoutX="314.0" layoutY="118.0" prefHeight="40.0" prefWidth="260.0" />
+            <Button fx:id="applyChangesBtn" layoutX="313.0" layoutY="452.0" mnemonicParsing="false" onAction="#handleApplyChanges" prefHeight="35.0" prefWidth="162.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Apply Changes" />
+            <Text layoutX="24.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="Household Settings" />
+            <Text layoutX="351.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Enter New Household Name" />
+            <Button fx:id="cancelBtn" layoutX="495.0" layoutY="451.0" mnemonicParsing="false" onAction="#handleCancelSettings" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Go Back" />
+            <ScrollPane fx:id="memberScrollPane1" fitToWidth="true" layoutX="314.0" layoutY="215.0" prefHeight="208.0" prefWidth="260.0" styleClass="member-scroll-pane" stylesheets="@../css/style1.css">
+               <content>
+                  <VBox fx:id="editMemberListBox" prefHeight="206.0" prefWidth="243.0" styleClass="member-list-box" stylesheets="@../css/style1.css" />
+               </content>
+            </ScrollPane>
+            <Text layoutX="385.0" layoutY="203.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Remove Members" />
+            <Button fx:id="deleteHouseholdBtn" layoutX="40.0" layoutY="451.0" mnemonicParsing="false" onAction="#handleDeleteHousehold" styleClass="danger-button" stylesheets="@../css/style1.css" text="DELETE Household" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="noHouseholdPane" prefHeight="524.0" prefWidth="888.0" visible="false">
+         <children>
+            <Text layoutX="219.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Join A Household Or Create Your Own" textAlignment="CENTER" wrappingWidth="455.4873046875" />
+            <Text layoutX="363.0" layoutY="118.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Enter Join Code" />
+            <TextField fx:id="joinCodeTextField" layoutX="296.0" layoutY="130.0" prefHeight="40.0" prefWidth="301.0" />
+            <Button fx:id="joinHouseholdBtn" layoutX="296.0" layoutY="184.0" mnemonicParsing="false" onAction="#handleJoinHousehold" prefHeight="35.0" prefWidth="301.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Join Household" />
+            <Button fx:id="returnToMainBtn" layoutX="757.0" layoutY="457.0" mnemonicParsing="false" onAction="#handleReturnToMain" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Go Back" />
+            <Text layoutX="174.0" layoutY="305.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Household Name" />
+            <TextField fx:id="createHouseholdNameField" layoutX="296.0" layoutY="280.0" prefHeight="40.0" prefWidth="301.0" />
+            <TextField fx:id="createAddressField" layoutX="296.0" layoutY="334.0" prefHeight="40.0" prefWidth="301.0" />
+            <Button fx:id="createHouseholdBtn" layoutX="296.0" layoutY="390.0" mnemonicParsing="false" onAction="#handleCreateHousehold" prefHeight="35.0" prefWidth="301.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Create Household" />
+            <Text layoutX="163.0" layoutY="359.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Address (Optional)" />
+            <Text layoutX="428.0" layoutY="256.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="OR" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

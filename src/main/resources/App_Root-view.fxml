@@ -4,15 +4,20 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.App_Root">
    <children>
-      <Text layoutX="287.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="App Main Interface" />
-      <Button fx:id="recordWaterBtn" layoutX="82.0" layoutY="348.0" mnemonicParsing="false" onAction="#handleRecordWater" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="Record Water" />
-      <Button fx:id="dashboardBtn" layoutX="276.0" layoutY="348.0" mnemonicParsing="false" onAction="#handleDashboard" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="Dashboard" />
-      <Button fx:id="aichatBtn" layoutX="463.0" layoutY="348.0" mnemonicParsing="false" onAction="#handleChatBot" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="AI Chatbot" />
-      <Button fx:id="leaderboardBtn" layoutX="650.0" layoutY="348.0" mnemonicParsing="false" onAction="#handleLeaderboard" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="Leaderboard" />
-      <Button fx:id="logoutBtn" layoutX="375.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleLogout" prefHeight="35.0" prefWidth="132.0" styleClass="danger-button" stylesheets="@css/style1.css" text="Logout" />
-      <Text fx:id="usernameText" layoutX="357.0" layoutY="127.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Welcome: User not found" />
+      <AnchorPane prefHeight="516.0" prefWidth="882.0">
+         <children>
+            <Text layoutX="287.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="App Main Interface" />
+            <Button fx:id="recordWaterBtn" layoutX="226.0" layoutY="440.0" mnemonicParsing="false" onAction="#handleRecordWater" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="Record Water" />
+            <Button fx:id="dashboardBtn" layoutX="377.0" layoutY="440.0" mnemonicParsing="false" onAction="#handleDashboard" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="Dashboard" />
+            <Button fx:id="aichatBtn" layoutX="525.0" layoutY="440.0" mnemonicParsing="false" onAction="#handleChatBot" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="AI Chatbot" />
+            <Button fx:id="leaderboardBtn" layoutX="674.0" layoutY="440.0" mnemonicParsing="false" onAction="#handleLeaderboard" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="Leaderboard" />
+            <Button fx:id="logoutBtn" layoutX="709.0" layoutY="31.0" mnemonicParsing="false" onAction="#handleLogout" prefHeight="35.0" prefWidth="132.0" styleClass="danger-button" stylesheets="@css/style1.css" text="Logout" />
+            <Text fx:id="usernameText" layoutX="34.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Welcome: User not found" />
+            <Button fx:id="viewHouseholdBtn" layoutX="76.0" layoutY="440.0" mnemonicParsing="false" onAction="#handleViewHousehold" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="View Household" />
+            <Text fx:id="householdText" layoutX="34.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Household: None" />
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>
