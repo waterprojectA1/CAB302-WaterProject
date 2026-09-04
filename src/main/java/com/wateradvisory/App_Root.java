@@ -1,6 +1,7 @@
 package com.wateradvisory;
 
 import com.wateradvisory.database.AuthService;
+import com.wateradvisory.database.HouseholdService;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -18,16 +19,63 @@ public class App_Root {
     private Text usernameText;
 
     @FXML
+    private Text householdText;
+
+    @FXML
     private void initialize() {
 
         String username = AuthService.getUsername();
+        String householdName = HouseholdService.getHouseholdName();
 
         usernameText.setText("Welcome: " + username);
+        householdText.setText(householdName);
     }
 
     @FXML
     private void handleRecordWater(ActionEvent event) {
-        System.out.println("Record Water clicked");
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/Arjay_FXML/recordwater.fxml")
+            );
+
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource())
+                    .getScene()
+                    .getWindow();
+
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleViewHousehold(ActionEvent event) {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(
+                            "/Arjay_FXML/householdview.fxml"
+                    )
+            );
+
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource())
+                    .getScene()
+                    .getWindow();
+
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

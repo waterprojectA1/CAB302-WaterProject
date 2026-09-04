@@ -13,8 +13,8 @@ import java.io.IOException;
 public class RecordWaterController {
 
     @FXML
-    private void handleLogout(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Arjay_FXML/login.fxml"));
+    private void handleReturnToMain(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/App_Root-view.fxml"));
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
@@ -22,5 +22,16 @@ public class RecordWaterController {
         stage.setScene(scene);
         stage.show();
     }
+
+    @FXML
+    private void handleShowerSubmit(ActionEvent event) {
+        System.out.println("shower submit clicked");
+    }
+
+    @FXML
+    private void handleSubmitWater(ActionEvent event) {
+        System.out.println("submit water clicked");
+    }
+
 
 }

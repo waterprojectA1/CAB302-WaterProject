@@ -185,9 +185,38 @@
     -fx-background-color: -color-danger-button-hover;
 }
 
-/* PEOPLE COUNT DROPDOWN */
 
-.people-count-menu {
+/* HOUSEHOLD MEMBER LIST */
+
+.member-scroll-pane {
+    -fx-background-color: -color-background-card;
+    -fx-background: -color-background-card;
+
+    -fx-border-color: -color-input-border;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.member-scroll-pane > .viewport {
+    -fx-background-color: -color-background-card;
+}
+
+.member-list-box {
+    -fx-background-color: -color-background-card;
+    -fx-padding: 10px;
+    -fx-spacing: 8px;
+}
+
+.member-list-box .label {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+}
+
+/* MENU DROPDOWN */
+
+.menu-dropdown {
     -fx-background-color: -color-input-background;
     -fx-text-fill: -color-text-primary;
 
@@ -201,15 +230,15 @@
     -fx-cursor: hand;
 }
 
-.people-count-menu:hover {
+.menu-dropdown:hover {
     -fx-border-color: -color-input-border-focus;
 }
 
-.people-count-menu .label {
+.menu-dropdown .label {
     -fx-text-fill: -color-text-primary;
 }
 
-.people-count-menu .arrow {
+.menu-dropdown .arrow {
     -fx-background-color: -color-text-secondary;
 }
 
@@ -217,8 +246,11 @@
 /* DROPDOWN POPUP */
 
 .context-menu {
-    -fx-background-color: #2c2f36;
-    -fx-border-color: #3b3f47;
+    -fx-background-color: -color-input-background;
+
+    -fx-border-color: -color-input-border;
+    -fx-border-width: 1px;
+
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
 }
@@ -228,9 +260,9 @@
 }
 
 .menu-item .label {
-    -fx-text-fill: #f1f1f1;
+    -fx-text-fill: -color-text-primary;
 }
 
 .menu-item:focused {
-    -fx-background-color: #3b82f6;
+    -fx-background-color: -color-primary-button;
 }

@@ -1,35 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Arjay_Root.PostRegister">
    <children>
-      <Text layoutX="119.0" layoutY="90.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="Would You Like To Create A Household?" />
-      <Button fx:id="yesHouseholdBtn" layoutX="298.0" layoutY="119.0" mnemonicParsing="false" onAction="#handleYesHousehold" prefHeight="35.0" prefWidth="287.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Yes, I Live With Other Tenants" />
-      <Button fx:id="noHouseholdBtn" layoutX="298.0" layoutY="169.0" mnemonicParsing="false" onAction="#handleNoHousehold" prefHeight="40.0" prefWidth="287.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="No, Skip Household Creation" />
-      <AnchorPane fx:id="householdDetailsPane" layoutY="213.0" prefHeight="303.0" prefWidth="882.0">
+      <AnchorPane fx:id="postRegister1" prefHeight="516.0" prefWidth="882.0" visible="false">
          <children>
-            <Text layoutX="171.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Household Name" />
-            <TextField fx:id="householdNameField" layoutX="295.0" layoutY="20.0" prefHeight="40.0" prefWidth="296.0" />
-            <Text layoutX="80.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="How many are living with you?" />
-            <Text layoutX="158.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Address (Optional)" wrappingWidth="126.2744140625" />
-            <TextField fx:id="addressField" layoutX="295.0" layoutY="75.0" prefHeight="40.0" prefWidth="296.0" />
-            <Button fx:id="createHouseholdBtn" layoutX="295.0" layoutY="192.0" mnemonicParsing="false" onAction="#handleCreateHousehold" prefHeight="35.0" prefWidth="296.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Create Household" />
-            <MenuButton fx:id="peopleCountMenu" layoutX="295.0" layoutY="139.0" mnemonicParsing="false" styleClass="people-count-menu" stylesheets="@../css/style1.css" text="No. Of People">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#handlePeopleCount" text="2" />
-                <MenuItem mnemonicParsing="false" onAction="#handlePeopleCount" text="3" />
-                  <MenuItem mnemonicParsing="false" onAction="#handlePeopleCount" text="4" />
-                  <MenuItem mnemonicParsing="false" onAction="#handlePeopleCount" text="5" />
-                  <MenuItem mnemonicParsing="false" onAction="#handlePeopleCount" text="6" />
-                  <MenuItem mnemonicParsing="false" onAction="#handlePeopleCount" text="7+" />
-              </items>
-            </MenuButton>
+            <Text fx:id="postRegisterText" layoutX="119.0" layoutY="192.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="Would You Like To Create A Household?" />
+            <Button fx:id="yesHouseholdBtn" layoutX="298.0" layoutY="218.0" mnemonicParsing="false" onAction="#handleYesHousehold" prefHeight="35.0" prefWidth="287.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Yes, I Live With Other Tenants" />
+            <Button fx:id="noHouseholdBtn" layoutX="298.0" layoutY="271.0" mnemonicParsing="false" onAction="#handleNoHousehold" prefHeight="40.0" prefWidth="287.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="No, Skip Household Creation" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="postRegister2" prefHeight="516.0" prefWidth="882.0">
+         <children>
+            <Text layoutX="190.0" layoutY="180.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Household Name" />
+            <TextField fx:id="householdNameField" layoutX="314.0" layoutY="155.0" prefHeight="40.0" prefWidth="296.0" />
+            <Text layoutX="177.0" layoutY="235.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Address (Optional)" wrappingWidth="126.2744140625" />
+            <TextField fx:id="addressField" layoutX="314.0" layoutY="210.0" prefHeight="40.0" prefWidth="296.0" />
+            <Button fx:id="createHouseholdBtn" layoutX="314.0" layoutY="272.0" mnemonicParsing="false" onAction="#handleCreateHousehold" prefHeight="35.0" prefWidth="296.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Create Household" />
+            <Button fx:id="returnHouseholdBtn" layoutX="314.0" layoutY="319.0" mnemonicParsing="false" onAction="#handleReturnHousehold" prefHeight="40.0" prefWidth="296.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Return, I changed my mind" />
+            <Text layoutX="345.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Enter household details to continue" />
          </children>
       </AnchorPane>
    </children>
