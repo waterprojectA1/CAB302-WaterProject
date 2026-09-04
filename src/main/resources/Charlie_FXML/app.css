@@ -112,7 +112,21 @@
 .bubble-ai .label { -fx-text-fill: -color-text; -fx-font-size: 13.5px; -fx-wrap-text: true; }
 .bubble-user { -fx-background-color: -color-accent-500; -fx-background-radius: 18 18 4 18; -fx-padding: 10 14; }
 .bubble-user .label { -fx-text-fill: white; -fx-font-size: 13.5px; -fx-wrap-text: true; }
-.bubble-system .label { -fx-text-fill: rgba(59, 74, 78, 0.55); -fx-font-size: 11.5px; -fx-font-style: italic; }
+.bubble-system .label { -fx-text-fill: rgba(59, 74, 78, 0.55); -fx-font-size: 11.5px; -fx-font-style: italic; -fx-wrap-text: true; }
+
+/* "more ›" / "less ‹" affordance for long messages -- expands the bubble in place */
+.bubble-more {
+    -fx-font-family: "Figtree";
+    -fx-font-size: 11px;
+    -fx-padding: 2 2 0 2;
+    -fx-border-width: 0;
+    -fx-underline: false;
+    -fx-cursor: hand;
+}
+.bubble-more:hover { -fx-underline: true; }
+.bubble-more:visited { -fx-underline: false; }
+.bubble-ai .bubble-more { -fx-text-fill: -color-accent-600; }
+.bubble-user .bubble-more { -fx-text-fill: rgba(255, 255, 255, 0.9); }
 
 .bubble-typing {
     -fx-background-color: -color-bg;

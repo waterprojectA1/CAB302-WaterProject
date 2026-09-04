@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
@@ -29,20 +30,31 @@
                         <Label text="&#128167;" style="-fx-font-size: 17px;"/>
                     </StackPane>
                     <VBox spacing="1">
-                        <Label text="Rippl" styleClass="chat-title"/>
+                        <Label text="Ripple" styleClass="chat-title"/>
                         <Label text="your water conservation assistant" styleClass="text-muted"
                                style="-fx-font-size: 12px;"/>
                     </VBox>
                 </HBox>
             </VBox>
 
-            <!-- wave divider: path data is regenerated in ChatController to match headerBox's actual width -->
-            <SVGPath fx:id="waveDivider" content="M0,14 L420,14 L420,28 L0,28 Z" fill="#e9f3fc"/>
+            <!-- Wave divider. The SVGPath's geometry is regenerated in ChatController to span the
+                 header's current width. It MUST sit inside this Pane: a Shape is not resizable, so
+                 as a direct VBox child its (ever-widening) geometric bounds would become headerBox's
+                 minWidth and ratchet the whole window's minimum width up, never letting it shrink
+                 back (see "Known gotchas" in CLAUDE.md). A plain Pane reports only its own insets as
+                 min/pref width and ignores its children, so the path can grow and shrink freely. -->
+            <Pane fx:id="waveHolder" minWidth="0" prefHeight="28" maxHeight="28">
+                <SVGPath fx:id="waveDivider" content="M0,14 L420,14 L420,28 L0,28 Z" fill="#e9f3fc"/>
+            </Pane>
         </VBox>
     </top>
 
     <center>
-        <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" styleClass="chat-scroll">
+        <!-- fitToWidth: content tracks the viewport width so bubbles re-flow on resize.
+             fitToHeight is deliberately OFF: the conversation must be free to grow taller
+             than the viewport so the vertical scrollbar can take over. -->
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="false"
+                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="chat-scroll">
             <VBox fx:id="conversationContainer" styleClass="chat-container" spacing="14"/>
         </ScrollPane>
     </center>
@@ -50,8 +62,7 @@
     <bottom>
         <HBox styleClass="chat-input-bar">
             <HBox styleClass="chat-input-pill" alignment="CENTER" spacing="8" HBox.hgrow="ALWAYS">
-                <TextField fx:id="inputField" styleClass="chat-input-field" promptText="Ask something..."
-                           onAction="#onSend" HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="inputField" styleClass="chat-input-field" promptText="Ask something..." onAction="#onSend" HBox.hgrow="ALWAYS"/>
                 <Button fx:id="sendButton" text="&#10148;" styleClass="btn-icon-send" onAction="#onSend"/>
             </HBox>
         </HBox>
