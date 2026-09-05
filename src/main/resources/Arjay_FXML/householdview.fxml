@@ -13,9 +13,9 @@
          <children>
             <Text layoutX="14.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="View Household" />
             <Button fx:id="returnToMainBtn1" layoutX="622.0" layoutY="446.0" mnemonicParsing="false" onAction="#handleReturnToMain" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Go Back" />
-            <Text fx:id="householdText" layoutX="180.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Household Name" textAlignment="CENTER" wrappingWidth="522.0" />
+            <Text fx:id="householdText" layoutX="180.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Household Name" textAlignment="CENTER" wrappingWidth="522.0" />
             <Button fx:id="houseSettingsBtn" layoutX="486.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleHouseSettings" styleClass="primary-button" stylesheets="@../css/style1.css" text="Edit Settings" />
-            <Text fx:id="ownerText" layoutX="191.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Owner" textAlignment="CENTER" wrappingWidth="500.947265625" />
+            <Text fx:id="ownerText" layoutX="191.0" layoutY="74.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Owner" textAlignment="CENTER" wrappingWidth="500.947265625" />
             <Text fx:id="householdTotalText" layoutX="543.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Total Members:" wrappingWidth="153.0" />
             <ScrollPane fx:id="memberScrollPane" fitToWidth="true" layoutX="188.0" layoutY="192.0" prefHeight="242.0" prefWidth="522.0" styleClass="member-scroll-pane" stylesheets="@../css/style1.css">
                <content>
@@ -24,6 +24,7 @@
             </ScrollPane>
             <Text fx:id="joinCodeText" layoutX="191.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Join Code:" wrappingWidth="329.4873046875" />
             <Button fx:id="leaveHouseholdBtn" layoutX="188.0" layoutY="446.0" mnemonicParsing="false" onAction="#handleLeaveHousehold" styleClass="danger-button" stylesheets="@../css/style1.css" text="Leave Household" />
+            <Text fx:id="householdWaterTotalText" layoutX="145.0" layoutY="125.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Water Total: NaN" textAlignment="CENTER" wrappingWidth="607.50390625" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="houseSettings" layoutY="1.0" prefHeight="523.0" prefWidth="888.0" styleClass="root" stylesheets="@../css/style1.css" visible="false">

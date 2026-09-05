@@ -1,6 +1,7 @@
 package com.wateradvisory.Arjay_Root;
 
 import com.wateradvisory.database.HouseholdService;
+import com.wateradvisory.database.WaterRecordService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -69,6 +71,9 @@ public class ViewHousehold {
     private TextField createAddressField;
 
     @FXML
+    private Text householdWaterTotalText;
+
+    @FXML
     private void initialize() {
 
         houseSettings.setVisible(false);
@@ -113,6 +118,10 @@ public class ViewHousehold {
             // show leave household to normal user
             leaveHouseholdBtn.setVisible(!isOwner);
             leaveHouseholdBtn.setManaged(!isOwner);
+
+            // show household water total
+            double householdWaterTotal = WaterRecordService.getHouseholdTotalWater();
+            householdWaterTotalText.setText("Household Water Total: " + householdWaterTotal + " L");
 
         } else {
 
@@ -239,18 +248,24 @@ public class ViewHousehold {
 
         memberListBox.getChildren().clear();
 
-        List<String> members =
-                HouseholdService.getHouseholdMembers();
+        Map<String, Double> memberTotals =
+                WaterRecordService.getHouseholdMemberTotals();
 
-        for (String username : members) {
+        for (Map.Entry<String, Double> member
+                : memberTotals.entrySet()) {
 
-            Label memberLabel = new Label(username);
+            String username = member.getKey();
+            double totalWater = member.getValue();
+
+            Label memberLabel = new Label(
+                    username + "     " + totalWater + " L"
+            );
 
             memberListBox.getChildren().add(memberLabel);
         }
 
         householdTotalText.setText(
-                "Total Members: " + members.size()
+                "Total Members: " + memberTotals.size()
         );
     }
 

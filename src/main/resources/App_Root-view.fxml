@@ -17,6 +17,7 @@
             <Text fx:id="usernameText" layoutX="34.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Welcome: User not found" />
             <Button fx:id="viewHouseholdBtn" layoutX="76.0" layoutY="440.0" mnemonicParsing="false" onAction="#handleViewHousehold" prefHeight="35.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@css/style1.css" text="View Household" />
             <Text fx:id="householdText" layoutX="34.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Household: None" />
+            <Text fx:id="waterTotalText" layoutX="121.0" layoutY="252.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Water Total: NaN" textAlignment="CENTER" wrappingWidth="643.85546875" />
          </children>
       </AnchorPane>
    </children>

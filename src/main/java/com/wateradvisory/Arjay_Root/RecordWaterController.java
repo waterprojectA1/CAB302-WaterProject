@@ -1,6 +1,7 @@
 package com.wateradvisory.Arjay_Root;
 import com.wateradvisory.database.WaterConsumptionService;
 import com.wateradvisory.water.WaterActivityEntry;
+import com.wateradvisory.database.WaterRecordService;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -271,8 +272,44 @@ public class RecordWaterController {
     }
 
     @FXML
-    private void handleSubmitWater(ActionEvent event) {
-        System.out.println("submit water clicked");
+    private void handleSubmitWaterConsumption() {
+
+        if (pendingActivities.isEmpty()) {
+            System.out.println("No water activities to submit.");
+            return;
+        }
+
+        boolean allSaved = true;
+
+        for (WaterActivityEntry entry : pendingActivities) {
+
+            boolean saved =
+                    WaterRecordService.saveWaterRecord(entry);
+
+            if (!saved) {
+                allSaved = false;
+                System.out.println(
+                        "Failed to save: " + entry.getActivity()
+                );
+            }
+        }
+
+        if (allSaved) {
+
+            System.out.println(
+                    "All water consumption records submitted."
+            );
+
+            pendingActivities.clear();
+
+            refreshActivityList();
+            recalculatePendingTotal();
+
+        } else {
+            System.out.println(
+                    "Some water records failed to submit."
+            );
+        }
     }
 
     private void updatePendingTotalText() {

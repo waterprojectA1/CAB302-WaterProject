@@ -2,6 +2,7 @@ package com.wateradvisory;
 
 import com.wateradvisory.database.AuthService;
 import com.wateradvisory.database.HouseholdService;
+import com.wateradvisory.database.WaterRecordService;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +23,9 @@ public class App_Root {
     private Text householdText;
 
     @FXML
+    private Text waterTotalText;
+
+    @FXML
     private void initialize() {
 
         String username = AuthService.getUsername();
@@ -29,6 +33,10 @@ public class App_Root {
 
         usernameText.setText("Welcome: " + username);
         householdText.setText(householdName);
+
+        double waterTotal = WaterRecordService.getUserTotalWater();
+
+        waterTotalText.setText("Total Water Recorded: " + waterTotal + " L");
     }
 
     @FXML

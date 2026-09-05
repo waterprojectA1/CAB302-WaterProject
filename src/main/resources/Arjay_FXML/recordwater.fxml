@@ -20,7 +20,7 @@
             <Button fx:id="showerBtn" layoutX="384.0" layoutY="208.0" mnemonicParsing="false" onAction="#handleShowerBtn" prefHeight="42.0" prefWidth="114.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Shower" />
             <Button fx:id="returnToMainBtn2" layoutX="725.0" layoutY="544.0" mnemonicParsing="false" onAction="#handleReturnToMain" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Go Back" />
             <Text layoutX="346.0" layoutY="177.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Record Water Test" />
-            <Button fx:id="submitWaterBtn" layoutX="320.0" layoutY="545.0" mnemonicParsing="false" onAction="#handleSubmitWater" styleClass="primary-button" stylesheets="@../css/style1.css" text="Submit Water Consumption Amount" />
+            <Button fx:id="submitWaterBtn" layoutX="364.0" layoutY="545.0" mnemonicParsing="false" onAction="#handleSubmitWaterConsumption" prefHeight="35.0" prefWidth="151.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Submit" />
             <Text fx:id="pendingTotalText" layoutX="108.0" layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Total Water Consumption Reported: NaN" textAlignment="CENTER" wrappingWidth="667.033203125" />
             <ScrollPane layoutX="192.0" layoutY="279.0" prefHeight="237.0" prefWidth="494.0" styleClass="member-scroll-pane" stylesheets="@../css/style1.css">
                <content>
