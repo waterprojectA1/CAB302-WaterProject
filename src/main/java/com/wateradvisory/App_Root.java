@@ -46,6 +46,8 @@ public class App_Root {
                     .getWindow();
 
             stage.setScene(new Scene(root));
+            stage.sizeToScene();
+            stage.centerOnScreen();
             stage.show();
 
         } catch (IOException e) {
