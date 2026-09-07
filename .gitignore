@@ -12,3 +12,6 @@ target/
 #Claude.md file for Claude AI Code correction
 /.claude/
 CLAUDE.md
+
+#pom.xml
+pom.xml

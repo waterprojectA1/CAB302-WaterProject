@@ -27,7 +27,7 @@
                 <SVGPath content="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" styleClass="resource-icon"/>
                 <Label text="Conservation" styleClass="nav-brand"/>
             </HBox>
-            <Button text="Open Rippl  &#8594;" styleClass="btn,btn-secondary" onAction="#onOpenChat"/>
+            <Button text="Open Ripple  &#8594;" styleClass="btn,btn-secondary" onAction="#onOpenChat"/>
         </HBox>
 
         <VBox spacing="22" styleClass="tips-page">
