@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefWidth="400.0" style="-fx-background-color: #181a1f;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.TablePageController">
+    <HBox spacing="20">
+
+        <RadioButton fx:id="dailyRadio" text="Daily" textFill="WHITE" />
+
+        <RadioButton fx:id="weeklyRadio" text="Weekly" textFill="WHITE" />
+
+        <RadioButton fx:id="monthlyRadio" text="Monthly" textFill="WHITE" />
+
+    </HBox>
+
+    <TableView fx:id="tableView" prefHeight="200.0" prefWidth="300.0">
+        <columns>
+            <TableColumn fx:id="userIDColumn" text="User" />
+            <TableColumn fx:id="dateColumn" text="Date">
+                <columns>
+                    <TableColumn fx:id="sDateColumn" text="Start Date" />
+                    <TableColumn fx:id="eDateColumn" text="End Date" />
+                </columns>
+            </TableColumn>
+            <TableColumn fx:id="usageColumn" text="Water Use" />
+            <TableColumn fx:id="zScoreColumn" text="Zscore" />
+            <TableColumn fx:id="userDiffColumn" text="User Difference" />
+            <TableColumn fx:id="globalDiffColumn" text="Global Difference" />
+
+        </columns>
+        <VBox.margin>
+            <Insets top="20.0" />
+        </VBox.margin>
+    </TableView>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+    </padding>
+
+</VBox>

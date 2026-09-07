@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #181a1f;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.DetailPageController">
+    <AnchorPane prefHeight="200.0" prefWidth="250.0" style="-fx-background-color: #22252b;">
+        <children>
+            <VBox prefHeight="200.0" prefWidth="250.0">
+                <children>
+
+                    <Label fx:id="sDateLabel" textFill="WHITE" />
+                    <Label fx:id="eDateLabel" textFill="WHITE" />
+                    <Label fx:id="timeSpanLabel" textFill="WHITE" />
+                    <Label fx:id="usageLabel" textFill="WHITE" />
+                    <Label fx:id="zScoreLabel" textFill="WHITE" />
+                    <Label fx:id="costLabel" textFill="WHITE" />
+                </children>
+                <opaqueInsets>
+                    <Insets />
+                </opaqueInsets>
+                <padding>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                </padding>
+            </VBox>
+        </children>
+    </AnchorPane>
+    <AnchorPane layoutX="100.0" layoutY="230.0" prefHeight="141.0" prefWidth="400.0" style="-fx-background-color: #22252b;">
+        <children>
+            <Label fx:id="reportLabel" />
+        </children>
+    </AnchorPane>
+    <padding>
+        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+    </padding>
+
+</AnchorPane>
