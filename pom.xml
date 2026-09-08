@@ -17,7 +17,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -54,17 +53,27 @@
             <version>2.13.2</version>
         </dependency>
 
+        <!-- Markdown renderer for the chat scene. The Qwen model emits Markdown
+             (**bold**, *italic*, "- " bullets, "## " headings); ChatController
+             parses it to an AST with flexmark and walks that AST to build JavaFX
+             nodes. Pure Java, no native code and a normally-named artifact, so it
+             does NOT hit the automatic-module-name problems jlama-native did initially. -->
+        <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-all</artifactId>
+            <version>0.64.8</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.wateradvisory.Main</mainClass>
+                    <!-- Pointing to Launcher avoids the missing runtime components error -->
+                    <mainClass>com.wateradvisory.Launcher</mainClass>
                     <options>
                         <option>--add-modules</option>
                         <option>jdk.incubator.vector</option>
@@ -94,7 +103,8 @@
                     </arguments>
                 </configuration>
                 <executions>
-                    <!-- Personal testing only: mvn clean compile exec:exec@charlie-preview
+
+<!-- Personal testing only: mvn clean compile exec:exec@charlie-preview
                          Runs Charlie's screens in isolation without needing App_Root
                          or the login flow finished. Does not affect the default
                          execution above, which is what the whole team uses. -->
@@ -122,12 +132,11 @@
                 <configuration>
                     <release>21</release>
                     <compilerArgs>
-                        <arg>--add-modules=jdk.incubator.vector</arg>
+                        <arg>--add-modules</arg>
+                        <arg>jdk.incubator.vector</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
-
 </project>

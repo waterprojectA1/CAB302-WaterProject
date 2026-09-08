@@ -40,15 +40,21 @@
                 <StackPane maxWidth="96" maxHeight="96" minWidth="96" minHeight="96">
                     <Circle radius="44" centerX="48" centerY="48" fill="TRANSPARENT"
                             stroke="#d6eafb" strokeWidth="6"/>
+                    <!-- length is set at runtime by ConservationTipsController from the real calculated score -->
                     <Arc fx:id="scoreArc" radiusX="44" radiusY="44" centerX="48" centerY="48"
-                         startAngle="90" length="-280.8" type="OPEN"
+                         startAngle="90" length="0" type="OPEN"
                          fill="TRANSPARENT" stroke="#5a9bd4" strokeWidth="6" strokeLineCap="ROUND"/>
                     <Label fx:id="scoreValueLabel" text="78" styleClass="score-value"/>
                 </StackPane>
-                <VBox spacing="2">
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
                     <Label text="Conservation score" styleClass="score-title"/>
                     <Label fx:id="scoreSubtitleLabel" text="Above average for your household size"
                            styleClass="text-muted" style="-fx-font-size: 12.5px;"/>
+                </VBox>
+                <VBox alignment="BOTTOM_RIGHT">
+                    <Button fx:id="scoreHelpButton" text="?" styleClass="btn-ghost"
+                            onAction="#onShowScoreHelp"
+                            maxWidth="24" maxHeight="24" minWidth="24" minHeight="24"/>
                 </VBox>
             </HBox>
 

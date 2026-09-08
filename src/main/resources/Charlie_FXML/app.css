@@ -128,6 +128,16 @@
 .bubble-ai .bubble-more { -fx-text-fill: -color-accent-600; }
 .bubble-user .bubble-more { -fx-text-fill: rgba(255, 255, 255, 0.9); }
 
+/* Markdown-rendered AI replies (flexmark AST -> JavaFX nodes in ChatController):
+   section headers, list markers, and the individual Text runs inside a TextFlow.
+   These sit AFTER ".bubble-ai .label" so, at equal specificity, they win by source order. */
+.bubble-ai .score-title { -fx-font-size: 15px; -fx-padding: 2 0 0 0; }
+.bubble-ai .list-marker { -fx-text-fill: -color-accent2; -fx-font-weight: bold; }
+/* Backstop fill for TextFlow runs -- ChatController also sets -fx-fill inline per run
+   (that inline style wins, e.g. accent colour for links); this just covers any run that
+   somehow reaches the scene without one. */
+.bubble-ai .text { -fx-fill: -color-text; }
+
 .bubble-typing {
     -fx-background-color: -color-bg;
     -fx-border-color: -color-divider;
@@ -150,3 +160,31 @@
 }
 .chat-input-field { -fx-background-color: transparent; -fx-font-size: 13.5px; }
 .chat-input-field:focused { -fx-background-color: transparent; }
+
+/* Score-formula help dialog (ConservationTipsController.onShowScoreHelp).
+   Strips the default modena chrome and repaints the DialogPane in the app's
+   own design tokens. */
+.score-help-dialog {
+    -fx-background-color: -color-bg;
+    -fx-padding: 18;
+}
+.score-help-dialog > .header-panel,
+.score-help-dialog > .content,
+.score-help-dialog > .button-bar {
+    -fx-background-color: -color-bg;
+}
+.score-help-dialog .label {
+    -fx-text-fill: -color-text;
+}
+.score-help-dialog .button-bar .button {
+    -fx-background-color: -color-accent;
+    -fx-text-fill: white;
+    -fx-font-family: "Caprasimo";
+    -fx-font-size: 13px;
+    -fx-background-radius: 999;
+    -fx-padding: 8 18;
+    -fx-cursor: hand;
+}
+.score-help-dialog .button-bar .button:hover {
+    -fx-background-color: -color-accent-600;
+}
