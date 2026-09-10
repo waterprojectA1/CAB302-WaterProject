@@ -20,3 +20,4 @@ pom.xml
 .DS_Store
 src/.DS_Store
 src/main/.DS_Store
+models/.DS_Store
