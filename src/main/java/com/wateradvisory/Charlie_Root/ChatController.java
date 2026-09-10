@@ -287,6 +287,7 @@ public class ChatController {
             sendButton.setDisable(false);
         });
 
+
         new Thread(generateTask).start();
     }
 

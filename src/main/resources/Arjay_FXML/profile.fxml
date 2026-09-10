@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Arjay_Root.Profile">
+   <children>
+      <AnchorPane fx:id="mainProfile" prefHeight="516.0" prefWidth="882.0">
+         <children>
+            <Text layoutX="23.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="User Profile" />
+            <Text fx:id="usernameText" layoutX="15.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Username: NULL" textAlignment="CENTER" wrappingWidth="852.2626953125" />
+            <Text fx:id="emailText" layoutX="11.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Email: NULL" textAlignment="CENTER" wrappingWidth="852.2626953125" />
+            <Text layoutX="313.0" layoutY="266.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Water Summary On User" />
+            <Text fx:id="dailyTotalText" layoutX="313.0" layoutY="302.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Daily Total" wrappingWidth="255.986328125" />
+            <Text fx:id="weeklyTotalText" layoutX="313.0" layoutY="331.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Weekly Total" wrappingWidth="249.2626953125" />
+            <Text fx:id="allTimeTotalText" layoutX="313.0" layoutY="360.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="All Time Total" wrappingWidth="249.2626953125" />
+            <Button fx:id="goBackBtn" layoutX="734.0" layoutY="446.0" mnemonicParsing="false" onAction="#handleReturnToMain" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Go Back" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

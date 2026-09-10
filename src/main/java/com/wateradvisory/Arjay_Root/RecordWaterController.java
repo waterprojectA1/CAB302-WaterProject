@@ -24,6 +24,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.Priority;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 
 import java.io.IOException;
 
@@ -33,24 +34,32 @@ public class RecordWaterController {
     private AnchorPane mainRecord;
 
     @FXML
-    private AnchorPane showerRecord;
+    private AnchorPane activityRecord;
 
     @FXML
-    private MenuButton showerDuration;
+    private MenuButton selectActivity;
 
     @FXML
-    private MenuButton showerAmount;
+    private MenuButton activityDuration;
 
-    private int selectedShowerDuration = 0;
-    private int selectedShowerAmount = 0;
+    @FXML
+    private MenuButton activityAmount;
+
+    @FXML
+    private Text activityDurationText;
+
+    @FXML
+    private Text activityTotalText;
+
+    private String selectedActivity = "";
+
+    private int selectedActivityDuration = 0;
+    private int selectedActivityAmount = 0;
 
     private double pendingWaterTotal = 0;
-    private double currentShowerTotal = 0;
+    private double currentActivityTotal = 0;
 
     private final List<WaterActivityEntry> pendingActivities = new ArrayList<>();
-
-    @FXML
-    private Text showerTotalText;
 
     @FXML
     private Text pendingTotalText;
@@ -64,11 +73,22 @@ public class RecordWaterController {
         mainRecord.setVisible(true);
         mainRecord.setManaged(true);
 
-        showerRecord.setVisible(false);
-        showerRecord.setManaged(false);
+        activityRecord.setVisible(false);
+        activityRecord.setManaged(false);
 
-        setupShowerMenus();
-        updatePendingTotalText();
+        setupActivityMenu();
+
+        // Load today's already-saved activities from Supabase
+        pendingActivities.clear();
+        pendingActivities.addAll(
+                WaterRecordService.getTodayActivities()
+        );
+
+        // Display them in the scroll box
+        refreshActivityList();
+
+        // Calculate today's current total
+        recalculatePendingTotal();
     }
 
     @FXML
@@ -83,87 +103,203 @@ public class RecordWaterController {
     }
 
     @FXML
-    private void handleShowerBtn(ActionEvent event) {
+    private void handleActivityBtn(ActionEvent event) {
+
+        selectedActivity = "";
+
+        resetActivityInputs();
+
+        selectActivity.setText("Choose Activity");
+
+        activityDuration.getItems().clear();
+        activityAmount.getItems().clear();
+
+        activityDuration.setDisable(true);
+        activityAmount.setDisable(true);
 
         mainRecord.setVisible(false);
         mainRecord.setManaged(false);
 
-        showerRecord.setVisible(true);
-        showerRecord.setManaged(true);
+        activityRecord.setVisible(true);
+        activityRecord.setManaged(true);
+
     }
 
     @FXML
     private void handleReturnToRecordMain(ActionEvent event) {
 
-        showerRecord.setVisible(false);
-        showerRecord.setManaged(false);
+        activityRecord.setVisible(false);
+        activityRecord.setManaged(false);
 
         mainRecord.setVisible(true);
         mainRecord.setManaged(true);
     }
 
-    private void setupShowerMenus() {
+    private void setupActivityMenu() {
 
-        // Shower Duration
-        int[] durations = {2, 5, 10, 15, 20};
+        String[] activities = {
+                "Shower",
+                "Dishes",
+                "Floor Cleaning",
+                "Laundry",
+                "Car Wash",
+                "Window Cleaning",
+                "Bathtub"
+        };
 
-        for (int minutes : durations) {
+        for (String activity : activities) {
 
-            MenuItem item = new MenuItem(minutes + " minutes");
-
-            item.setOnAction(event -> {
-                selectedShowerDuration = minutes;
-                showerDuration.setText(minutes + " minutes");
-
-                updateShowerTotal();
-            });
-
-            // Add duration
-            showerDuration.getItems().add(item);
-        }
-
-        // Shower Amount
-        for (int amount = 1; amount <= 5; amount++) {
-
-            int selectedAmount = amount;
-
-            MenuItem item = new MenuItem(amount == 1 ? "1 time" : amount + " times");
+            MenuItem item = new MenuItem(activity);
 
             item.setOnAction(event -> {
 
-                selectedShowerAmount = selectedAmount;
-                showerAmount.setText(selectedAmount == 1 ? "1 time" : selectedAmount + " times");
+                selectedActivity = activity;
+                selectActivity.setText(activity);
 
-                updateShowerTotal();
+                resetActivityInputs();
+                setupInputsForActivity();
             });
 
-            // Add amount
-            showerAmount.getItems().add(item);
+            selectActivity.getItems().add(item);
         }
     }
 
-    private void updateShowerTotal() {
+    private void setupInputsForActivity() {
 
-        if (selectedShowerDuration == 0
-                || selectedShowerAmount == 0) {
+        activityDuration.getItems().clear();
+        activityAmount.getItems().clear();
 
-            showerTotalText.setText(
+        int[] durations;
+        int maxAmount;
+
+        switch (selectedActivity) {
+
+            case "Shower":
+                durations = new int[]{2, 5, 10, 15, 20};
+                maxAmount = 5;
+                break;
+
+            case "Dishes":
+                durations = new int[]{5, 10, 15, 20, 30};
+                maxAmount = 5;
+                break;
+
+            case "Floor Cleaning":
+                durations = new int[]{5, 10, 15, 20, 30};
+                maxAmount = 5;
+                break;
+
+            case "Laundry":
+                durations = new int[]{15, 30, 45, 60};
+                maxAmount = 5;
+                break;
+
+            case "Car Wash":
+                durations = new int[]{5, 10, 15, 20, 30};
+                maxAmount = 3;
+                break;
+
+            case "Window Cleaning":
+                durations = new int[]{5, 10, 15, 20, 30};
+                maxAmount = 5;
+                break;
+
+            case "Bathtub":
+                durations = new int[]{10, 15, 20, 30, 45};
+                maxAmount = 3;
+                break;
+
+            default:
+                return;
+        }
+
+        activityDuration.setDisable(false);
+        activityAmount.setDisable(false);
+
+        for (int minutes : durations) {
+
+            MenuItem item =
+                    new MenuItem(minutes + " minutes");
+
+            item.setOnAction(event -> {
+
+                selectedActivityDuration = minutes;
+
+                activityDuration.setText(
+                        minutes + " minutes"
+                );
+
+                updateActivityTotal();
+            });
+
+            activityDuration.getItems().add(item);
+        }
+
+        for (int amount = 1; amount <= maxAmount; amount++) {
+
+            int selectedAmount = amount;
+
+            MenuItem item = new MenuItem(
+                    amount == 1
+                            ? "1 time"
+                            : amount + " times"
+            );
+
+            item.setOnAction(event -> {
+
+                selectedActivityAmount = selectedAmount;
+
+                activityAmount.setText(
+                        selectedAmount == 1
+                                ? "1 time"
+                                : selectedAmount + " times"
+                );
+
+                updateActivityTotal();
+            });
+
+            activityAmount.getItems().add(item);
+        }
+    }
+
+    private void resetActivityInputs() {
+
+        selectedActivityDuration = 0;
+        selectedActivityAmount = 0;
+        currentActivityTotal = 0;
+
+        activityDuration.setText("Duration");
+        activityAmount.setText("Select Amount");
+
+        activityTotalText.setText(
+                "Water Consumption Total: N/A"
+        );
+    }
+
+    private void updateActivityTotal() {
+
+        if (selectedActivity.isEmpty()
+                || selectedActivityDuration == 0
+                || selectedActivityAmount == 0) {
+
+            activityTotalText.setText(
                     "Water Consumption Total: N/A"
             );
 
-            currentShowerTotal = 0;
+            currentActivityTotal = 0;
             return;
         }
 
-        currentShowerTotal =
-                WaterConsumptionService.calculateShower(
-                        selectedShowerDuration,
-                        selectedShowerAmount
+        currentActivityTotal =
+                WaterConsumptionService.calculateActivity(
+                        selectedActivity,
+                        selectedActivityDuration,
+                        selectedActivityAmount
                 );
 
-        showerTotalText.setText(
+        activityTotalText.setText(
                 "Water Consumption Total: "
-                        + currentShowerTotal
+                        + currentActivityTotal
                         + " L"
         );
     }
@@ -217,44 +353,55 @@ public class RecordWaterController {
     }
 
     @FXML
-    private void handleSubmitShower() {
+    private void handleSubmitActivity() {
 
-        if (currentShowerTotal <= 0) {
+        if (selectedActivity.isEmpty()) {
+            System.out.println("Please select an activity.");
+            return;
+        }
+
+        if (currentActivityTotal <= 0) {
             System.out.println("Please select duration and amount.");
             return;
         }
 
-        WaterActivityEntry showerEntry =
+        WaterActivityEntry activityEntry =
                 new WaterActivityEntry(
-                        "Shower",
-                        selectedShowerDuration,
-                        selectedShowerAmount,
-                        currentShowerTotal
+                        selectedActivity,
+                        selectedActivityDuration,
+                        selectedActivityAmount,
+                        currentActivityTotal
                 );
 
-        pendingActivities.add(showerEntry);
+        pendingActivities.add(activityEntry);
 
         refreshActivityList();
         recalculatePendingTotal();
 
-        recalculatePendingTotal();
+        System.out.println(
+                "Added activity: " + selectedActivity
+        );
 
         System.out.println(
                 "Pending activities: " + pendingActivities.size()
         );
 
-        selectedShowerDuration = 0;
-        selectedShowerAmount = 0;
-        currentShowerTotal = 0;
+        // Reset activity inputs
+        selectedActivity = "";
+        selectedActivityDuration = 0;
+        selectedActivityAmount = 0;
+        currentActivityTotal = 0;
 
-        showerDuration.setText("Duration");
-        showerAmount.setText("Select Amount");
-        showerTotalText.setText(
+        selectActivity.setText("Choose Activity");
+        activityDuration.setText("Duration");
+        activityAmount.setText("Select Amount");
+
+        activityTotalText.setText(
                 "Water Consumption Total: N/A"
         );
 
-        showerRecord.setVisible(false);
-        showerRecord.setManaged(false);
+        activityRecord.setVisible(false);
+        activityRecord.setManaged(false);
 
         mainRecord.setVisible(true);
         mainRecord.setManaged(true);
@@ -274,41 +421,51 @@ public class RecordWaterController {
     @FXML
     private void handleSubmitWaterConsumption() {
 
-        if (pendingActivities.isEmpty()) {
-            System.out.println("No water activities to submit.");
-            return;
-        }
-
-        boolean allSaved = true;
-
-        for (WaterActivityEntry entry : pendingActivities) {
-
-            boolean saved =
-                    WaterRecordService.saveWaterRecord(entry);
-
-            if (!saved) {
-                allSaved = false;
-                System.out.println(
-                        "Failed to save: " + entry.getActivity()
+        boolean success =
+                WaterRecordService.saveDailyWaterSubmission(
+                        pendingActivities
                 );
-            }
-        }
 
-        if (allSaved) {
+        if (success) {
 
             System.out.println(
-                    "All water consumption records submitted."
+                    "Today's water activities saved successfully."
             );
 
-            pendingActivities.clear();
-
-            refreshActivityList();
             recalculatePendingTotal();
+            refreshActivityList();
+
+            Alert alert = new Alert(
+                    Alert.AlertType.INFORMATION
+            );
+
+            alert.setTitle("Water Usage Saved");
+            alert.setHeaderText("Daily Water Usage Updated");
+
+            alert.setContentText(
+                    "Your water usage report for today has been successfully saved."
+            );
+
+            alert.showAndWait();
 
         } else {
+
             System.out.println(
-                    "Some water records failed to submit."
+                    "Failed to save today's water activities."
             );
+
+            Alert alert = new Alert(
+                    Alert.AlertType.ERROR
+            );
+
+            alert.setTitle("Save Failed");
+            alert.setHeaderText("Unable to Save Water Usage");
+
+            alert.setContentText(
+                    "Your daily water usage report could not be saved. Please try again."
+            );
+
+            alert.showAndWait();
         }
     }
 

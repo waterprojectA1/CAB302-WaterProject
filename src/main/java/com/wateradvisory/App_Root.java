@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.text.Text;
+import java.util.Map;
 
 import java.io.IOException;
 
@@ -37,6 +38,11 @@ public class App_Root {
         double waterTotal = WaterRecordService.getUserTotalWater();
 
         waterTotalText.setText("Total Water Recorded: " + waterTotal + " L");
+
+        Map<String, Double> summary =
+                WaterRecordService.getUserWaterSummary();
+
+        System.out.println(summary);
     }
 
     @FXML
@@ -81,6 +87,31 @@ public class App_Root {
                     .getWindow();
 
             stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleViewProfile(ActionEvent event) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/Arjay_FXML/profile.fxml")
+            );
+
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource())
+                    .getScene()
+                    .getWindow();
+
+            stage.setScene(new Scene(root));
+
+            stage.sizeToScene();
+            stage.centerOnScreen();
             stage.show();
 
         } catch (IOException e) {

@@ -272,4 +272,52 @@ public class AuthService {
 
         return "User";
     }
+
+    public static String getUserEmail() {
+
+        try {
+            String accessToken = UserSession.getAccessToken();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            SupabaseConfig.SUPABASE_URL
+                                    + "/auth/v1/user"
+                    ))
+                    .header(
+                            "apikey",
+                            SupabaseConfig.SUPABASE_KEY
+                    )
+                    .header(
+                            "Authorization",
+                            "Bearer " + accessToken
+                    )
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response =
+                    HttpClient.newHttpClient().send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            if (response.statusCode() != 200) {
+                System.out.println(
+                        "Failed to get user email: "
+                                + response.body()
+                );
+
+                return "Unknown";
+            }
+
+            JsonObject user = JsonParser
+                    .parseString(response.body())
+                    .getAsJsonObject();
+
+            return user.get("email").getAsString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Unknown";
+        }
+    }
 }
