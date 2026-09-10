@@ -12,51 +12,67 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
+<!-- Part 4: the message area and the header no longer live in separate BorderPane
+     regions. They share one StackPane so they can overlap: the ScrollPane fills
+     the whole StackPane (extending up behind the header) and the header is added
+     AFTER it, so it renders in front. Messages scrolling up slide underneath the
+     header's animated wavy bottom edge. Only the header/wave overlaps the scroll
+     content; the input bar stays in the BorderPane's own bottom region. -->
 <BorderPane stylesheets="@app.css"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.wateradvisory.Charlie_Root.ChatController">
 
-    <top>
-        <VBox fx:id="headerBox" styleClass="chat-page-header">
+    <center>
+        <StackPane fx:id="chatStack">
 
-            <VBox spacing="10">
-                <padding>
-                    <Insets top="16" right="18" bottom="12" left="18"/>
-                </padding>
-                <Button text="&#8592; Back" styleClass="btn,btn-ghost" onAction="#onBack"/>
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <StackPane styleClass="chat-avatar" maxWidth="40" maxHeight="40" minWidth="40" minHeight="40">
-                        <Label text="&#128167;" style="-fx-font-size: 17px;"/>
-                    </StackPane>
-                    <VBox spacing="1">
-                        <Label text="Ripple" styleClass="chat-title"/>
-                        <Label text="your water conservation assistant" styleClass="text-muted"
-                               style="-fx-font-size: 12px;"/>
-                    </VBox>
-                </HBox>
+            <!-- BACK layer: full-height. fitToWidth so bubbles re-flow on resize;
+                 fitToHeight OFF so the conversation can grow taller than the viewport
+                 and the vertical scrollbar takes over. -->
+            <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="false"
+                        hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="chat-scroll">
+                <VBox fx:id="conversationContainer" styleClass="chat-container" spacing="14"/>
+            </ScrollPane>
+
+            <!-- FRONT layer: opaque header, pinned to the top, only as tall as its
+                 content (maxHeight="-Infinity" = USE_PREF_SIZE), full width
+                 (maxWidth="Infinity"). The cream background lives on the inner
+                 .chat-header-body VBox, NOT on this container, so the region below
+                 the wave curve is genuinely transparent and scrolled messages show
+                 through it. -->
+            <VBox fx:id="headerBox" styleClass="chat-page-header"
+                  maxWidth="Infinity" maxHeight="-Infinity"
+                  StackPane.alignment="TOP_LEFT">
+
+                <VBox styleClass="chat-header-body" spacing="10">
+                    <padding>
+                        <Insets top="16" right="18" bottom="12" left="18"/>
+                    </padding>
+                    <Button text="&#8592; Back" styleClass="btn,btn-ghost" onAction="#onBack"/>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <StackPane styleClass="chat-avatar" maxWidth="40" maxHeight="40" minWidth="40" minHeight="40">
+                            <Label text="&#128167;" style="-fx-font-size: 17px;"/>
+                        </StackPane>
+                        <VBox spacing="1">
+                            <Label text="Ripple" styleClass="chat-title"/>
+                            <Label text="your water conservation assistant" styleClass="text-muted"
+                                   style="-fx-font-size: 12px;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Wavy bottom edge + animated "moving water". See ChatController.startWaveAnimation().
+                     waveDivider is a cream-filled polygon from y=0 down to an animated sine curve
+                     (so it continues the header body to a scalloped edge); two translucent bands
+                     are added behind it in code for the water shimmer. The SVGPath MUST stay inside
+                     this Pane so its shape bounds can't ratchet the window's min width
+                     (see "Known gotchas" in CLAUDE.md). -->
+                <Pane fx:id="waveHolder" minWidth="0" prefHeight="70" maxHeight="70">
+                    <SVGPath fx:id="waveDivider" content="M0,0 L420,0 L420,40 L0,40 Z" fill="#f3ebda"/>
+                </Pane>
             </VBox>
 
-            <!-- Wave divider. The SVGPath's geometry is regenerated in ChatController to span the
-                 header's current width. It MUST sit inside this Pane: a Shape is not resizable, so
-                 as a direct VBox child its (ever-widening) geometric bounds would become headerBox's
-                 minWidth and ratchet the whole window's minimum width up, never letting it shrink
-                 back (see "Known gotchas" in CLAUDE.md). A plain Pane reports only its own insets as
-                 min/pref width and ignores its children, so the path can grow and shrink freely. -->
-            <Pane fx:id="waveHolder" minWidth="0" prefHeight="28" maxHeight="28">
-                <SVGPath fx:id="waveDivider" content="M0,14 L420,14 L420,28 L0,28 Z" fill="#e9f3fc"/>
-            </Pane>
-        </VBox>
-    </top>
-
-    <center>
-        <!-- fitToWidth: content tracks the viewport width so bubbles re-flow on resize.
-             fitToHeight is deliberately OFF: the conversation must be free to grow taller
-             than the viewport so the vertical scrollbar can take over. -->
-        <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="false"
-                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="chat-scroll">
-            <VBox fx:id="conversationContainer" styleClass="chat-container" spacing="14"/>
-        </ScrollPane>
+        </StackPane>
     </center>
 
     <bottom>

@@ -94,7 +94,11 @@
 .resource-body { -fx-font-size: 12px; -fx-text-fill: rgba(59, 74, 78, 0.8); }
 .resource-icon { -fx-fill: transparent; -fx-stroke: -color-accent-700; -fx-stroke-width: 2.75; -fx-stroke-line-cap: round; -fx-stroke-line-join: round; }
 
-.chat-page-header { -fx-background-color: -color-bg; }
+/* Part 4: the header container itself is transparent so the area below the wave
+   curve lets scrolled messages show through. The opaque cream fill lives on the
+   inner body VBox (and on the wave polygon, set in ChatController). */
+.chat-page-header { -fx-background-color: transparent; }
+.chat-header-body { -fx-background-color: -color-bg; }
 .chat-avatar { -fx-background-color: -color-accent2-100; -fx-background-radius: 999; }
 .chat-title { -fx-font-family: "Caprasimo"; -fx-font-size: 19px; -fx-text-fill: -color-text; }
 .chat-scroll, .chat-scroll .viewport { -fx-background-color: -color-accent2-100; }
