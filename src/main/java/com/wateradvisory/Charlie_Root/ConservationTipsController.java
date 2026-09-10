@@ -1,8 +1,11 @@
 package com.wateradvisory.Charlie_Root;
 
+import java.util.List;
 import java.util.Locale;
 
 import com.wateradvisory.Michael_Root.WaterDataList;
+import com.wateradvisory.database.WaterRecordService;
+import com.wateradvisory.water.WaterActivityEntry;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,12 +45,8 @@ public class ConservationTipsController {
     /** Drives seasonal-tip hemisphere detection. TODO: read from the household profile when available. */
     private static final String USER_REGION = "Brisbane, AU";
 
-    // Fallback activity benchmarks, used until real per-activity data is available:
-    //   shower 8 min/day, tap 6 L/min, irrigation 0 min midday.
-    private static final double SHOWER_BENCHMARK_MIN_PER_DAY = 8.0;
-    private static final double SHOWER_LITRES_PER_MIN = 9.0;          // standard showerhead
-    private static final double TAP_BENCHMARK_L_PER_MIN = 6.0;
-    private static final double IRRIGATION_BENCHMARK_MIDDAY_MIN = 0.0;
+    /** Cap on personalised tip cards shown, so the page stays scannable (ranked, highest impact first). */
+    private static final int MAX_TIPS_SHOWN = 4;
 
     private static final String SCORE_HELP_TITLE = "How is your score calculated?";
     private static final String SCORE_HELP_BODY =
@@ -82,25 +81,24 @@ public class ConservationTipsController {
         SeasonalTipProvider seasonalTips = new SeasonalTipProvider(USER_REGION);
         setSeasonalTip("Seasonal tip: " + seasonalTips.getTipForToday(USER_REGION));
 
-        // 2. Personalised tips, each with an estimated weekly water + cost saving derived
-        //    from the gap between actual usage and the recommended benchmark for that activity.
-        double showerLitres = benchmarkGapLitresPerWeek(
-            11.0 * SHOWER_LITRES_PER_MIN,
-            SHOWER_BENCHMARK_MIN_PER_DAY * SHOWER_LITRES_PER_MIN);       // (11 - 8) min * 9 L/min * 7 days
-        addTip("Your showers average 11 minutes, above the 8-minute recommendation.",
-            "high", showerLitres, weeklyCost(showerLitres));
+        // 2. Personalised tips -- generated from the user's REAL recorded data:
+        //    logged activities from Supabase (shower length, laundry frequency,
+        //    category share) plus aggregate weekly trend / outlier signals from
+        //    WaterDataList. No time-of-day tips: the schema has no per-activity
+        //    timestamp yet (see PersonalizedTipGenerator / CLAUDE.md gotcha).
+        List<WaterActivityEntry> activities = WaterRecordService.getUserActivities(CURRENT_USER_ID);
+        PersonalizedTipGenerator tipGenerator = new PersonalizedTipGenerator(WATER_RATE_PER_LITRE);
+        List<PersonalizedTipGenerator.TipCandidate> tips =
+            tipGenerator.generate(CURRENT_USER_ID, activities, data);
 
-        double tapMinutesPerDay = 6.0;
-        double tapLitres = benchmarkGapLitresPerWeek(
-            8.0 * tapMinutesPerDay,
-            TAP_BENCHMARK_L_PER_MIN * tapMinutesPerDay);                 // ~8 L/min observed vs 6 L/min benchmark
-        addTip("Tap usage spikes between 7-8am, consistent with a slow leak pattern.",
-            "medium", tapLitres, weeklyCost(tapLitres));
-
-        double irrigationLitres = benchmarkGapLitresPerWeek(
-            IRRIGATION_BENCHMARK_MIDDAY_MIN, IRRIGATION_BENCHMARK_MIDDAY_MIN);  // already on benchmark -> 0
-        addTip("Outdoor watering is timed well against evaporation for your area.",
-            "low", irrigationLitres, weeklyCost(irrigationLitres));
+        if (tips.isEmpty()) {
+            // Brand-new user with nothing logged yet -- never leave the section blank.
+            addFallbackTip("Start logging your water usage to get personalised tips as your history builds up.");
+        } else {
+            tips.stream().limit(MAX_TIPS_SHOWN).forEach(tip ->
+                addTip(tip.sentence(), tip.impact().name().toLowerCase(Locale.ROOT),
+                    tip.litresSavedPerWeek(), tip.costSavedPerWeek()));
+        }
 
         addResource("Leak checklist", "A 5-minute self-audit for common fixtures.", leakChecklistIcon());
         addResource("Rebate finder", "Local rebates for water-efficient fixtures.", rebateFinderIcon());
@@ -126,20 +124,12 @@ public class ConservationTipsController {
         seasonalTipLabel.setText(text);
     }
 
-    /** litres/week saved by closing the gap between actual and recommended daily usage (never negative). */
-    private static double benchmarkGapLitresPerWeek(double actualLitresPerDay, double benchmarkLitresPerDay) {
-        return Math.max(0.0, actualLitresPerDay - benchmarkLitresPerDay) * 7.0;
-    }
-
-    /** Dollars/week for a given litres/week saving, at the Brisbane water rate. */
-    private static double weeklyCost(double litresSavedPerWeek) {
-        return litresSavedPerWeek * WATER_RATE_PER_LITRE;
-    }
-
     /**
      * Adds one tip card to the tips section.
      * impactLevel must be "high", "medium", or "low" -- controls the tag style.
-     * The weekly litres/cost saving is shown as small muted text under the impact tag.
+     * The weekly litres/cost saving is shown as small muted text under the impact tag,
+     * but only when there is actually something to save (a positive-reinforcement tip
+     * passes 0 and gets no savings line).
      */
     public void addTip(String sentence, String impactLevel,
                        double litresSavedPerWeek, double costSavedPerWeek) {
@@ -150,18 +140,39 @@ public class ConservationTipsController {
         Label impactTag = new Label(capitalize(impactLevel) + " impact");
         impactTag.getStyleClass().addAll("tag", impactTagStyleFor(impactLevel));
 
-        Label savingsLabel = new Label(formatSavings(litresSavedPerWeek, costSavedPerWeek));
-        savingsLabel.getStyleClass().add("text-muted");
-        savingsLabel.setStyle("-fx-font-size: 11px;");
-        savingsLabel.setWrapText(true);
-
-        VBox textColumn = new VBox(6, sentenceLabel, impactTag, savingsLabel);
+        VBox textColumn = new VBox(6, sentenceLabel, impactTag);
         textColumn.setFillWidth(true);
+
+        if (litresSavedPerWeek > 0) {
+            Label savingsLabel = new Label(formatSavings(litresSavedPerWeek, costSavedPerWeek));
+            savingsLabel.getStyleClass().add("text-muted");
+            savingsLabel.setStyle("-fx-font-size: 11px;");
+            savingsLabel.setWrapText(true);
+            textColumn.getChildren().add(savingsLabel);
+        }
 
         HBox card = new HBox(12, textColumn);
         card.getStyleClass().add("card");
         card.setStyle(card.getStyle() + "; -fx-alignment: CENTER_LEFT;");
         HBox.setHgrow(textColumn, Priority.ALWAYS);
+
+        tipsContainer.getChildren().add(card);
+    }
+
+    /**
+     * Single plain card shown when {@link PersonalizedTipGenerator} produced nothing
+     * (e.g. a brand-new user with no logged activity and no usage history) -- so the
+     * personalised tips section is never just an unexplained blank.
+     */
+    private void addFallbackTip(String message) {
+        Label label = new Label(message);
+        label.setWrapText(true);
+        label.getStyleClass().add("tip-text");
+
+        HBox card = new HBox(label);
+        card.getStyleClass().add("card");
+        card.setStyle(card.getStyle() + "; -fx-alignment: CENTER_LEFT;");
+        HBox.setHgrow(label, Priority.ALWAYS);
 
         tipsContainer.getChildren().add(card);
     }
