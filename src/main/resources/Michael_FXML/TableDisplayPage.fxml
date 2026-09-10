@@ -41,7 +41,7 @@
                <Insets left="5.0" right="5.0" />
             </HBox.margin>
          </Button>
-         <Button mnemonicParsing="false" styleClass="btn" text="Graph">
+         <Button mnemonicParsing="false" onAction="#handleGoToGraph" styleClass="btn" text="Graph" >
             <HBox.margin>
                <Insets left="5.0" right="5.0" />
             </HBox.margin>

@@ -25,6 +25,8 @@ public class WaterData {
         this.userID = userID;
     }
 
+
+
     public void setUsageRating(String usageRating){
         this.usageRating = usageRating;
     }

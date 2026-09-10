@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.wateradvisory.Michael_Root.NotificationController">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.NotificationController">
 
     <top>
         <VBox spacing="5">
             <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
+                <Insets bottom="20" left="20" right="20" top="20" />
             </padding>
 
-            <Label text="Notifications"
-                   style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Notifications" />
 
-            <Label fx:id="notificationCount"
-                   text="0 notifications"
-                   style="-fx-text-fill: grey;"/>
+            <Label fx:id="notificationCount" style="-fx-text-fill: grey;" text="0 notifications" />
         </VBox>
     </top>
 
     <center>
-        <ListView fx:id="notificationList"
-                  prefHeight="500"
-                  prefWidth="600"/>
+        <ListView fx:id="notificationList" prefHeight="500" prefWidth="600" />
     </center>
+   <bottom>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" text="Back" onAction="#handleReturnToMain"/>
+            <Button mnemonicParsing="false" text="Graph" onAction="#handleGoToGraph"/>
+            <Button mnemonicParsing="false" text="List" onAction="#handleReturnTable"/>
+         </children>
+      </HBox>
+   </bottom>
 
 </BorderPane>
