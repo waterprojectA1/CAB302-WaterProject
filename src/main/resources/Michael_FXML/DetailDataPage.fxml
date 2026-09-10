@@ -4,35 +4,59 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #181a1f;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.DetailPageController">
-    <AnchorPane prefHeight="200.0" prefWidth="250.0" style="-fx-background-color: #22252b;">
-        <children>
-            <VBox prefHeight="200.0" prefWidth="250.0">
-                <children>
-
-                    <Label fx:id="sDateLabel" textFill="WHITE" />
-                    <Label fx:id="eDateLabel" textFill="WHITE" />
-                    <Label fx:id="timeSpanLabel" textFill="WHITE" />
-                    <Label fx:id="usageLabel" textFill="WHITE" />
-                    <Label fx:id="zScoreLabel" textFill="WHITE" />
-                    <Label fx:id="costLabel" textFill="WHITE" />
-                </children>
-                <opaqueInsets>
-                    <Insets />
-                </opaqueInsets>
-                <padding>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                </padding>
+<VBox alignment="CENTER" styleClass="root" stylesheets="@../Charlie_FXML/app.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.DetailPageController">
+   <children>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="500.0" spacing="20.0">
+         <children>
+            <VBox prefHeight="200.0" prefWidth="240.0" styleClass="tag-accent">
+               <children>
+                    <Label fx:id="sDateLabel" styleClass="tag-accent" textFill="WHITE">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </VBox.margin></Label>
+                    <Label fx:id="eDateLabel" styleClass="tag-accent" text="test" textFill="WHITE">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </VBox.margin></Label>
+                    <Label fx:id="timeSpanLabel" styleClass="tag-accent" textFill="WHITE">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </VBox.margin></Label>
+                    <Label fx:id="usageLabel" styleClass="tag-accent" textFill="WHITE">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </VBox.margin></Label>
+                    <Label fx:id="zScoreLabel" styleClass="tag-accent" textFill="WHITE">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </VBox.margin></Label>
+                    <Label fx:id="costLabel" styleClass="tag-accent" textFill="WHITE">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </VBox.margin></Label>
+               </children>
             </VBox>
-        </children>
-    </AnchorPane>
-    <AnchorPane layoutX="100.0" layoutY="230.0" prefHeight="141.0" prefWidth="400.0" style="-fx-background-color: #22252b;">
-        <children>
-            <Label fx:id="reportLabel" />
-        </children>
-    </AnchorPane>
-    <padding>
-        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-    </padding>
+            <Pane prefHeight="200.0" prefWidth="240.0" styleClass="tag-accent" />
+         </children>
+         <VBox.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </VBox.margin>
+      </HBox>
+      <Pane prefHeight="100.0" prefWidth="200.0" styleClass="tag-accent">
+         <VBox.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" />
+         </VBox.margin>
+         <children>
+             <Label fx:id="reportLabel" styleClass="tag-accent" text="test" textFill="WHITE">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding></Label>
+         </children>
+      </Pane>
 
-</AnchorPane>
+      <Button mnemonicParsing="false" styleClass="btn" text="Back" onAction="#handleReturnTable">
+         <VBox.margin>
+            <Insets bottom="20.0" />
+         </VBox.margin></Button>
+   </children>
+</VBox>

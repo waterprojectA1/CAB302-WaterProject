@@ -234,6 +234,7 @@ public class WaterDataList {
             water.setUsageRating("High");
         } else if (zScoreRounded >= 2) {
             water.setUsageRating("Extreme");
+
         } else if (zScoreRounded >= 3) {
             water.setUsageRating("Outlier");
         }
