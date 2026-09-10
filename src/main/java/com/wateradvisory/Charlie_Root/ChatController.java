@@ -39,6 +39,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.wateradvisory.Michael_Root.WaterDataList;
 
 import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -106,6 +107,7 @@ public class ChatController {
     @FXML private VBox headerBox;
     @FXML private Pane waveHolder;
     @FXML private SVGPath waveDivider;
+    @FXML private Button scrollToLatestButton;
 
     private final ChatSession session = ChatSession.getInstance();
     private ChatDataContextBuilder dataContextBuilder;
@@ -122,6 +124,13 @@ public class ChatController {
     private final DoubleProperty wavePhase = new SimpleDoubleProperty(0);
     private SVGPath waveShimmer1;
     private SVGPath waveShimmer2;
+
+    // --- "Scroll to latest" floating button state --------------------------------
+    /** True while an auto jump-to-bottom is in flight, so the button isn't flashed in the gap. */
+    private boolean autoScrolling = false;
+    /** Latched desired visibility, so a fade can be reversed mid-flight without losing intent. */
+    private boolean scrollButtonWanted = false;
+    private FadeTransition scrollButtonFade;
 
     // Point this at whichever model folder jlama list showed you --
     // e.g. the quantized one used by TipPhraser. Models stayed put,
@@ -212,6 +221,14 @@ public class ChatController {
     private static final int MAX_COLLAPSED_CHARS = 500;
     private static final int COLLAPSE_WORD_LOOKBACK = 80;      // how far back to hunt for a word boundary when truncating
 
+    // --- "Scroll to latest" floating button -------------------------------------
+    // Below this vvalue the user counts as "scrolled up" and the button shows;
+    // 0.98 (not 1.0) gives a little tolerance so it hides the moment they're basically at the end.
+    private static final double SCROLL_BOTTOM_THRESHOLD = 0.98;
+    private static final Duration SCROLL_BTN_FADE = Duration.millis(180);      // subtle, matches the wave-animation feel
+    private static final Duration SMOOTH_SCROLL_DURATION = Duration.millis(350);
+    private static final double SCROLLABLE_SLACK_PX = 4;      // content must exceed the viewport by at least this to count as scrollable
+
     // --- Part 4 wave geometry ---------------------------------------------------
     // Everything here is redrawn each animation frame from a sine function. The
     // ONLY time-varying term is wavePhase, and every curve advances by exactly one
@@ -270,6 +287,9 @@ public class ChatController {
             scrollPane.widthProperty()
                 .subtract(CHAT_HORIZONTAL_PADDING)
                 .multiply(BUBBLE_WIDTH_FRACTION));
+
+        // "Scroll to latest" floating button: fade it in only when scrolled up, out at the bottom.
+        setupScrollToLatestButton();
 
         // --- Part 4: keep the first message clear of the fixed header overlay ---
         // Height-tracking spacer as child 0 of the conversation column. Bound to
@@ -1154,7 +1174,95 @@ public class ChatController {
 
     private void addRow(HBox row) {
         conversationContainer.getChildren().add(row);
-        Platform.runLater(() -> scrollPane.setVvalue(1.0));
+        scrollToBottom();
+    }
+
+    /**
+     * Jumps the conversation to the newest message. Called on every new row (user
+     * bubble, AI bubble, system line, typing indicator), and always jumps
+     * regardless of where the user had scrolled -- standard messaging-app
+     * behaviour.
+     *
+     * <p>Two-phase on purpose: the row was just added to the VBox but a layout
+     * pass has not run yet, so a bare {@code setVvalue(1.0)} here clamps to the
+     * OLD content height and stops short -- very visible for tall multi-line
+     * Markdown replies. {@link Platform#runLater} lets the pending pulse run;
+     * {@code applyCss()} + {@code layout()} inside it force the new row's real
+     * height to be computed first, so {@code setVvalue(1.0)} then reaches the true
+     * bottom every time.</p>
+     */
+    private void scrollToBottom() {
+        autoScrolling = true;
+        Platform.runLater(() -> {
+            scrollPane.applyCss();
+            scrollPane.layout();
+            scrollPane.setVvalue(1.0);
+            autoScrolling = false;
+            updateScrollButton();
+        });
+    }
+
+    // -------------------------------------------------------------------------
+    // "Scroll to latest" floating button (in chatStack, bottom-right of the
+    // scroll area -- above the input bar, clear of the header/wave overlay).
+    // Hidden while the user is at/near the bottom or there is nothing to scroll;
+    // fades in when they scroll up; clicking it smooth-scrolls back down.
+    // -------------------------------------------------------------------------
+
+    private void setupScrollToLatestButton() {
+        scrollButtonFade = new FadeTransition(SCROLL_BTN_FADE, scrollToLatestButton);
+
+        // Re-evaluate on: the user scrolling, the viewport resizing, and the
+        // conversation growing/shrinking (new message, "more" expand, etc.).
+        scrollPane.vvalueProperty().addListener((obs, o, n) -> updateScrollButton());
+        scrollPane.viewportBoundsProperty().addListener((obs, o, n) -> updateScrollButton());
+        conversationContainer.heightProperty().addListener((obs, o, n) -> updateScrollButton());
+
+        updateScrollButton();
+    }
+
+    /** Shows the button only when the conversation is actually scrollable AND the user is scrolled up. */
+    private void updateScrollButton() {
+        if (autoScrolling) {
+            return;   // an auto jump-to-bottom is in flight -- don't flash the button in the gap
+        }
+        double viewportHeight = (scrollPane.getViewportBounds() != null)
+            ? scrollPane.getViewportBounds().getHeight() : 0;
+        if (viewportHeight <= 0) {
+            setScrollButtonShown(false);   // not laid out yet
+            return;
+        }
+        boolean scrollable = conversationContainer.getHeight() > viewportHeight + SCROLLABLE_SLACK_PX;
+        boolean nearBottom = scrollPane.getVvalue() >= SCROLL_BOTTOM_THRESHOLD;
+        setScrollButtonShown(scrollable && !nearBottom);
+    }
+
+    /** Fades the button toward the wanted state; reversible mid-flight without losing intent. */
+    private void setScrollButtonShown(boolean show) {
+        if (show == scrollButtonWanted) {
+            return;
+        }
+        scrollButtonWanted = show;
+        scrollButtonFade.stop();
+        scrollToLatestButton.setVisible(true);   // keep it rendered for the whole fade, either direction
+        scrollButtonFade.setFromValue(scrollToLatestButton.getOpacity());
+        scrollButtonFade.setToValue(show ? 1.0 : 0.0);
+        scrollButtonFade.setOnFinished(show ? null : e -> {
+            if (!scrollButtonWanted) {
+                scrollToLatestButton.setVisible(false);
+            }
+        });
+        scrollButtonFade.playFromStart();
+    }
+
+    /** Click handler: ease the scroll position smoothly back to the bottom (not an instant jump). */
+    @FXML
+    private void onScrollToLatest() {
+        Timeline smoothScroll = new Timeline(new KeyFrame(
+            SMOOTH_SCROLL_DURATION,
+            new KeyValue(scrollPane.vvalueProperty(), 1.0, Interpolator.EASE_BOTH)));
+        smoothScroll.play();
+        // The vvalue listener fades the button out on its own as we approach the bottom.
     }
 
     /** Single-line, length-capped form of {@code text} for console logging (no newlines, <= 160 chars). */

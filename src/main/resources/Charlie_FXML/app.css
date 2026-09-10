@@ -63,6 +63,24 @@
 }
 .btn-icon-send:hover { -fx-background-color: -color-accent-600; }
 
+/* Floating "scroll to latest" button (ChatController). Same family as .btn-icon-send
+   -- circular, accent-500 fill, white icon, accent-600 on hover -- a touch larger with
+   a drop shadow so it reads as an overlay floating above the message list. */
+.btn-icon-scroll {
+    -fx-background-color: -color-accent-500;
+    -fx-background-radius: 999;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-min-width: 36;
+    -fx-min-height: 36;
+    -fx-max-width: 36;
+    -fx-max-height: 36;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(46, 43, 37, 0.28), 6, 0, 0, 2);
+}
+.btn-icon-scroll:hover { -fx-background-color: -color-accent-600; }
+
 .card {
     -fx-background-color: -color-surface;
     -fx-background-radius: 22;

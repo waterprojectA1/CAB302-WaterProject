@@ -72,6 +72,21 @@
                 </Pane>
             </VBox>
 
+            <!-- Floating "scroll to latest" button. Lives in this StackPane (the
+                 scroll area), pinned bottom-right with enough bottom margin to sit
+                 clearly above the separate input bar in the BorderPane's bottom
+                 region, and well clear of the top header/wave overlay. Starts
+                 hidden (visible=false, opacity=0); ChatController fades it in when
+                 the user scrolls up and smooth-scrolls back down on click. -->
+            <Button fx:id="scrollToLatestButton" text="&#8595;" styleClass="btn-icon-scroll"
+                    onAction="#onScrollToLatest" focusTraversable="false"
+                    visible="false" opacity="0"
+                    StackPane.alignment="BOTTOM_RIGHT">
+                <StackPane.margin>
+                    <Insets right="16" bottom="18"/>
+                </StackPane.margin>
+            </Button>
+
         </StackPane>
     </center>
 
