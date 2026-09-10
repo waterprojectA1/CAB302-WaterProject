@@ -1,8 +1,10 @@
 package com.wateradvisory.Michael_Root;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
@@ -49,7 +51,29 @@ public class TablePageController {
     @FXML
     private RadioButton monthlyRadio;
 
-    private WaterDataList model;
+    @FXML
+    private void handleReturnToMain(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/App_Root-view.fxml"));
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.show();
+    }
+    @FXML
+    private void handleGoToNotification(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/Michael_FXML/NotificationPage.fxml"));
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.show();
+    }
+
+
+    private WaterDataList model = new WaterDataList();
 
     private int loggedUser = 1;
 
@@ -60,7 +84,13 @@ public class TablePageController {
     public void initialize(){
 
 
+        filteredDailyWater = new FilteredList<>(model.getDailyWater(), water -> true);
+        filteredWeeklyWater = new FilteredList<>(model.getWeeklyWater(), water -> true);
+        filteredMonthlyWater = new FilteredList<>(model.getMonthlyWater(), water -> true);
+        filteredDailyWater.setPredicate(water -> water.getUserID() == loggedUser);
 
+        setupTable();
+        setupRadioButtons();
 
         tableView.setItems(filteredDailyWater);
 
@@ -80,19 +110,7 @@ public class TablePageController {
     }
 
     public void setModel(WaterDataList model) {
-        this.model = model;
 
-        filteredDailyWater = new FilteredList<>(model.getDailyWater(), water -> true);
-        filteredWeeklyWater = new FilteredList<>(model.getWeeklyWater(), water -> true);
-        filteredMonthlyWater = new FilteredList<>(model.getMonthlyWater(), water -> true);
-        filteredDailyWater.setPredicate(water -> water.getUserID() == loggedUser);
-
-
-
-
-        setupTable();
-        initialize();
-        setupRadioButtons();
 
     }
 
@@ -182,7 +200,7 @@ public class TablePageController {
 
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource(
-                            "DetailDataPage.fxml"
+                            "/Michael_FXML/DetailDataPage.fxml"
                     )
             );
 

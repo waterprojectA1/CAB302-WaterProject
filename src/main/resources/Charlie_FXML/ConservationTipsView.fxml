@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
@@ -38,12 +39,23 @@
             <!-- score gauge -->
             <HBox alignment="CENTER_LEFT" spacing="16" styleClass="score-card">
                 <StackPane maxWidth="96" maxHeight="96" minWidth="96" minHeight="96">
-                    <Circle radius="44" centerX="48" centerY="48" fill="TRANSPARENT"
-                            stroke="#d6eafb" strokeWidth="6"/>
-                    <!-- length is set at runtime by ConservationTipsController from the real calculated score -->
-                    <Arc fx:id="scoreArc" radiusX="44" radiusY="44" centerX="48" centerY="48"
-                         startAngle="90" length="0" type="OPEN"
-                         fill="TRANSPARENT" stroke="#5a9bd4" strokeWidth="6" strokeLineCap="ROUND"/>
+                    <!-- Circle + Arc live in a plain Pane, NOT directly in the StackPane.
+                         A StackPane re-centres each child by its own bounding box, and an
+                         OPEN Arc with a ROUND cap has an asymmetric bbox versus the full
+                         Circle, so identical centreX/centreY="48" values were being painted
+                         at different positions. A Pane does no layout on non-resizable
+                         Shape children, so both keep centre (48,48) and stay truly
+                         concentric. The Pane is a fixed 96x96, matching the ring box. -->
+                    <Pane minWidth="96" minHeight="96" prefWidth="96" prefHeight="96"
+                          maxWidth="96" maxHeight="96">
+                        <Circle radius="44" centerX="48" centerY="48" fill="TRANSPARENT"
+                                stroke="#d6eafb" strokeWidth="6"/>
+                        <!-- length is set at runtime by ConservationTipsController from the real calculated score -->
+                        <Arc fx:id="scoreArc" radiusX="44" radiusY="44" centerX="48" centerY="48"
+                             startAngle="90" length="0" type="OPEN"
+                             fill="TRANSPARENT" stroke="#5a9bd4" strokeWidth="6" strokeLineCap="ROUND"/>
+                    </Pane>
+                    <!-- Label stays centred by the outer StackPane and layered above the ring. -->
                     <Label fx:id="scoreValueLabel" text="78" styleClass="score-value"/>
                 </StackPane>
                 <VBox spacing="2" HBox.hgrow="ALWAYS">

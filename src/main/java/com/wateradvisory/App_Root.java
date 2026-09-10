@@ -121,12 +121,9 @@ public class App_Root {
 
     @FXML
     private void handleDashboard(ActionEvent event) {
-        // Jainya & Michael section
-        System.out.println("Dashboard clicked");
-
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/Jainya_FXML/MainView.fxml")
+                    getClass().getResource("/Michael_FXML/TableDisplayPage.fxml")
             );
 
             Parent root = loader.load();
@@ -136,6 +133,7 @@ public class App_Root {
                     .getWindow();
 
             stage.setScene(new Scene(root));
+
             stage.sizeToScene();
             stage.centerOnScreen();
             stage.show();

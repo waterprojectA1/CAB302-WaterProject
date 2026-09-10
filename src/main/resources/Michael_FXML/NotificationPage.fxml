@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.wateradvisory.Michael_Root.NotificationController">
+
+    <top>
+        <VBox spacing="5">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="Notifications"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+            <Label fx:id="notificationCount"
+                   text="0 notifications"
+                   style="-fx-text-fill: grey;"/>
+        </VBox>
+    </top>
+
+    <center>
+        <ListView fx:id="notificationList"
+                  prefHeight="500"
+                  prefWidth="600"/>
+    </center>
+
+</BorderPane>
