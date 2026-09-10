@@ -1,6 +1,8 @@
 package com.wateradvisory.Charlie_Root;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -810,7 +812,8 @@ public class ChatController {
     //   1. trim
     //   2. strip a leaked identity / "as an AI" preamble        (stripLeadingPreamble)
     //   3. strip a single pair of wrapping quotation marks       (stripSurroundingQuotes)
-    //   4. flag/mark truncated output                            (isLikelyTruncated)
+    //   4. repair tokenizer UTF-8 mojibake, then NFC-normalise   (repairTokenizerMojibake)
+    //   5. flag/mark truncated output                            (isLikelyTruncated)
     // Only AFTER all of the above does the cleaned text go to the flexmark Markdown
     // parser + AST walk in addAiBubble() to become JavaFX nodes.
     // ---------------------------------------------------------------------------
@@ -821,6 +824,8 @@ public class ChatController {
         text = stripLeadingPreamble(text);
         text = stripSurroundingQuotes(text);
         text = text.strip();
+        text = repairTokenizerMojibake(text);
+        text = Normalizer.normalize(text, Normalizer.Form.NFC);
 
         if (isLikelyTruncated(text, finishReason)) {
             // We APPEND A MARKER rather than doing a continuation generation. Jlama's
@@ -911,6 +916,60 @@ public class ChatController {
             }
         }
         return n;
+    }
+
+    /**
+     * Repairs UTF-8 "mojibake" produced by Jlama 0.8.4's tokenizer (see CLAUDE.md
+     * gotcha #13). {@code LlamaTokenizer.decode()} — which the Qwen2 model type is
+     * wired to — reverses the ByteLevel/GPT-2 byte map per code point but then emits
+     * each recovered byte as its own {@code char} instead of decoding the byte run
+     * as UTF-8. So every non-ASCII character comes back as its raw UTF-8 bytes read
+     * as ISO-8859-1:
+     * <pre>
+     *   ®  (C2 AE)     -> "Â®"                (U+00C2 U+00AE)
+     *   ’  (E2 80 99)  -> "â" + two C1 controls (U+00E2 U+0080 U+0099)
+     *   é  (C3 A9)     -> "Ã©"                (U+00C3 U+00A9)
+     * </pre>
+     * The fix is the standard round-trip: take the chars back to Latin-1 bytes and
+     * decode THOSE as UTF-8. Heavily guarded so it only ever touches genuinely
+     * corrupted text:
+     * <ul>
+     *   <li>all-ASCII output is returned untouched (the overwhelmingly common case);</li>
+     *   <li>any code point &ge; U+0100 means the string already holds real
+     *       non-Latin-1 Unicode (a correctly-decoded response, an emoji, …) that the
+     *       round-trip would wreck — left alone;</li>
+     *   <li>the repaired string is kept only if it actually changed AND contains no
+     *       U+FFFD replacement char. A replacement char means the Latin-1 bytes were
+     *       not valid UTF-8, i.e. this was a genuine lone character such as "café",
+     *       not our bug — so the original is kept.</li>
+     * </ul>
+     * A single {@code decode(long[])} call is uniformly broken or uniformly fine, so
+     * a response never mixes real U+2014 with a mojibake "Â®"; the "&ge; U+0100 →
+     * skip" guard is therefore safe in practice.
+     */
+    static String repairTokenizerMojibake(String text) {
+        if (text.isEmpty()) {
+            return text;
+        }
+        boolean hasHighByteChar = false;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c > 0x00FF) {
+                return text;                 // genuine non-Latin-1 Unicode present -> don't risk it
+            }
+            if (c > 0x007F) {
+                hasHighByteChar = true;
+            }
+        }
+        if (!hasHighByteChar) {
+            return text;                      // pure ASCII -> nothing to repair
+        }
+        String repaired = new String(
+            text.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        if (repaired.equals(text) || repaired.indexOf(0xFFFD) >= 0) {
+            return text;                      // unchanged, or not valid UTF-8 -> leave as-is
+        }
+        return repaired;
     }
 
     /**
