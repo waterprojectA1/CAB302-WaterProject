@@ -1,5 +1,7 @@
 package com.wateradvisory.Charlie_Root;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -9,33 +11,43 @@ import java.util.Map;
 
 import com.wateradvisory.Michael_Root.WaterData;
 import com.wateradvisory.Michael_Root.WaterDataList;
-import com.wateradvisory.water.WaterActivityEntry;
+import com.wateradvisory.water.ActivityEntry;
+import com.wateradvisory.water.DailyWaterRecord;
 
 /**
  * Builds a ranked list of personalised conservation tips from the user's REAL
- * recorded data, replacing the hardcoded placeholder tips that used to live in
- * {@link ConservationTipsController}.
+ * recorded data.
  *
- * <p>Two data sources, both passed in (this class does no I/O of its own, so it
- * is easy to unit-test):</p>
+ * <p><b>Primary source:</b> {@link DailyWaterRecord}s from Supabase
+ * ({@code WaterRecordService.getUserDailyRecords()}), passed in — one row per
+ * day, each with the day's {@code activities} array and the precomputed
+ * {@code total_water_consumption_day}. From those:</p>
  * <ul>
- *   <li><b>{@link WaterActivityEntry} list</b> (from
- *       {@code WaterRecordService.getUserActivities()}) — per-activity tips:
- *       shower duration, laundry frequency, and category usage share.</li>
- *   <li><b>{@link WaterDataList}</b> — aggregate trend / outlier tips off the
- *       user's weekly records: week-over-week trend, outlier flag, and positive
- *       reinforcement.</li>
+ *   <li>SHOWER DURATION — weighted average shower minutes across all days;</li>
+ *   <li>CATEGORY USAGE SHARE — each activity type's % of total litres;</li>
+ *   <li>LAUNDRY FREQUENCY — sum of {@code amount} for "Laundry" over the range;</li>
+ *   <li>WEEK-OVER-WEEK TREND — last 7 days' totals vs the previous 7, by
+ *       {@code record_date} (now directly queryable);</li>
+ *   <li>HOUSEHOLD-SIZE BENCHMARKING — per-person daily usage vs a target, only
+ *       when a household size is known (null {@code household_id} → skipped).</li>
  * </ul>
  *
- * <p><b>No time-of-day tips.</b> The Supabase schema has no per-activity
- * timestamp (only a day-level {@code record_date}), so tips like "tap usage
- * spikes 7–8am" are deliberately NOT generated — see the gotcha in CLAUDE.md.
- * Blocked on a future {@code created_at} column.</p>
+ * <p><b>Fallback source:</b> when the user has no Supabase rows yet (brand-new
+ * account, or offline testing), the seeded in-memory {@link WaterDataList} drives
+ * the trend / outlier / positive-reinforcement tips instead.</p>
  *
- * <p><b>No activity date range either.</b> Because the flattened
- * {@link WaterActivityEntry} list carries no dates, the whole returned set is
- * treated as one recent typical week ({@link #ASSUMED_LOG_PERIOD_WEEKS}). When a
- * {@code created_at} column lands, replace that assumption with a real span.</p>
+ * <p><b>Weighted average, not naive.</b> One {@code activities} entry can be
+ * several occurrences at once (e.g. {@code amount:5} = five showers), so average
+ * duration is {@code sum(duration * amount) / sum(amount)} — never a plain mean
+ * across entries.</p>
+ *
+ * <p><b>No time-of-day tips.</b> {@code record_date} is date-only (no time
+ * component) and the activity objects carry no timestamp, so patterns like "tap
+ * usage spikes between 7-8am" genuinely cannot be derived. This is a lack of
+ * time data, NOT a lack of date data — day/week/month comparison IS possible and
+ * is done above.</p>
+ *
+ * <p>Does no I/O; everything is passed in, so it is easy to unit-test.</p>
  */
 public class PersonalizedTipGenerator {
 
@@ -51,26 +63,25 @@ public class PersonalizedTipGenerator {
                                double litresSavedPerWeek, double costSavedPerWeek) {
     }
 
-    // --- benchmarks -----------------------------------------------------------
-    /** Recommended maximum average shower length (minutes). */
+    // --- benchmarks ---------------------------------------------------------
     private static final double SHOWER_BENCHMARK_MINUTES = 8.0;
+    private static final double SHOWER_HIGH_IMPACT_MINUTES = 12.0;
     /** Standard showerhead flow — matches {@code WaterConsumptionService.SHOWER_LITRES_PER_MINUTE}. */
     private static final double SHOWER_LITRES_PER_MIN = 9.0;
-    /** Recommended maximum laundry loads per week before "combine loads" advice kicks in. */
     private static final double LAUNDRY_LOADS_PER_WEEK_BENCHMARK = 5.0;
-    /** A single category taking more than this share of total litres earns a "biggest category" tip. */
     private static final double CATEGORY_SHARE_THRESHOLD = 0.30;
-    /** Week-over-week % increase over the user's own average that triggers a trend tip. */
     private static final double WEEK_TREND_THRESHOLD_PCT = 15.0;
     private static final double WEEK_TREND_HIGH_PCT = 30.0;
-    private static final double SHOWER_HIGH_IMPACT_MINUTES = 12.0;
+    /** Rough per-person daily target (litres) for household-size framing. */
+    private static final double PER_PERSON_DAILY_LITRE_BENCHMARK = 200.0;
+    /** Need at least this many days of history before a weekly-rate judgement is meaningful. */
+    private static final int MIN_DAYS_FOR_WEEKLY_RATE = 7;
+    /** User id for the seeded {@link WaterDataList} fallback (its {@code loggedUser}). */
+    private static final int FALLBACK_USER_ID = 1;
 
-    /**
-     * No per-activity date column exists yet (blocked on {@code created_at}), so the
-     * full set of returned activity entries is taken to represent one recent typical
-     * week. Swap this for a real measured span once activities are timestamped.
-     */
-    private static final double ASSUMED_LOG_PERIOD_WEEKS = 1.0;
+    /** Confirmed real activity names (exact casing) — match case-insensitively. */
+    private static final List<String> KNOWN_ACTIVITIES = List.of(
+        "Shower", "Dishes", "Floor Cleaning", "Laundry", "Car Wash", "Window Cleaning", "Bathtub");
 
     private final double waterRatePerLitre;
 
@@ -83,73 +94,127 @@ public class PersonalizedTipGenerator {
     }
 
     /**
-     * @return tips ranked highest-impact first (stable within an impact level).
-     *         Empty if neither data source yielded anything — the caller should
-     *         then show a "start logging" fallback rather than an empty section.
+     * @param records          the user's real {@code daily_water_records} rows (may be empty)
+     * @param householdSize    from the households table, or {@code null} if unknown / no household
+     * @param fallbackAggregate seeded in-memory data, used only when {@code records} is empty
+     * @return tips ranked highest-impact first (stable within an impact level); empty if
+     *         nothing could be derived — the caller then shows a "start logging" message.
      */
-    public List<TipCandidate> generate(int userId,
-                                       List<WaterActivityEntry> activities,
-                                       WaterDataList aggregateData) {
-        List<WaterActivityEntry> acts = (activities == null) ? List.of() : activities;
-
+    public List<TipCandidate> generate(List<DailyWaterRecord> records,
+                                       Integer householdSize,
+                                       WaterDataList fallbackAggregate) {
+        List<DailyWaterRecord> recs = (records == null) ? List.of() : records;
         List<TipCandidate> tips = new ArrayList<>();
-        addShowerDurationTip(tips, acts);
-        addLaundryFrequencyTip(tips, acts);
-        addCategoryShareTip(tips, acts);
-        addTrendAndOutlierTips(tips, userId, aggregateData);
+
+        if (!recs.isEmpty()) {
+            List<ActivityEntry> activities = flattenActivities(recs);
+            long spanDays = spanDays(recs);
+            double spanWeeks = Math.max(1.0, spanDays / 7.0);
+
+            addShowerDurationTip(tips, activities, spanWeeks);
+            addCategoryShareTip(tips, activities, spanWeeks);
+            addLaundryFrequencyTip(tips, activities, spanWeeks, spanDays);
+            addWeekOverWeekTrendTip(tips, recs);
+            addHouseholdSizeTip(tips, recs, householdSize);
+        } else {
+            addFallbackAggregateTips(tips, fallbackAggregate);
+        }
 
         tips.sort(Comparator.comparingInt(t -> t.impact().ordinal()));
         return tips;
     }
 
-    // ------------------------------------------------------------------------
-    // Activity-based tips (from WaterActivityEntry)
-    // ------------------------------------------------------------------------
+    // =====================================================================
+    //  Real-data tips (from List<DailyWaterRecord>)
+    // =====================================================================
 
-    /** (a) Average shower length above the 8-minute benchmark. */
-    private void addShowerDurationTip(List<TipCandidate> tips, List<WaterActivityEntry> acts) {
-        double weightedMinutes = 0;
-        double sessions = 0;
-        for (WaterActivityEntry e : acts) {
-            if (!isActivity(e, "shower")) {
+    /** SHOWER DURATION: weighted average shower length across every logged day, vs the 8-minute benchmark. */
+    private void addShowerDurationTip(List<TipCandidate> tips, List<ActivityEntry> activities, double spanWeeks) {
+        double weightedMinutes = 0;   // sum(duration * amount)
+        double occurrences = 0;       // sum(amount)
+        for (ActivityEntry a : activities) {
+            if (!"Shower".equalsIgnoreCase(a.getActivity())) {
                 continue;
             }
-            int count = Math.max(1, e.getAmount());
-            weightedMinutes += (double) e.getDuration() * count;
-            sessions += count;
+            int amount = Math.max(1, a.getAmount());
+            weightedMinutes += (double) a.getDuration() * amount;
+            occurrences += amount;
         }
-        if (sessions <= 0) {
+        if (occurrences <= 0) {
             return;
         }
-        double avgMinutes = weightedMinutes / sessions;
-        if (avgMinutes <= SHOWER_BENCHMARK_MINUTES) {
+        double weightedAvgMinutes = weightedMinutes / occurrences;   // WEIGHTED, not a naive mean
+        if (weightedAvgMinutes <= SHOWER_BENCHMARK_MINUTES) {
             return;
         }
-        double showersPerWeek = sessions / ASSUMED_LOG_PERIOD_WEEKS;
-        double litresPerWeek = (avgMinutes - SHOWER_BENCHMARK_MINUTES) * SHOWER_LITRES_PER_MIN * showersPerWeek;
-        Impact impact = (avgMinutes > SHOWER_HIGH_IMPACT_MINUTES) ? Impact.HIGH : Impact.MEDIUM;
+        double showersPerWeek = occurrences / spanWeeks;
+        double litresPerWeek =
+            (weightedAvgMinutes - SHOWER_BENCHMARK_MINUTES) * SHOWER_LITRES_PER_MIN * showersPerWeek;
+        Impact impact = (weightedAvgMinutes > SHOWER_HIGH_IMPACT_MINUTES) ? Impact.HIGH : Impact.MEDIUM;
         tips.add(tip(
             String.format(Locale.ROOT,
                 "Your showers average %d minutes, above the 8-minute recommendation.",
-                Math.round(avgMinutes)),
+                Math.round(weightedAvgMinutes)),
             impact, litresPerWeek));
     }
 
-    /** (b) Running laundry more than ~5 times per week. */
-    private void addLaundryFrequencyTip(List<TipCandidate> tips, List<WaterActivityEntry> acts) {
+    /** CATEGORY USAGE SHARE: the biggest single activity type, if it exceeds 30% of total recorded litres. */
+    private void addCategoryShareTip(List<TipCandidate> tips, List<ActivityEntry> activities, double spanWeeks) {
+        Map<String, Double> litresByCategory = new LinkedHashMap<>();
+        double total = 0;
+        for (ActivityEntry a : activities) {
+            String category = canonicalActivity(a.getActivity());
+            litresByCategory.merge(category, a.getWaterLitres(), Double::sum);
+            total += a.getWaterLitres();
+        }
+        if (total <= 0) {
+            return;
+        }
+        String topCategory = null;
+        double topLitres = 0;
+        for (Map.Entry<String, Double> entry : litresByCategory.entrySet()) {
+            if (entry.getKey().equals("Other")) {
+                continue;   // only name a real, known category
+            }
+            if (topCategory == null || entry.getValue() > topLitres) {
+                topCategory = entry.getKey();
+                topLitres = entry.getValue();
+            }
+        }
+        if (topCategory == null) {
+            return;
+        }
+        double share = topLitres / total;
+        if (share <= CATEGORY_SHARE_THRESHOLD) {
+            return;
+        }
+        double excessLitres = Math.max(0, topLitres - CATEGORY_SHARE_THRESHOLD * total);
+        tips.add(tip(
+            String.format(Locale.ROOT,
+                "%s accounts for %d%% of your total recorded water use -- your single biggest category.",
+                topCategory, Math.round(share * 100)),
+            Impact.MEDIUM, excessLitres / spanWeeks));
+    }
+
+    /** LAUNDRY FREQUENCY: sum of "Laundry" occurrences over the range; flags more than ~5/week. */
+    private void addLaundryFrequencyTip(List<TipCandidate> tips, List<ActivityEntry> activities,
+                                        double spanWeeks, long spanDays) {
+        if (spanDays < MIN_DAYS_FOR_WEEKLY_RATE) {
+            return;   // too short a window to judge a weekly rate fairly
+        }
         double loads = 0;
         double litres = 0;
-        for (WaterActivityEntry e : acts) {
-            if (!isActivity(e, "laundry")) {
+        for (ActivityEntry a : activities) {
+            if (!"Laundry".equalsIgnoreCase(a.getActivity())) {
                 continue;
             }
-            loads += Math.max(1, e.getAmount());
-            litres += e.getLitres();
+            loads += Math.max(1, a.getAmount());
+            litres += a.getWaterLitres();
         }
         if (loads <= 0) {
             return;
         }
-        double loadsPerWeek = loads / ASSUMED_LOG_PERIOD_WEEKS;
+        double loadsPerWeek = loads / spanWeeks;
         if (loadsPerWeek <= LAUNDRY_LOADS_PER_WEEK_BENCHMARK) {
             return;
         }
@@ -160,107 +225,106 @@ public class PersonalizedTipGenerator {
             Impact.MEDIUM, litresPerWeek));
     }
 
-    /** (c) One activity category is more than 30% of total recorded litres. */
-    private void addCategoryShareTip(List<TipCandidate> tips, List<WaterActivityEntry> acts) {
-        Map<String, Double> byCategory = new LinkedHashMap<>();
-        double total = 0;
-        for (WaterActivityEntry e : acts) {
-            String key = (e.getActivity() == null || e.getActivity().isBlank())
-                ? "Other" : e.getActivity().trim();
-            byCategory.merge(key, e.getLitres(), Double::sum);
-            total += e.getLitres();
-        }
-        if (total <= 0) {
+    /** WEEK-OVER-WEEK TREND: last 7 days' day-totals vs the previous 7, anchored on the most recent record. */
+    private void addWeekOverWeekTrendTip(List<TipCandidate> tips, List<DailyWaterRecord> recs) {
+        LocalDate anchor = recs.stream()
+            .map(DailyWaterRecord::getRecordDate)
+            .max(Comparator.naturalOrder())
+            .orElse(null);
+        if (anchor == null) {
             return;
         }
-        Map.Entry<String, Double> top = null;
-        for (Map.Entry<String, Double> entry : byCategory.entrySet()) {
-            if (top == null || entry.getValue() > top.getValue()) {
-                top = entry;
-            }
+        double[] recent = sumInRange(recs, anchor.minusDays(6), anchor);           // {sum, count}
+        double[] previous = sumInRange(recs, anchor.minusDays(13), anchor.minusDays(7));
+        if (previous[1] < 1 || previous[0] <= 0) {
+            return;   // no usable baseline week
         }
-        if (top == null) {
-            return;
-        }
-        double share = top.getValue() / total;
-        if (share <= CATEGORY_SHARE_THRESHOLD) {
-            return;
-        }
-        // "Savings" here = the litres above a 30% share, i.e. what bringing this
-        // category back in line with the rest of the household would recover.
-        double excessLitres = top.getValue() - (CATEGORY_SHARE_THRESHOLD * total);
-        double litresPerWeek = Math.max(0, excessLitres) / ASSUMED_LOG_PERIOD_WEEKS;
-        tips.add(tip(
-            String.format(Locale.ROOT,
-                "%s accounts for %d%% of your total recorded water use -- your single biggest category.",
-                top.getKey(), Math.round(share * 100)),
-            Impact.MEDIUM, litresPerWeek));
-    }
+        double pctChange = (recent[0] - previous[0]) / previous[0] * 100.0;
 
-    // ------------------------------------------------------------------------
-    // Aggregate tips (from WaterDataList)
-    // ------------------------------------------------------------------------
-
-    /** (d) week-over-week trend, (e) outlier flag, (f) positive reinforcement. */
-    private void addTrendAndOutlierTips(List<TipCandidate> tips, int userId, WaterDataList data) {
-        if (data == null) {
-            return;
-        }
-        WaterData latestWeekly = latestWeeklyFor(data, userId);
-        if (latestWeekly == null) {
-            return;
-        }
-
-        double diffPct = data.getUserDiff(latestWeekly);          // signed % vs the user's own weekly mean
-        double weeklyMean = data.getUserWeeklyMean();
-        double excessLitres = (Double.isFinite(weeklyMean))
-            ? Math.max(0, latestWeekly.getWaterUsage() - weeklyMean)
-            : 0;
-
-        // (d) trend
-        if (Double.isFinite(diffPct) && diffPct > WEEK_TREND_THRESHOLD_PCT) {
-            Impact impact = (diffPct > WEEK_TREND_HIGH_PCT) ? Impact.HIGH : Impact.MEDIUM;
+        if (pctChange > WEEK_TREND_THRESHOLD_PCT) {
+            Impact impact = (pctChange > WEEK_TREND_HIGH_PCT) ? Impact.HIGH : Impact.MEDIUM;
             tips.add(tip(
                 String.format(Locale.ROOT,
-                    "Your usage this week is %d%% above your typical average.",
-                    Math.round(diffPct)),
-                impact, excessLitres / ASSUMED_LOG_PERIOD_WEEKS));
-        }
-
-        // (e) outlier flag -- getZScore() sets usageRating as a side effect.
-        // NOTE: in the current WaterDataList, getZScore()'s if-order means only
-        // "Normal"/"High" are ever actually produced ("Extreme"/"Outlier" are
-        // unreachable), so this tip is effectively future-proofing for when that
-        // is fixed. We still check the ratings the spec named, verbatim.
-        data.getZScore(latestWeekly);
-        String rating = latestWeekly.getUsageRating();
-        if ("Extreme".equalsIgnoreCase(rating) || "Outlier".equalsIgnoreCase(rating)) {
-            tips.add(tip(
-                "Your recent usage was flagged as unusually high compared to your normal pattern.",
-                Impact.HIGH, excessLitres / ASSUMED_LOG_PERIOD_WEEKS));
-        }
-
-        // (f) positive reinforcement -- only when usage is BELOW average and
-        // nothing high-impact was found.
-        boolean anyHighImpact = tips.stream().anyMatch(t -> t.impact() == Impact.HIGH);
-        if (!anyHighImpact && Double.isFinite(diffPct) && diffPct < 0) {
+                    "Your usage this week is %d%% above the previous week.", Math.round(pctChange)),
+                impact, Math.max(0, recent[0] - previous[0])));
+        } else if (pctChange < 0 && tips.stream().noneMatch(t -> t.impact() == Impact.HIGH)) {
             tips.add(new TipCandidate(
-                "You're tracking below your usual usage this week -- keep it up.",
+                "You're using less water this week than last -- keep it up.", Impact.LOW, 0, 0));
+        }
+    }
+
+    /** HOUSEHOLD-SIZE BENCHMARKING: per-person daily usage vs a target. Skipped entirely when size is unknown. */
+    private void addHouseholdSizeTip(List<TipCandidate> tips, List<DailyWaterRecord> recs, Integer householdSize) {
+        if (householdSize == null || householdSize <= 0) {
+            return;   // no household_id / no size -> no household framing, and no crash
+        }
+        double totalLitres = 0;
+        for (DailyWaterRecord r : recs) {
+            totalLitres += r.getTotalWaterConsumptionDay();
+        }
+        long loggedDays = recs.stream().map(DailyWaterRecord::getRecordDate).distinct().count();
+        if (loggedDays <= 0) {
+            return;
+        }
+        double avgDailyTotal = totalLitres / loggedDays;
+        double perPersonDaily = avgDailyTotal / householdSize;
+
+        if (perPersonDaily > PER_PERSON_DAILY_LITRE_BENCHMARK) {
+            Impact impact = (perPersonDaily > 1.5 * PER_PERSON_DAILY_LITRE_BENCHMARK) ? Impact.HIGH : Impact.MEDIUM;
+            double litresPerWeek = (perPersonDaily - PER_PERSON_DAILY_LITRE_BENCHMARK) * householdSize * 7.0;
+            tips.add(tip(
+                String.format(Locale.ROOT,
+                    "For a household of %d, you average %d L per person per day -- above the ~%d L target.",
+                    householdSize, Math.round(perPersonDaily), Math.round(PER_PERSON_DAILY_LITRE_BENCHMARK)),
+                impact, litresPerWeek));
+        } else if (tips.stream().noneMatch(t -> t.impact() == Impact.HIGH)) {
+            tips.add(new TipCandidate(
+                String.format(Locale.ROOT,
+                    "Your usage sits below the typical level for a household of %d -- nicely done.", householdSize),
                 Impact.LOW, 0, 0));
         }
     }
 
-    // ------------------------------------------------------------------------
-    // helpers
-    // ------------------------------------------------------------------------
+    // =====================================================================
+    //  Fallback tips (seeded WaterDataList) — used only when there is no real data
+    // =====================================================================
 
-    /** Case-insensitive "activity name contains this word" (e.g. "Shower" matches "shower"). */
-    private static boolean isActivity(WaterActivityEntry e, String keyword) {
-        String name = e.getActivity();
-        return name != null && name.toLowerCase(Locale.ROOT).contains(keyword);
+    private void addFallbackAggregateTips(List<TipCandidate> tips, WaterDataList data) {
+        if (data == null) {
+            return;
+        }
+        WaterData latestWeekly = latestWeeklyFor(data, FALLBACK_USER_ID);
+        if (latestWeekly == null) {
+            return;
+        }
+        double diffPct = data.getUserDiff(latestWeekly);
+        double weeklyMean = data.getUserWeeklyMean();
+        double excessLitres = Double.isFinite(weeklyMean)
+            ? Math.max(0, latestWeekly.getWaterUsage() - weeklyMean) : 0;
+
+        if (Double.isFinite(diffPct) && diffPct > WEEK_TREND_THRESHOLD_PCT) {
+            Impact impact = (diffPct > WEEK_TREND_HIGH_PCT) ? Impact.HIGH : Impact.MEDIUM;
+            tips.add(tip(String.format(Locale.ROOT,
+                "Your usage this week is %d%% above your typical average.", Math.round(diffPct)),
+                impact, excessLitres));
+        }
+
+        // getZScore() sets usageRating as a side effect. Only "Normal"/"High" are actually
+        // reachable in the current WaterDataList, so the Extreme/Outlier branch is future-proofing.
+        data.getZScore(latestWeekly);
+        String rating = latestWeekly.getUsageRating();
+        if ("Extreme".equalsIgnoreCase(rating) || "Outlier".equalsIgnoreCase(rating)) {
+            tips.add(tip("Your recent usage was flagged as unusually high compared to your normal pattern.",
+                Impact.HIGH, excessLitres));
+        }
+
+        boolean anyHigh = tips.stream().anyMatch(t -> t.impact() == Impact.HIGH);
+        if (!anyHigh && Double.isFinite(diffPct) && diffPct < 0) {
+            tips.add(new TipCandidate(
+                "You're tracking below your usual usage this week -- keep it up.", Impact.LOW, 0, 0));
+        }
     }
 
-    /** Latest weekly record for the user; the seeded lists are already in chronological order. */
     private static WaterData latestWeeklyFor(WaterDataList data, int userId) {
         WaterData latest = null;
         for (WaterData w : data.getWeeklyWater()) {
@@ -269,6 +333,63 @@ public class PersonalizedTipGenerator {
             }
         }
         return latest;
+    }
+
+    // =====================================================================
+    //  helpers
+    // =====================================================================
+
+    private static List<ActivityEntry> flattenActivities(List<DailyWaterRecord> recs) {
+        List<ActivityEntry> all = new ArrayList<>();
+        for (DailyWaterRecord r : recs) {
+            all.addAll(r.getActivities());
+        }
+        return all;
+    }
+
+    /** Inclusive span in days between the earliest and latest {@code record_date} (min 1). */
+    private static long spanDays(List<DailyWaterRecord> recs) {
+        LocalDate min = null;
+        LocalDate max = null;
+        for (DailyWaterRecord r : recs) {
+            LocalDate d = r.getRecordDate();
+            if (min == null || d.isBefore(min)) {
+                min = d;
+            }
+            if (max == null || d.isAfter(max)) {
+                max = d;
+            }
+        }
+        if (min == null) {
+            return 1;
+        }
+        return ChronoUnit.DAYS.between(min, max) + 1;
+    }
+
+    /** {sum of total_water_consumption_day, count of records} for records with record_date in [from, to]. */
+    private static double[] sumInRange(List<DailyWaterRecord> recs, LocalDate from, LocalDate to) {
+        double sum = 0;
+        int count = 0;
+        for (DailyWaterRecord r : recs) {
+            LocalDate d = r.getRecordDate();
+            if (!d.isBefore(from) && !d.isAfter(to)) {
+                sum += r.getTotalWaterConsumptionDay();
+                count++;
+            }
+        }
+        return new double[]{sum, count};
+    }
+
+    /** Maps an activity name to a confirmed known category (case-insensitively), or "Other". */
+    private static String canonicalActivity(String raw) {
+        if (raw != null) {
+            for (String known : KNOWN_ACTIVITIES) {
+                if (known.equalsIgnoreCase(raw.trim())) {
+                    return known;
+                }
+            }
+        }
+        return "Other";
     }
 
     /** Builds a tip, deriving the dollar figure from litres via the shared Brisbane rate. */

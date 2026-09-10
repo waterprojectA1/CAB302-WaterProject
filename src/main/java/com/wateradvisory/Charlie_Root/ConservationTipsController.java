@@ -1,11 +1,14 @@
 package com.wateradvisory.Charlie_Root;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import com.wateradvisory.Michael_Root.WaterDataList;
+import com.wateradvisory.database.UserSession;
 import com.wateradvisory.database.WaterRecordService;
-import com.wateradvisory.water.WaterActivityEntry;
+import com.wateradvisory.water.DailyWaterRecord;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,8 +42,15 @@ public class ConservationTipsController {
      */
     public static final double WATER_RATE_PER_LITRE = 0.00357;
 
-    /** Whose data to display. TODO: read from UserSession once the login flow is wired through. */
-    private static final int CURRENT_USER_ID = 1;
+    /**
+     * Fallback user id for the seeded {@link WaterDataList} path only (matches its
+     * {@code loggedUser}). The real path keys off the signed-in user's uuid from
+     * {@link UserSession#getUserId()}.
+     */
+    private static final int FALLBACK_USER_ID = 1;
+
+    /** How far back to pull the user's daily_water_records (covers month-over-month + week-over-week + buffer). */
+    private static final int HISTORY_MONTHS = 3;
 
     /** Drives seasonal-tip hemisphere detection. TODO: read from the household profile when available. */
     private static final String USER_REGION = "Brisbane, AU";
@@ -63,33 +73,48 @@ public class ConservationTipsController {
     }
 
     /**
-     * Runs automatically once the FXML has finished loading. Wires the screen to the
-     * in-memory usage model: real conservation score, per-tip savings estimates, and a
-     * seasonal tip that rotates once per day.
+     * Runs automatically once the FXML has finished loading. Wires the screen to
+     * the user's REAL Supabase history ({@code daily_water_records}) for the
+     * conservation score and personalised tips, with the seeded in-memory
+     * {@link WaterDataList} kept only as a fallback for a brand-new user with no
+     * rows yet (or a run with no database connection, e.g. charlie-preview).
      */
     @FXML
     public void initialize() {
-        WaterDataList data = new WaterDataList();
+        // --- Resolve the signed-in user + pull their real history once. --------
+        UUID userId = parseUuid(UserSession.getUserId());   // null when not signed in
+        LocalDate today = LocalDate.now();
+        List<DailyWaterRecord> dailyRecords = (userId == null)
+            ? List.of()
+            : WaterRecordService.getUserDailyRecords(
+                  userId, today.minusMonths(HISTORY_MONTHS).withDayOfMonth(1), today);
+        boolean haveRealData = !dailyRecords.isEmpty();
 
-        // 1. Conservation score -- real calculation (daily granularity for now).
+        WaterDataList fallbackData = new WaterDataList();   // seeded; used only when haveRealData == false
+
+        // 1. Conservation score -- real day-over-day comparison via record_date,
+        //    or the seeded fallback when there is no real history yet.
         ConservationScoreCalculator scoreCalculator = new ConservationScoreCalculator();
-        int score = scoreCalculator.calculateDailyScore(
-            CURRENT_USER_ID, ConservationScoreCalculator.STARTING_SCORE, data);
+        int score = haveRealData
+            ? scoreCalculator.calculateDailyScore(
+                  ConservationScoreCalculator.STARTING_SCORE, dailyRecords)
+            : scoreCalculator.calculateDailyScoreFallback(
+                  FALLBACK_USER_ID, ConservationScoreCalculator.STARTING_SCORE, fallbackData);
         setConservationScore(score, subtitleForScore(score));
 
         // 3. Seasonal tip -- deterministic, rotates once per calendar day (never random).
         SeasonalTipProvider seasonalTips = new SeasonalTipProvider(USER_REGION);
         setSeasonalTip("Seasonal tip: " + seasonalTips.getTipForToday(USER_REGION));
 
-        // 2. Personalised tips -- generated from the user's REAL recorded data:
-        //    logged activities from Supabase (shower length, laundry frequency,
-        //    category share) plus aggregate weekly trend / outlier signals from
-        //    WaterDataList. No time-of-day tips: the schema has no per-activity
-        //    timestamp yet (see PersonalizedTipGenerator / CLAUDE.md gotcha).
-        List<WaterActivityEntry> activities = WaterRecordService.getUserActivities(CURRENT_USER_ID);
+        // 2. Personalised tips -- from the real DailyWaterRecords (+ household size
+        //    for "for a household of N" framing), or the seeded fallback. NO
+        //    time-of-day tip: record_date is date-only, so 7-8am-style patterns
+        //    still can't be derived (it's missing TIME data, not date data).
+        Integer householdSize = haveRealData
+            ? WaterRecordService.getHouseholdSize(householdIdOf(dailyRecords)) : null;
         PersonalizedTipGenerator tipGenerator = new PersonalizedTipGenerator(WATER_RATE_PER_LITRE);
         List<PersonalizedTipGenerator.TipCandidate> tips =
-            tipGenerator.generate(CURRENT_USER_ID, activities, data);
+            tipGenerator.generate(dailyRecords, householdSize, fallbackData);
 
         if (tips.isEmpty()) {
             // Brand-new user with nothing logged yet -- never leave the section blank.
@@ -102,6 +127,28 @@ public class ConservationTipsController {
 
         addResource("Leak checklist", "A 5-minute self-audit for common fixtures.", leakChecklistIcon());
         addResource("Rebate finder", "Local rebates for water-efficient fixtures.", rebateFinderIcon());
+    }
+
+    /** Parses the session's user id string to a {@link UUID}, or null if absent / not a uuid. */
+    private static UUID parseUuid(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        try {
+            return UUID.fromString(raw.trim());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /** household_id from the most recent record that has one, or null if the user has no household. */
+    private static UUID householdIdOf(List<DailyWaterRecord> records) {
+        for (int i = records.size() - 1; i >= 0; i--) {
+            if (records.get(i).getHouseholdId() != null) {
+                return records.get(i).getHouseholdId();
+            }
+        }
+        return null;
     }
 
     /** score out of 100 -- drives both the number and the ring's fill amount */
