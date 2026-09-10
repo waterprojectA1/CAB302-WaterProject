@@ -59,13 +59,15 @@ public class ConservationTipsController {
     private static final int MAX_TIPS_SHOWN = 4;
 
     private static final String SCORE_HELP_TITLE = "How is your score calculated?";
-    private static final String SCORE_HELP_BODY =
-          "Your Conservation Score starts at 50 and updates each day based on how your water "
-        + "usage compares to the previous day.\n\n"
-        + "If you use less water than yesterday, your score increases (up to +10 points). If you "
-        + "use more, it decreases (up to -10 points). The score is always kept between 0 and 100.\n\n"
-        + "Your estimated savings are calculated using your current usage compared to recommended "
-        + "benchmarks, multiplied by your local water rate ($3.57 per kilolitre).";
+    private static final String SCORE_HELP_BODY = """
+        Your Conservation Score starts at 50 and updates each day based on how your water usage
+        compares to the previous day.
+
+        If you use less water than yesterday, your score increases (up to +10 points). If you use
+        more, it decreases (up to -10 points). The score is always kept between 0 and 100.
+
+        Your estimated savings are calculated using your current usage compared to recommended
+        benchmarks, multiplied by your local water rate ($3.57 per kilolitre).""";
 
     @FXML
     private void onOpenChat(ActionEvent event) {
