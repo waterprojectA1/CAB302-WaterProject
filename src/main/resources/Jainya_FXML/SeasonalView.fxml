@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.wateradvisory.Jainya_Root.Controllers.SeasonalController"
+      styleClass="card" spacing="12">
+    <padding>
+        <Insets top="16" right="16" bottom="16" left="16"/>
+    </padding>
+
+    <HBox spacing="6">
+        <ToggleButton fx:id="totalToggle" text="Total" styleClass="toggle-btn"/>
+        <ToggleButton fx:id="avgToggle" text="Average / day" styleClass="toggle-btn"/>
+    </HBox>
+
+    <BarChart fx:id="seasonChart" legendVisible="false" animated="false" prefHeight="260" styleClass="chart-panel">
+        <xAxis>
+            <CategoryAxis label="Season"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis label="Litres (L)"/>
+        </yAxis>
+    </BarChart>
+
+    <Label fx:id="rangeLabel" styleClass="range-label"/>
+
+    <TitledPane text="Custom Date Range" expanded="true">
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <Label text="Start:" styleClass="form-label"/>
+            <DatePicker fx:id="startPicker"/>
+            <Label text="End:" styleClass="form-label"/>
+            <DatePicker fx:id="endPicker"/>
+            <Button text="Apply" onAction="#onApplyRange" styleClass="primary-button"/>
+        </HBox>
+    </TitledPane>
+    <Label fx:id="errorLabel" styleClass="error-label" wrapText="true"/>
+</VBox>

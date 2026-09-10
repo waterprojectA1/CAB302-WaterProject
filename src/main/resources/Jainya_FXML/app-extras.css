@@ -1,0 +1,144 @@
+/*
+ * app-extras.css
+ * Extends the team's existing style.css (same -color-* variables).
+ * Load this AFTER style.css so it can reuse the variables defined
+ * in that file's .root block, and only adds classes that don't
+ * already exist there (stat cards, chart panel, toggle buttons,
+ * comparison badges). Nothing in style.css is overridden.
+ */
+
+.root {
+    /* Two colours the team's palette doesn't have yet, named to
+       match their existing -color-danger-* convention. */
+    -color-success-button: #1f3b2a;
+    -color-success-button-hover: #274c36;
+    -color-success-button-border: #2f5940;
+    -color-success-text: #7be0a0;
+}
+
+/* CHART PANEL (Daily / Seasonal bar charts) */
+.chart-panel {
+    -fx-background-color: -color-input-background;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px;
+}
+.chart-panel .chart-plot-background {
+    -fx-background-color: -color-input-background;
+}
+.chart-panel .axis {
+    -fx-tick-label-fill: -color-text-placeholder;
+}
+.chart-panel .default-color0.chart-bar {
+    -fx-bar-fill: -color-primary-button;
+}
+
+/* RANGE / ERROR TEXT */
+.range-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-placeholder;
+}
+.error-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-danger-text;
+}
+
+/* STAT CARDS (Average / Highest / Lowest) */
+.stat-card {
+    -fx-background-color: -color-input-background;
+    -fx-background-radius: 8px;
+    -fx-border-color: -color-input-border;
+    -fx-border-radius: 8px;
+}
+.stat-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 6px 0 6px 0;
+    -fx-background-radius: 8px 8px 0 0;
+}
+.stat-avg .stat-label {
+    -fx-background-color: -color-primary-button;
+}
+.stat-high .stat-label {
+    -fx-background-color: -color-danger-button;
+    -fx-border-color: -color-danger-button-border;
+    -fx-border-width: 0 0 1px 0;
+}
+.stat-low .stat-label {
+    -fx-background-color: -color-success-button;
+    -fx-border-color: -color-success-button-border;
+    -fx-border-width: 0 0 1px 0;
+}
+.stat-value {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 8px 0 0 0;
+}
+
+/* TOGGLE BUTTONS (Seasonal Total/Average switch) */
+.toggle-btn {
+    -fx-background-color: -color-secondary-button;
+    -fx-text-fill: -color-text-primary;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-border-color: -color-secondary-button-border;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-padding: 6px 14px;
+}
+.toggle-btn:hover {
+    -fx-background-color: -color-secondary-button-hover;
+}
+.toggle-btn:selected {
+    -fx-background-color: -color-primary-button;
+    -fx-text-fill: -color-text-primary;
+}
+
+/* COMPARE VIEW */
+.compare-summary {
+    -fx-background-color: -color-input-background;
+    -fx-background-radius: 8px;
+    -fx-padding: 16px;
+}
+.plabel {
+    -fx-font-size: 10px;
+    -fx-text-fill: -color-text-placeholder;
+}
+.pvalue {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-primary;
+}
+.arrow {
+    -fx-font-size: 20px;
+    -fx-text-fill: -color-text-secondary;
+}
+
+.change-badge {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10px;
+    -fx-padding: 2px 10px 2px 10px;
+    -fx-background-color: -color-secondary-button;
+    -fx-text-fill: -color-text-secondary;
+}
+.change-badge.up {
+    -fx-background-color: -color-danger-button;
+    -fx-text-fill: -color-danger-text;
+}
+.change-badge.down {
+    -fx-background-color: -color-success-button;
+    -fx-text-fill: -color-success-text;
+}
+
+.insight-box {
+    -fx-background-color: -color-input-background;
+    -fx-border-color: -color-input-border;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 12px;
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-text-primary;
+}
