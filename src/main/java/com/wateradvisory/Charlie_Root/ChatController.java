@@ -34,6 +34,8 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.ast.TextCollectingVisitor;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 
+import com.wateradvisory.Michael_Root.WaterDataList;
+
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -59,6 +61,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
@@ -70,11 +73,27 @@ import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
 /**
- * Simple free-form chat scene for testing the model directly --
- * this is a debugging/testing aid, not the same as TipPhraser
- * (which is tightly constrained to rephrasing pre-computed sentences).
- * Keep this scene separate from your graded "conservation opportunities"
- * feature unless you specifically want live chat as part of the app.
+ * Free-form chat scene for the local water-conservation assistant ("Ripple").
+ * This is a testing/probing scene, kept separate from TipPhraser (which is
+ * tightly constrained to rephrasing pre-computed sentences).
+ *
+ * <p>Four pieces of extra architecture layer on top of the plain chat loop:</p>
+ * <ol>
+ *   <li><b>Data grounding</b> ({@link ChatDataContextBuilder}) -- when the user
+ *       asks about their own usage/score/trend, the real recorded numbers are
+ *       fetched in Java and injected into the prompt as pre-formatted text. The
+ *       model paraphrases them; it never invents figures and never gets access
+ *       to the data layer itself.</li>
+ *   <li><b>Stay-on-topic filter</b> ({@link TopicFilter}) -- a fast Java
+ *       pre-check answers obviously off-topic messages instantly with a canned
+ *       line and skips the model entirely; the system prompt is the fallback for
+ *       borderline cases.</li>
+ *   <li><b>Session persistence</b> ({@link ChatSession}) -- the model is loaded
+ *       once per app run and the transcript is kept in memory, so navigating away
+ *       and back neither reloads the model nor loses the conversation.</li>
+ *   <li><b>Layered wave header</b> -- the header sits in front of a full-height
+ *       ScrollPane so messages slide under its animated wavy bottom edge.</li>
+ * </ol>
  */
 public class ChatController {
 
@@ -86,6 +105,9 @@ public class ChatController {
     @FXML private Pane waveHolder;
     @FXML private SVGPath waveDivider;
 
+    private final ChatSession session = ChatSession.getInstance();
+    private ChatDataContextBuilder dataContextBuilder;
+
     private AbstractModel model;
     private HBox loadingRow;
     private HBox typingRow;
@@ -93,12 +115,24 @@ public class ChatController {
     /** Live "how wide may a bubble be right now" value. Rebuilt from scrollPane.widthProperty() in {@link #initialize()}. */
     private DoubleBinding bubbleWidth;
     private final List<Animation> typingAnimations = new ArrayList<>();
+
+    // --- Part 4: wave header animation state --------------------------------------
     private final DoubleProperty wavePhase = new SimpleDoubleProperty(0);
+    private SVGPath waveShimmer1;
+    private SVGPath waveShimmer2;
 
     // Point this at whichever model folder jlama list showed you --
     // e.g. the quantized one used by TipPhraser. Models stayed put,
     // so this relative path is unaffected by the folder restructuring.
     private static final String MODEL_DIR = "./models/Qwen_Qwen2.5-1.5B-Instruct-JQ4";
+
+    /** Whose recorded data the grounding context is built from (matches ConservationTipsController). */
+    private static final int CURRENT_USER_ID = 1;
+
+    private static final String LOADING_MSG = "Loading Ripple, please wait...";
+    private static final String READY_MSG = "Ripple loaded. Ask it something.";
+    private static final String WELCOME_MSG =
+        "Hi! I'm Ripple. Ask me about your water usage, leak signs, or ways to cut back this season.";
 
     // Real chat-template "system" turn (see onSend). Qwen renders this into its own
     // <|im_start|>system ... <|im_end|> block, so it is a genuine system instruction,
@@ -107,9 +141,21 @@ public class ChatController {
     // ("You are Qwen, created by Alibaba Cloud...") was the model echoing its default
     // system prompt into its own output. stripLeadingPreamble() is the defensive
     // second line of defence if the model ignores this.
+    //
+    // The middle clauses are the model-level fallbacks for Parts 1 and 2: stay on
+    // topic, and never fabricate numbers when a data block is present.
     private static final String SYSTEM_PROMPT =
           "You are Rippl, a friendly water conservation assistant built into the Water Advisory app. "
         + "Answer the user's question directly and helpfully. "
+        + "Only help with water usage, water conservation, water saving, water data and analytics, "
+        + "or questions about this water tracking app itself. If the user asks about anything else, "
+        + "politely reply that you can only help with water usage and conservation topics, and do "
+        + "not answer the unrelated question. "
+        + "If the prompt includes a section headed \"User's recorded water data\", treat those "
+        + "figures as the only real data you have: base any answer about the user's own usage, "
+        + "score or trends strictly on them, never invent or guess a number that is not shown, and "
+        + "if that section says no data is available, say you don't have the data to answer rather "
+        + "than making something up. "
         + "Never introduce yourself, describe your origins, or mention Alibaba, Qwen, or any other model name. "
         + "Never wrap your response in quotation marks. "
         + "Keep answers concise but complete.";
@@ -159,15 +205,31 @@ public class ChatController {
     private static final int MAX_COLLAPSED_CHARS = 500;
     private static final int COLLAPSE_WORD_LOOKBACK = 80;      // how far back to hunt for a word boundary when truncating
 
-    // Wavelength/height stay fixed in pixels; the path is re-sampled out to headerBox's actual
-    // width on every resize, so the wave always reaches edge to edge instead of being stretched
-    // there with a scaleX transform. WAVE_FALLBACK_WIDTH only covers the first paint, before the
-    // very first layout pass has given headerBox a real width.
-    private static final double WAVE_FALLBACK_WIDTH = 420;
-    private static final double WAVE_PERIOD = 210;
-    private static final double WAVE_BASELINE = 14;
-    private static final double WAVE_AMPLITUDE = 12;
-    private static final double WAVE_STEP = 6;
+    // --- Part 4 wave geometry ---------------------------------------------------
+    // Everything here is redrawn each animation frame from a sine function. The
+    // ONLY time-varying term is wavePhase, and every curve advances by exactly one
+    // full 2*PI over the Timeline's cycle, so the loop has no visible seam.
+    private static final double WAVE_FALLBACK_WIDTH = 420;     // covers the first paint, before layout gives a real width
+    private static final double WAVE_STEP = 6;                 // polyline sampling step in px
+
+    // Primary edge: the OPAQUE bottom of the header. Cream fill from y=0 down to this
+    // curve; everything below the curve is transparent, so scrolled-up messages show
+    // through there and get covered from the wave's troughs (lowest points) first.
+    private static final double EDGE_PERIOD = 230;
+    private static final double EDGE_BASELINE = 34;
+    private static final double EDGE_AMPLITUDE = 13;
+
+    // Two translucent "moving water" bands layered under the opaque edge. Different
+    // periods and drift directions so they slide past each other for a gentle,
+    // non-repeating-looking shimmer right at the header lip.
+    private static final double SHIMMER1_PERIOD = 190;
+    private static final double SHIMMER1_BASELINE = 41;
+    private static final double SHIMMER1_AMPLITUDE = 9;
+    private static final double SHIMMER1_THICKNESS = 7;
+    private static final double SHIMMER2_PERIOD = 305;
+    private static final double SHIMMER2_BASELINE = 30;
+    private static final double SHIMMER2_AMPLITUDE = 7;
+    private static final double SHIMMER2_THICKNESS = 5;
 
     @FXML
     private void onBack(ActionEvent event) {
@@ -190,49 +252,119 @@ public class ChatController {
         // Let the conversation column collapse to ANY width (min = 0). Combined
         // with the ScrollPane's fitToWidth="true", that pins the VBox width to
         // exactly the current viewport width -- it can never stay stuck at a
-        // previously larger size, so every row's alignment (CENTER / CENTER_LEFT /
-        // CENTER_RIGHT) is recomputed against the real current width on shrink as
-        // well as on grow.
+        // previously larger size, so every row's alignment is recomputed against
+        // the real current width on shrink as well as on grow.
         conversationContainer.setMinWidth(0);
 
         // One shared binding, derived straight from the ScrollPane's own width
-        // property, which the layout pass updates on EVERY resize. Every bubble and
-        // system message binds its maxWidth to this, so they all re-flow together.
-        // Nothing here is a captured .getWidth() snapshot, so nothing can freeze.
+        // property, which the layout pass updates on EVERY resize.
         bubbleWidth = Bindings.max(
             BUBBLE_WIDTH_FLOOR,
             scrollPane.widthProperty()
                 .subtract(CHAT_HORIZONTAL_PADDING)
                 .multiply(BUBBLE_WIDTH_FRACTION));
 
-        loadingRow = addSystemMessage("Loading Ripple, please wait...");
+        // --- Part 4: keep the first message clear of the fixed header overlay ---
+        // Height-tracking spacer as child 0 of the conversation column. Bound to
+        // the header's live height, so the first bubble always starts just below
+        // the header's flat bottom regardless of header/wave size.
+        Region headerSpacer = new Region();
+        headerSpacer.setMinHeight(Region.USE_PREF_SIZE);
+        headerSpacer.setMaxHeight(Region.USE_PREF_SIZE);
+        headerSpacer.prefHeightProperty().bind(headerBox.heightProperty());
+        conversationContainer.getChildren().add(headerSpacer);
 
-        Task<Void> loadTask = new Task<>() {
+        // --- Part 3: rebuild the transcript so history survives navigation ------
+        renderHistory();
+
+        // --- Part 1: the grounding builder needs a usage model. Fresh seeded
+        //     instance, same as ConservationTipsController -- still on sample data.
+        dataContextBuilder = new ChatDataContextBuilder(new WaterDataList());
+
+        AbstractModel shared = session.getModel();
+        if (shared != null) {
+            // Part 3: model already loaded this app session -- reuse instantly.
+            // No Task, no "Loading model..." message, no reload.
+            this.model = shared;
+            maybeAddWelcome();
+            sendButton.setDisable(false);
+        } else {
+            loadModelAsync();
+        }
+    }
+
+    /** Part 3: replays the stored transcript into fresh bubbles (no re-appending to history). */
+    private void renderHistory() {
+        for (ChatMessage message : session.getHistory()) {
+            switch (message.sender()) {
+                case USER -> addUserBubble(message.text());
+                case AI -> addAiBubble(message.text());
+                case SYSTEM -> addSystemMessage(message.text());
+            }
+        }
+    }
+
+    /** Adds the one-time greeting the very first time the chat session is created. */
+    private void maybeAddWelcome() {
+        if (session.isWelcomed()) {
+            return;
+        }
+        session.markWelcomed();
+        showAndRemember(Sender.SYSTEM, READY_MSG);
+        showAndRemember(Sender.AI, WELCOME_MSG);
+    }
+
+    /** Renders one message AND appends it to the session transcript so it survives navigation. */
+    private void showAndRemember(Sender sender, String text) {
+        session.addMessage(sender, text);
+        switch (sender) {
+            case USER -> addUserBubble(text);
+            case AI -> addAiBubble(text);
+            case SYSTEM -> addSystemMessage(text);
+        }
+    }
+
+    /** Part 3: first-visit model load. On later visits {@link ChatSession} already holds the model. */
+    private void loadModelAsync() {
+        loadingRow = addSystemMessage(LOADING_MSG);
+        sendButton.setDisable(true);
+
+        Task<AbstractModel> loadTask = new Task<>() {
             @Override
-            protected Void call() throws Exception {
-                model = ModelSupport.loadModel(new File(MODEL_DIR), DType.F32, DType.I8);
-                return null;
+            protected AbstractModel call() throws Exception {
+                return ModelSupport.loadModel(new File(MODEL_DIR), DType.F32, DType.I8);
             }
         };
 
         loadTask.setOnSucceeded(e -> {
-            conversationContainer.getChildren().remove(loadingRow);
-            addSystemMessage("Ripple loaded. Ask it something.");
-            addAiBubble("Hi! I'm Ripple. Ask me about your water usage, leak signs, or ways to cut back this season.");
+            this.model = loadTask.getValue();
+            session.setModel(this.model);
+            removeLoadingRow();
+            maybeAddWelcome();
             sendButton.setDisable(false);
         });
 
         loadTask.setOnFailed(e -> {
             Throwable ex = loadTask.getException();
-            Throwable cause = (ex.getCause() != null) ? ex.getCause() : ex;
-            cause.printStackTrace();
-            conversationContainer.getChildren().remove(loadingRow);
+            Throwable cause = (ex != null && ex.getCause() != null) ? ex.getCause() : ex;
+            if (cause != null) {
+                cause.printStackTrace();
+            }
+            removeLoadingRow();
+            // Not remembered: leaving it out of the transcript means a later revisit retries the load.
             addSystemMessage("Failed to load Ripple: "
-                + cause.getClass().getSimpleName() + ": " + cause.getMessage());
+                + (cause == null ? "unknown error"
+                   : cause.getClass().getSimpleName() + ": " + cause.getMessage()));
         });
 
-        sendButton.setDisable(true);
         new Thread(loadTask).start();
+    }
+
+    private void removeLoadingRow() {
+        if (loadingRow != null) {
+            conversationContainer.getChildren().remove(loadingRow);
+            loadingRow = null;
+        }
     }
 
     @FXML
@@ -243,22 +375,40 @@ public class ChatController {
         }
 
         inputField.clear();
+
+        // --- Part 2: fast Java pre-check FIRST. Clearly off-topic -> instant canned
+        //     reply, model never invoked, no typing indicator, no latency. ---------
+        if (!TopicFilter.isLikelyOnTopic(userMessage)) {
+            showAndRemember(Sender.USER, userMessage);
+            showAndRemember(Sender.AI, TopicFilter.OFF_TOPIC_REPLY);
+            return;
+        }
+
         sendButton.setDisable(true);
-        addUserBubble(userMessage);
+        showAndRemember(Sender.USER, userMessage);
         addTypingIndicator();
+
+        // --- Part 1: fetch + format the user's REAL data (or null) BEFORE the model
+        //     runs. The model only ever sees this finished string. -----------------
+        final String dataContext = dataContextBuilder.buildContext(userMessage, CURRENT_USER_ID);
 
         Task<String> generateTask = new Task<>() {
             @Override
             protected String call() {
+                String systemPrompt = SYSTEM_PROMPT;
+                if (dataContext != null && !dataContext.isBlank()) {
+                    systemPrompt = systemPrompt + "\n\n" + dataContext;
+                }
+
                 PromptContext ctx;
                 if (model.promptSupport().isPresent()) {
                     ctx = model.promptSupport().get().builder()
-                        .addSystemMessage(SYSTEM_PROMPT)
+                        .addSystemMessage(systemPrompt)
                         .addUserMessage(userMessage)
                         .build();
                 } else {
                     // No chat template -- fold the system instruction into the plain prompt.
-                    ctx = PromptContext.of(SYSTEM_PROMPT + "\n\n" + userMessage);
+                    ctx = PromptContext.of(systemPrompt + "\n\n" + userMessage);
                 }
 
                 Generator.Response response = model.generate(
@@ -277,7 +427,8 @@ public class ChatController {
 
         generateTask.setOnSucceeded(e -> {
             removeTypingIndicator();
-            addAiBubble(generateTask.getValue());
+            String reply = generateTask.getValue();
+            showAndRemember(Sender.AI, reply);
             sendButton.setDisable(false);
         });
 
@@ -291,57 +442,105 @@ public class ChatController {
         new Thread(generateTask).start();
     }
 
-    /**
-     * Drifts the header's wave divider sideways forever, looping seamlessly. The shape is
-     * regenerated each frame from a sine function rather than reusing the static bezier path,
-     * because a sine wave is exactly periodic -- shifting its phase by a full 2*PI lands back
-     * on the identical shape, so the loop has no visible seam or jump.
-     */
+    // -------------------------------------------------------------------------
+    // Part 4: layered wave header.
+    //
+    // The header (this VBox, opaque cream) is stacked IN FRONT of a full-height
+    // ScrollPane in the FXML's StackPane, so messages scrolling up slide beneath
+    // it. Its bottom edge is not flat: waveDivider is a cream-filled polygon
+    // running from y=0 down to an animated sine curve, so messages disappear from
+    // the wave's lowest points first. Two translucent bands (waveShimmer1/2)
+    // drift underneath the lip for a subtle "moving water" feel; they bleed a
+    // little below the opaque edge over the top of the message list.
+    // -------------------------------------------------------------------------
+
     private void startWaveAnimation() {
         if (waveDivider == null || waveHolder == null) {
             return;
         }
+        // Purely decorative -- never intercept clicks meant for the messages behind it.
+        waveHolder.setMouseTransparent(true);
 
-        // Keep an over-wide path (possible for a single frame mid-shrink, before redrawWave runs)
+        // Opaque, matches the header body above it (-color-bg).
+        waveDivider.setFill(Color.web("#f3ebda"));
+
+        waveShimmer1 = new SVGPath();
+        waveShimmer1.setFill(Color.web("#7bb9ef", 0.30));   // -color-accent2, translucent
+        waveShimmer2 = new SVGPath();
+        waveShimmer2.setFill(Color.web("#5a9bd4", 0.16));   // -color-accent2-600, fainter
+        // Insert BEHIND waveDivider (which is already the Pane's child) so the opaque
+        // edge stays on top and only the part of each band below the edge shows.
+        waveHolder.getChildren().add(0, waveShimmer2);
+        waveHolder.getChildren().add(1, waveShimmer1);
+
+        // Keep an over-wide path (possible for one frame mid-shrink, before redraw runs)
         // from painting outside the holder.
         Rectangle clip = new Rectangle();
         clip.widthProperty().bind(waveHolder.widthProperty());
         clip.heightProperty().bind(waveHolder.heightProperty());
         waveHolder.setClip(clip);
 
-        wavePhase.addListener((obs, oldValue, newValue) -> redrawWave());
-        // Drive the redraw off the holder's width, not headerBox's -- the holder is the node that
-        // actually tracks the header width now, and it is free to shrink.
-        waveHolder.widthProperty().addListener((obs, oldValue, newValue) -> redrawWave());
-        redrawWave();
+        wavePhase.addListener((obs, oldValue, newValue) -> redrawWaves());
+        // Drive the redraw off the holder's width -- it is the node that tracks the header
+        // width and is free to shrink.
+        waveHolder.widthProperty().addListener((obs, oldValue, newValue) -> redrawWaves());
+        redrawWaves();
 
         Timeline waveTimeline = new Timeline(
             new KeyFrame(Duration.ZERO, new KeyValue(wavePhase, 0, Interpolator.LINEAR)),
-            new KeyFrame(Duration.seconds(6), new KeyValue(wavePhase, 2 * Math.PI, Interpolator.LINEAR))
+            new KeyFrame(Duration.seconds(8), new KeyValue(wavePhase, 2 * Math.PI, Interpolator.LINEAR))
         );
         waveTimeline.setCycleCount(Animation.INDEFINITE);
         waveTimeline.play();
     }
 
-    /** Redraws the wave divider at the holder's current actual width and the animation's current phase. */
-    private void redrawWave() {
+    /** Redraws all three wave layers at the holder's current width and the animation's current phase. */
+    private void redrawWaves() {
         double width = waveHolder.getWidth() > 0 ? waveHolder.getWidth() : WAVE_FALLBACK_WIDTH;
-        waveDivider.setContent(buildWavePath(width, wavePhase.get()));
+        double phase = wavePhase.get();
+
+        waveDivider.setContent(buildEdgePath(width, phase));
+        if (waveShimmer1 != null) {
+            waveShimmer1.setContent(buildBandPath(
+                width, -phase, SHIMMER1_PERIOD, SHIMMER1_BASELINE, SHIMMER1_AMPLITUDE, SHIMMER1_THICKNESS));
+        }
+        if (waveShimmer2 != null) {
+            waveShimmer2.setContent(buildBandPath(
+                width, phase, SHIMMER2_PERIOD, SHIMMER2_BASELINE, SHIMMER2_AMPLITUDE, SHIMMER2_THICKNESS));
+        }
     }
 
-    /** Builds the wave divider's SVG path spanning the given width, as a polyline sampling a sine curve. */
-    private String buildWavePath(double width, double phase) {
+    /** Opaque header edge: full-width top, then the sine curve as a scalloped bottom. */
+    private String buildEdgePath(double width, double phase) {
         StringBuilder path = new StringBuilder();
-        path.append(String.format(Locale.ROOT, "M0,%.2f", waveY(0, phase)));
-        for (double x = WAVE_STEP; x <= width; x += WAVE_STEP) {
-            path.append(String.format(Locale.ROOT, " L%.2f,%.2f", x, waveY(x, phase)));
+        path.append(String.format(Locale.ROOT, "M0,0 L%.2f,0", width));
+        for (double x = width; x >= 0; x -= WAVE_STEP) {
+            path.append(String.format(Locale.ROOT, " L%.2f,%.2f",
+                x, curveY(x, phase, EDGE_PERIOD, EDGE_BASELINE, EDGE_AMPLITUDE)));
         }
-        path.append(String.format(Locale.ROOT, " L%.2f,28 L0,28 Z", width));
+        path.append(" Z");
         return path.toString();
     }
 
-    private double waveY(double x, double phase) {
-        return WAVE_BASELINE + WAVE_AMPLITUDE * Math.sin((2 * Math.PI * x / WAVE_PERIOD) + phase);
+    /** A translucent band of the given thickness following a sine curve across the width. */
+    private String buildBandPath(double width, double phase, double period,
+                                 double baseline, double amplitude, double thickness) {
+        StringBuilder path = new StringBuilder();
+        path.append(String.format(Locale.ROOT, "M0,%.2f", curveY(0, phase, period, baseline, amplitude)));
+        for (double x = WAVE_STEP; x <= width; x += WAVE_STEP) {
+            path.append(String.format(Locale.ROOT, " L%.2f,%.2f",
+                x, curveY(x, phase, period, baseline, amplitude)));
+        }
+        for (double x = width; x >= 0; x -= WAVE_STEP) {
+            path.append(String.format(Locale.ROOT, " L%.2f,%.2f",
+                x, curveY(x, phase, period, baseline, amplitude) + thickness));
+        }
+        path.append(" Z");
+        return path.toString();
+    }
+
+    private static double curveY(double x, double phase, double period, double baseline, double amplitude) {
+        return baseline + amplitude * Math.sin((2 * Math.PI * x / period) + phase);
     }
 
     private void addUserBubble(String text) {

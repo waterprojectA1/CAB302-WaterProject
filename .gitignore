@@ -15,3 +15,8 @@ CLAUDE.md
 
 #pom.xml
 pom.xml
+
+#MacOS Cache/Log Type Files (used for MacOS to store custom attributes of a folder/file)
+.DS_Store
+src/.DS_Store
+src/main/.DS_Store
