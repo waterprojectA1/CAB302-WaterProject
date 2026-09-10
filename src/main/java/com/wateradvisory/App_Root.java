@@ -123,6 +123,26 @@ public class App_Root {
     private void handleDashboard(ActionEvent event) {
         // Jainya & Michael section
         System.out.println("Dashboard clicked");
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/Jainya_FXML/MainView.fxml")
+            );
+
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource())
+                    .getScene()
+                    .getWindow();
+
+            stage.setScene(new Scene(root));
+            stage.sizeToScene();
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

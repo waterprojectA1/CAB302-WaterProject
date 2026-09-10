@@ -178,7 +178,7 @@ public class ChatController {
     // bold / italic / list / heading subset the model produces.
     private static final Parser MARKDOWN_PARSER = Parser.builder(new MutableDataSet()).build();
 
-    // Base body size for AI-bubble Text runs, matched to ".bubble-ai .label" in app.css so
+    // Base body size for AI-bubble Text runs, matched to ".bubble-ai .label" in app-extra.css so
     // TextFlow spans and plain Labels line up.
     private static final double BODY_FONT_SIZE = 13.5;
 

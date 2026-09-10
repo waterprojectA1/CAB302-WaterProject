@@ -1,5 +1,6 @@
 package com.wateradvisory.database;
 import com.wateradvisory.water.WaterActivityEntry;
+import com.wateradvisory.water.WaterUsageEntry;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -466,5 +467,70 @@ public class WaterRecordService {
         }
 
         return activities;
+    }
+
+    /**
+     * Fetches this user's recorded daily water usage between start and
+     * end (inclusive) from daily_water_records. A day with no row in
+     * the table simply doesn't appear in the returned list - it is
+     * never synthesised as a 0 L reading.
+     */
+    public static List<WaterUsageEntry> getDailyUsageEntries(LocalDate start, LocalDate end) {
+
+        List<WaterUsageEntry> out = new ArrayList<>();
+
+        String accessToken = UserSession.getAccessToken();
+        String userId = UserSession.getUserId();
+
+        if (accessToken == null || userId == null) {
+            System.out.println("getDailyUsageEntries: no active session - returning no data.");
+            return out;
+        }
+
+        try {
+            String url = SupabaseConfig.SUPABASE_URL
+                    + "/rest/v1/daily_water_records"
+                    + "?user_id=eq." + userId
+                    + "&record_date=gte." + start
+                    + "&record_date=lte." + end
+                    + "&select=record_date,total_water_consumption_day"
+                    + "&order=record_date.asc";
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = HttpClient.newHttpClient()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                System.out.println("getDailyUsageEntries: failed to fetch usage: " + response.body());
+                return out;
+            }
+
+            JsonArray rows = JsonParser.parseString(response.body()).getAsJsonArray();
+
+            for (int i = 0; i < rows.size(); i++) {
+                JsonObject row = rows.get(i).getAsJsonObject();
+
+                if (row.get("record_date").isJsonNull()
+                        || row.get("total_water_consumption_day").isJsonNull()) {
+                    continue; // no reading for this row - skip, don't treat as 0
+                }
+
+                LocalDate date = LocalDate.parse(row.get("record_date").getAsString());
+                int litres = (int) Math.round(row.get("total_water_consumption_day").getAsDouble());
+
+                out.add(new WaterUsageEntry(date, litres));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return out;
     }
 }

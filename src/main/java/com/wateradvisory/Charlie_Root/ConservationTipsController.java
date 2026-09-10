@@ -174,7 +174,7 @@ public class ConservationTipsController {
 
     /**
      * Opens the "how is your score calculated" help dialog. Styled to the app design
-     * system via app.css (the {@code .score-help-dialog} rules repaint the default
+     * system via app-extra.css (the {@code .score-help-dialog} rules repaint the default
      * JavaFX chrome in {@code -color-bg} / {@code -color-text}).
      */
     @FXML
