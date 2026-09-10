@@ -109,7 +109,11 @@ public class ConservationScoreCalculator {
         }
         Map<YearMonth, Double> byMonth = new TreeMap<>();
         for (DailyWaterRecord r : records) {
-            byMonth.merge(YearMonth.from(r.getRecordDate()), r.getTotalWaterConsumptionDay(), Double::sum);
+            YearMonth month = YearMonth.from(r.getRecordDate());
+            // getOrDefault(month, 0.0) is never null and getTotalWaterConsumptionDay() is a
+            // primitive double, so no possibly-null Double is ever unboxed here -- this replaces
+            // merge(..., Double::sum), whose primitive-param method reference tripped the linter.
+            byMonth.put(month, byMonth.getOrDefault(month, 0.0) + r.getTotalWaterConsumptionDay());
         }
         List<Double> monthlyTotals = new ArrayList<>(byMonth.values());   // TreeMap -> ascending by month
         if (monthlyTotals.isEmpty()) {

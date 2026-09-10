@@ -164,8 +164,11 @@ public class PersonalizedTipGenerator {
         double total = 0;
         for (ActivityEntry a : activities) {
             String category = canonicalActivity(a.getActivity());
-            litresByCategory.merge(category, a.getWaterLitres(), Double::sum);
-            total += a.getWaterLitres();
+            double litres = a.getWaterLitres();   // primitive double -- never null
+            // put(getOrDefault(...) + litres) instead of merge(..., Double::sum): keeps a
+            // possibly-null Double out of a remap BiFunction, clearing the unboxing warning.
+            litresByCategory.put(category, litresByCategory.getOrDefault(category, 0.0) + litres);
+            total += litres;
         }
         if (total <= 0) {
             return;
@@ -227,8 +230,12 @@ public class PersonalizedTipGenerator {
 
     /** WEEK-OVER-WEEK TREND: last 7 days' day-totals vs the previous 7, anchored on the most recent record. */
     private void addWeekOverWeekTrendTip(List<TipCandidate> tips, List<DailyWaterRecord> recs) {
+        // recs never contains a null element or a null record_date: WaterRecordService.fetchDailyRecords()
+        // only adds rows for which parseDailyRecord() returned non-null, and that method returns null
+        // (skipping the row) whenever record_date is missing. The lambda (vs a DailyWaterRecord::getRecordDate
+        // method ref) also keeps the linter from asking for an unchecked non-null conversion on the element.
         LocalDate anchor = recs.stream()
-            .map(DailyWaterRecord::getRecordDate)
+            .map(r -> r.getRecordDate())
             .max(Comparator.naturalOrder())
             .orElse(null);
         if (anchor == null) {
@@ -262,7 +269,11 @@ public class PersonalizedTipGenerator {
         for (DailyWaterRecord r : recs) {
             totalLitres += r.getTotalWaterConsumptionDay();
         }
-        long loggedDays = recs.stream().map(DailyWaterRecord::getRecordDate).distinct().count();
+        // Same guarantee as in addWeekOverWeekTrendTip: no null elements / null dates reach here
+        // (WaterRecordService filters them at parse time). Lambda form avoids the unchecked-null warning.
+        long loggedDays = recs.stream()
+            .map(r -> r.getRecordDate())
+            .distinct().count();
         if (loggedDays <= 0) {
             return;
         }
