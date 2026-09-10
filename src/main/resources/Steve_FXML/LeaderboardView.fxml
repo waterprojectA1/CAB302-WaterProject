@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root, leaderboard-page"
+            stylesheets="@../css/style1.css, @leaderboard.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.wateradvisory.Steve_Root.LeaderboardController">
+    <children>
+        <VBox layoutX="20.0" layoutY="20.0" prefHeight="476.0" prefWidth="135.0"
+              spacing="16.0" styleClass="side-menu">
+            <Button mnemonicParsing="false" onAction="#handleGoHome" prefWidth="115.0"
+                    styleClass="menu-button" text="Home" />
+            <Button disable="true" mnemonicParsing="false" prefWidth="115.0"
+                    styleClass="menu-button-selected" text="Leaderboard" />
+            <Button disable="true" mnemonicParsing="false" prefWidth="115.0"
+                    styleClass="menu-button" text="Challenges" />
+            <Button disable="true" mnemonicParsing="false" prefWidth="115.0"
+                    styleClass="menu-button" text="Badges" />
+        </VBox>
+
+        <Label layoutX="185.0" layoutY="22.0" styleClass="page-title-label" text="Leaderboards" />
+
+        <VBox layoutX="185.0" layoutY="82.0" prefHeight="390.0" prefWidth="505.0"
+              spacing="12.0" styleClass="leaderboard-card">
+            <Label maxWidth="Infinity" styleClass="card-title" text="Household" />
+            <Label fx:id="seasonLabel" maxWidth="Infinity" styleClass="season-label"
+                   text="Current season" />
+            <Label fx:id="messageLabel" maxWidth="Infinity" styleClass="message-label"
+                   text="Loading leaderboard..." wrapText="true" />
+            <ScrollPane fitToWidth="true" prefHeight="300.0" styleClass="leaderboard-scroll">
+                <content>
+                    <VBox fx:id="leaderboardList" spacing="10.0" styleClass="leaderboard-list" />
+                </content>
+            </ScrollPane>
+        </VBox>
+
+        <VBox alignment="CENTER" layoutX="716.0" layoutY="82.0" prefHeight="185.0"
+              prefWidth="145.0" spacing="16.0" styleClass="profile-card">
+            <Label styleClass="profile-symbol" text="U" />
+            <Label text="Your seasonal points" wrapText="true" />
+            <Label fx:id="currentPointsLabel" styleClass="current-points-label" text="0 PTS" />
+        </VBox>
+    </children>
+</AnchorPane>

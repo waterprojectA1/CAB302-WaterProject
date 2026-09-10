@@ -1,0 +1,110 @@
+.leaderboard-page {
+    -fx-background-color: -color-background-main;
+}
+
+.side-menu {
+    -fx-background-color: -color-background-card;
+    -fx-background-radius: 10px;
+    -fx-padding: 20px 10px;
+}
+
+.menu-button,
+.menu-button-selected {
+    -fx-background-color: -color-secondary-button;
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 13px;
+    -fx-padding: 10px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: -color-secondary-button-hover;
+}
+
+.menu-button-selected {
+    -fx-background-color: -color-primary-button;
+    -fx-opacity: 1.0;
+}
+
+.page-title-label {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+}
+
+.leaderboard-card,
+.profile-card {
+    -fx-background-color: -color-background-card;
+    -fx-background-radius: 10px;
+    -fx-padding: 16px;
+}
+
+.card-title {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+.season-label {
+    -fx-text-fill: -color-text-label;
+    -fx-font-size: 12px;
+    -fx-alignment: center;
+}
+
+.message-label {
+    -fx-text-fill: -color-text-label;
+    -fx-alignment: center;
+}
+
+.leaderboard-scroll,
+.leaderboard-scroll > .viewport,
+.leaderboard-list {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.leaderboard-row {
+    -fx-background-color: -color-input-background;
+    -fx-background-radius: 5px;
+    -fx-padding: 12px;
+}
+
+.current-user-row {
+    -fx-border-color: -color-input-border-focus;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}
+
+.rank-label {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-min-width: 25px;
+}
+
+.username-label,
+.points-label,
+.profile-card .label {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 14px;
+}
+
+.points-label,
+.current-points-label {
+    -fx-font-weight: bold;
+}
+
+.profile-symbol {
+    -fx-background-color: -color-primary-button;
+    -fx-background-radius: 50px;
+    -fx-padding: 12px 17px;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.current-points-label {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 18px;
+}
