@@ -68,7 +68,8 @@ public class NotificationController {
     @FXML
     public void initialize() {
 
-        WaterData testdata = new WaterData(1,  755, "02-09-2026", "02-09-2026", "DAILY", 1);
+        WaterData testdata = new WaterData(1,  755, "02-09-2026", "02-09-2026", "DAILY", "1");
+
 
         // Example notifications
         notifications.add(new Notification(

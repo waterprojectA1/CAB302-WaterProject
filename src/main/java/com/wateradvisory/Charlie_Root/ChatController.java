@@ -138,7 +138,7 @@ public class ChatController {
     private static final String MODEL_DIR = "./models/Qwen_Qwen2.5-1.5B-Instruct-JQ4";
 
     /** Whose recorded data the grounding context is built from (matches ConservationTipsController). */
-    private static final int CURRENT_USER_ID = 1;
+    private static final String CURRENT_USER_ID = "1";
 
     private static final String LOADING_MSG = "Loading Ripple, please wait...";
     private static final String READY_MSG = "Ripple loaded. Ask it something.";

@@ -22,7 +22,7 @@ import javafx.collections.ObservableList;
  *
  * <p>Flow (see {@code ChatController.onSend}):</p>
  * <ol>
- *   <li>{@link #buildContext(String, int)} runs a keyword intent check on the
+ *   <li>{@link #buildContext(String, String)} runs a keyword intent check on the
  *       user's message -- "is this about their own usage / score / trend?";</li>
  *   <li>if not, it returns {@code null} and the model is prompted as normal;</li>
  *   <li>if so, it pulls the user's latest daily / weekly / monthly records from
@@ -86,7 +86,7 @@ public final class ChatDataContextBuilder {
      * @return a formatted, self-contained context block to inject into the prompt,
      *         or {@code null} if the message is not about the user's own data.
      */
-    public String buildContext(String userMessage, int userId) {
+    public String buildContext(String userMessage, String userId) {
         if (userMessage == null) {
             return null;
         }
@@ -131,7 +131,7 @@ public final class ChatDataContextBuilder {
     }
 
     /** Latest = last matching record; the seeded lists are already in chronological order. */
-    private static WaterData latestFor(ObservableList<WaterData> records, int userId) {
+    private static WaterData latestFor(ObservableList<WaterData> records, String userId) {
         WaterData latest = null;
         if (records != null) {
             for (WaterData record : records) {

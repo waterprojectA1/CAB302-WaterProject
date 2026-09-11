@@ -1,4 +1,5 @@
 package com.wateradvisory.Michael_Root;
+import com.wateradvisory.database.UserSession;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -40,7 +41,7 @@ public class TablePageController {
     private TableColumn<WaterData, Double> globalDiffColumn;
 
     @FXML
-    private TableColumn<WaterData, Integer> userIDColumn;
+    private TableColumn<WaterData, String> userIDColumn;
 
     @FXML
     private RadioButton dailyRadio;
@@ -86,7 +87,7 @@ public class TablePageController {
 
     private WaterDataList model = new WaterDataList();
 
-    private int loggedUser = 1;
+    private String loggedUser = UserSession.getUserId();
 
     private FilteredList<WaterData> filteredDailyWater;
     private FilteredList<WaterData> filteredWeeklyWater;

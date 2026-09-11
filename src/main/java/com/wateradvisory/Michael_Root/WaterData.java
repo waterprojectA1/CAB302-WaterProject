@@ -7,7 +7,7 @@ public class WaterData {
 
 
     private int id;
-    private int userID;
+    private String userID;
     private double waterUsage;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -15,7 +15,7 @@ public class WaterData {
     private String usageRating;
     private double watercost = 0.008;
 
-    public WaterData(int id, double waterUsage, String startDate, String endDate, String timeSpan, int userID){
+    public WaterData(int id, double waterUsage, String startDate, String endDate, String timeSpan, String userID){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         this.id = id;
         this.waterUsage = waterUsage;
@@ -47,7 +47,7 @@ public class WaterData {
         return timeSpan;
     }
 
-    public int getUserID(){
+    public String getUserID(){
         return userID;
     }
 

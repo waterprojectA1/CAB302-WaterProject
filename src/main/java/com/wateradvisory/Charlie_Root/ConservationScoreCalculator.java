@@ -129,7 +129,7 @@ public class ConservationScoreCalculator {
     // ------------------------------------------------------------------
 
     /** Fallback for zero-Supabase-data / no-DB-connection: compare the user's two most recent DAILY {@link WaterData} records. */
-    public int calculateDailyScoreFallback(int userId, int previousScore, WaterDataList data) {
+    public int calculateDailyScoreFallback(String userId, int previousScore, WaterDataList data) {
         if (data == null) {
             return STARTING_SCORE;
         }
@@ -137,7 +137,7 @@ public class ConservationScoreCalculator {
     }
 
     /** Fallback counterpart to {@link #calculateMonthlyScore}. See {@link #calculateDailyScoreFallback}. */
-    public int calculateMonthlyScoreFallback(int userId, int previousScore, WaterDataList data) {
+    public int calculateMonthlyScoreFallback(String userId, int previousScore, WaterDataList data) {
         if (data == null) {
             return STARTING_SCORE;
         }
@@ -145,7 +145,7 @@ public class ConservationScoreCalculator {
     }
 
     /** Filters a usage list down to one user's records, keeping the list's (chronological) order. */
-    private static List<WaterData> userRecords(int userId, ObservableList<WaterData> all) {
+    private static List<WaterData> userRecords(String userId, ObservableList<WaterData> all) {
         List<WaterData> mine = new ArrayList<>();
         if (all == null) {
             return mine;
