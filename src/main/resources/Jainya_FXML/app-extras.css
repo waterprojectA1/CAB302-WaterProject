@@ -1,15 +1,5 @@
-/*
- * app-extras.css
- * Extends the team's existing style.css (same -color-* variables).
- * Load this AFTER style.css so it can reuse the variables defined
- * in that file's .root block, and only adds classes that don't
- * already exist there (stat cards, chart panel, toggle buttons,
- * comparison badges). Nothing in style.css is overridden.
- */
 
 .root {
-    /* Two colours the team's palette doesn't have yet, named to
-       match their existing -color-danger-* convention. */
     -color-success-button: #1f3b2a;
     -color-success-button-hover: #274c36;
     -color-success-button-border: #2f5940;
