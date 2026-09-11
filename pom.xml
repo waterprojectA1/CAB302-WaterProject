@@ -17,6 +17,15 @@
     </properties>
 
     <dependencies>
+
+        <!-- JUnit 5 for automated testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -42,7 +51,7 @@
         <dependency>
             <groupId>com.github.tjake</groupId>
             <artifactId>jlama-native</artifactId>
-            <classifier>osx-aarch_64</classifier>
+            <classifier>windows-x86_64</classifier>
             <version>0.8.4</version>
         </dependency>
 
