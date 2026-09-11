@@ -136,6 +136,9 @@ public class PersonalizedTipGenerator {
             if (!"Shower".equalsIgnoreCase(a.getActivity())) {
                 continue;
             }
+            if (a.getDuration() <= 0) {
+                continue;   // malformed entry -- treat as no contribution, not a negative drag on the average
+            }
             int amount = Math.max(1, a.getAmount());
             weightedMinutes += (double) a.getDuration() * amount;
             occurrences += amount;
