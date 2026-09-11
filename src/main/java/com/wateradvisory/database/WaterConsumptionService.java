@@ -29,6 +29,11 @@ public class WaterConsumptionService {
             int durationMinutes,
             int amount
     ) {
+        // test 1 fix solution code
+        if (durationMinutes <= 0 || amount <= 0) {
+            return 0;
+        }
+        // test 1
 
         double rate;
 
