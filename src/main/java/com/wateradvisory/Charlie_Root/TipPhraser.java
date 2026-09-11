@@ -28,7 +28,7 @@ public class TipPhraser {
       + "Do not change, invent, recalculate, or drop any numbers, units, or "
       + "percentages that appear in the input -- copy them exactly as given.";
 
-    private final AbstractModel model;
+    private final Generator model;
 
     /**
      * @param modelDir path to the locally downloaded + quantized model
@@ -43,6 +43,18 @@ public class TipPhraser {
             );
         }
         this.model = ModelSupport.loadModel(localModelPath, DType.F32, DType.I8);
+    }
+
+    /**
+     * Test-only seam: inject a {@link Generator} directly (e.g. a throwing stub)
+     * instead of loading a real model from disk. {@link AbstractModel} implements
+     * {@link Generator}, and rephrase() only ever calls generate()/promptSupport(),
+     * so this is a strict narrowing with no behavior change on the real path. Public
+     * (rather than package-private) because Charlie_Test/ tests live in a different
+     * package per this project's test-folder convention.
+     */
+    public TipPhraser(Generator model) {
+        this.model = model;
     }
 
     /**

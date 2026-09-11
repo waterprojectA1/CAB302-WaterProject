@@ -51,12 +51,6 @@ public class TipPhraserFallbackTest {
 
     @Test
     void rephraseReturnsOriginalSentenceUnchangedWhenModelThrows() {
-        // TipPhraser currently only exposes a constructor that loads a real model
-        // from disk (TipPhraser(String modelDir)), so there is no way to inject a
-        // failing model to exercise the "generation throws" fallback path in a unit
-        // test. This is expected to fail to compile until a test seam (e.g. a
-        // TipPhraser(Generator) constructor) is added -- that seam is the minimal
-        // fix for this item.
         TipPhraser phraser = new TipPhraser(new ThrowingGenerator());
 
         String original = "Your showers average 12 minutes, above the 8-minute recommendation.";
