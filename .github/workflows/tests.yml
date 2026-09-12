@@ -21,5 +21,17 @@ jobs:
           java-version: '21'
           cache: maven
 
+      # Add your JUnit test below using this format:
+      # - name: Run <feature name> JUnit tests
+      #   run: mvn -B -Dtest=<TestClassName> test
+      #
+      # Example:
+      # - name: Run Charlie AI Chat JUnit tests
+      #   run: mvn -B -Dtest=ChatServiceTest test
+      #
+      #   Note: can also add more test script, separate them by commas
+      #   run: mvn -B -Dtest=ChatServiceTest,DatabaseTest,WaterRecordTest test
+
+      # DO NOT DELETE ANY EXISTING TESTS
       - name: Run Arjay database JUnit tests
         run: mvn -B -Dtest=WaterConsumptionServiceTest,HouseholdServiceTest test
