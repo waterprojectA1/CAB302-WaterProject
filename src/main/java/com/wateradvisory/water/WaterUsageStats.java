@@ -46,4 +46,9 @@ public class WaterUsageStats {
         int avg = Math.round((float) sum / entries.size());
         return new Stats(avg, high, low);
     }
+    public static int computePercentChange(int oldAvg, int newAvg) {
+        if (oldAvg == 0) return 0;
+        int diff = newAvg - oldAvg;
+        return Math.round((diff / (float) oldAvg) * 100);
+    }
 }
