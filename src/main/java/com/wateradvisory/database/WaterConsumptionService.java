@@ -24,6 +24,7 @@ public class WaterConsumptionService {
             return 0;
         }
 
+        activity = activity.trim();
         double rate;
 
         switch (activity) {
