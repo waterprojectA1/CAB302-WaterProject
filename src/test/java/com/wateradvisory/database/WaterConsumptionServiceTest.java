@@ -76,4 +76,22 @@ public class WaterConsumptionServiceTest {
                 0.001
         );
     }
+
+    // Test 5: Extra spaces inside activity name should still calculate correctly
+    @Test
+    void activityWithExtraInternalSpacesShouldCalculateCorrectly() {
+
+        double result =
+                WaterConsumptionService.calculateActivity(
+                        "Floor   Cleaning",
+                        5,
+                        1
+                );
+
+        assertEquals(
+                15.0,
+                result,
+                0.001
+        );
+    }
 }
