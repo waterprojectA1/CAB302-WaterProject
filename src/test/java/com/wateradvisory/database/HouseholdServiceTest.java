@@ -3,6 +3,7 @@ package com.wateradvisory.database;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class HouseholdServiceTest {
 
@@ -12,5 +13,13 @@ public class HouseholdServiceTest {
 
         boolean result = HouseholdService.isValidJoinCode("ABC234");
         assertTrue(result);
+    }
+
+    // Test 2: Join code containing special characters should be rejected
+    @Test
+    void joinCodeWithSpecialCharactersShouldReturnFalse() {
+
+        boolean result = HouseholdService.isValidJoinCode("AB#234");
+        assertFalse(result);
     }
 }
