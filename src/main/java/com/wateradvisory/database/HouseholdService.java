@@ -124,10 +124,15 @@ public class HouseholdService {
     public static boolean joinHousehold(String joinCode) {
 
         try {
-            String accessToken = UserSession.getAccessToken();
+            String normalisedCode = normaliseJoinCode(joinCode);
 
+            if (!isValidJoinCode(normalisedCode)) {
+                return false;
+            }
+
+            String accessToken = UserSession.getAccessToken();
             JsonObject json = new JsonObject();
-            json.addProperty("p_join_code", joinCode);
+            json.addProperty("p_join_code",normalisedCode);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(
@@ -869,5 +874,14 @@ public class HouseholdService {
         }
 
         return name.trim();
+    }
+
+    public static String normaliseJoinCode(String code) {
+
+        if (code == null) {
+            return "";
+        }
+
+        return code.trim().toUpperCase();
     }
 }
