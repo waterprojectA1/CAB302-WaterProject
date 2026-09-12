@@ -22,4 +22,12 @@ public class HouseholdServiceTest {
         boolean result = HouseholdService.isValidJoinCode("AB#234");
         assertFalse(result);
     }
+
+    // Test 3: Lowercase join codes should be rejected
+    @Test
+    void lowercaseJoinCodeShouldReturnFalse() {
+
+        boolean result =HouseholdService.isValidJoinCode("abc234");
+        assertFalse(result);
+    }
 }
