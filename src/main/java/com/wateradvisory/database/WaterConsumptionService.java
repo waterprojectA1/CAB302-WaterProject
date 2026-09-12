@@ -24,36 +24,36 @@ public class WaterConsumptionService {
             return 0;
         }
 
-        activity = activity.trim();
+        activity = activity.trim().toLowerCase();
         double rate;
 
         switch (activity) {
 
-            case "Shower":
+            case "shower":
                 rate = SHOWER_LITRES_PER_MINUTE;
                 break;
 
-            case "Dishes":
+            case "dishes":
                 rate = DISHES_LITRES_PER_MINUTE;
                 break;
 
-            case "Floor Cleaning":
+            case "floor cleaning":
                 rate = FLOOR_CLEANING_LITRES_PER_MINUTE;
                 break;
 
-            case "Laundry":
+            case "laundry":
                 rate = LAUNDRY_LITRES_PER_MINUTE;
                 break;
 
-            case "Car Wash":
+            case "car wash":
                 rate = CAR_WASH_LITRES_PER_MINUTE;
                 break;
 
-            case "Window Cleaning":
+            case "window cleaning":
                 rate = WINDOW_CLEANING_LITRES_PER_MINUTE;
                 break;
 
-            case "Bathtub":
+            case "bathtub":
                 rate = BATHTUB_LITRES_PER_MINUTE;
                 break;
 
