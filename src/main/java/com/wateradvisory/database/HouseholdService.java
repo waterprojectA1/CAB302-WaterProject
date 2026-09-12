@@ -177,8 +177,14 @@ public class HouseholdService {
             json.addProperty("created_by", userId);
             json.addProperty("join_code", joinCode);
 
-            if (!address.isBlank()) {
-                json.addProperty("household_address", address);
+            String normalisedAddress =
+                    normaliseHouseholdAddress(address);
+
+            if (!normalisedAddress.isBlank()) {
+                json.addProperty(
+                        "household_address",
+                        normalisedAddress
+                );
             }
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -844,5 +850,14 @@ public class HouseholdService {
         }
 
         return !name.trim().isEmpty();
+    }
+
+    public static String normaliseHouseholdAddress(String address) {
+
+        if (address == null) {
+            return "";
+        }
+
+        return address.trim();
     }
 }
