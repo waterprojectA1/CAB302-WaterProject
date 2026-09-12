@@ -172,7 +172,8 @@ public class HouseholdService {
             JsonObject json = new JsonObject();
             String joinCode = generateJoinCode();
 
-            json.addProperty("household_name", householdName);
+            String normalisedName = normaliseHouseholdName(householdName);
+            json.addProperty("household_name", normalisedName);
             json.addProperty("household_size", 1);
             json.addProperty("created_by", userId);
             json.addProperty("join_code", joinCode);
@@ -859,5 +860,14 @@ public class HouseholdService {
         }
 
         return address.trim();
+    }
+
+    public static String normaliseHouseholdName(String name) {
+
+        if (name == null) {
+            return "";
+        }
+
+        return name.trim();
     }
 }

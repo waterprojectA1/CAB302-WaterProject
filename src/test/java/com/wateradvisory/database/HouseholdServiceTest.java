@@ -60,7 +60,7 @@ public class HouseholdServiceTest {
     @Test
     void householdNameShouldBeTrimmed() {
 
-        String result =HouseholdService.normaliseHouseholdName("   Smith Family   ");
+        String result = HouseholdService.normaliseHouseholdName("   Smith Family   ");
         assertEquals("Smith Family",result);
     }
 }
