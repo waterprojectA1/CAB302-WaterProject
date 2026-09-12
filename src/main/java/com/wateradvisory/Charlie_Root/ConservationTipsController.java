@@ -97,12 +97,12 @@ public class ConservationTipsController {
         // 1. Conservation score -- real day-over-day comparison via record_date,
         //    or the seeded fallback when there is no real history yet.
         ConservationScoreCalculator scoreCalculator = new ConservationScoreCalculator();
-        int score = haveRealData
+        ConservationScoreCalculator.ScoreResult scoreResult = haveRealData
             ? scoreCalculator.calculateDailyScore(
                   ConservationScoreCalculator.STARTING_SCORE, dailyRecords)
             : scoreCalculator.calculateDailyScoreFallback(
                   FALLBACK_USER_ID, ConservationScoreCalculator.STARTING_SCORE, fallbackData);
-        setConservationScore(score, subtitleForScore(score));
+        setConservationScore(scoreResult.newScore(), subtitleForScore(scoreResult));
 
         // 3. Seasonal tip -- deterministic, rotates once per calendar day (never random).
         SeasonalTipProvider seasonalTips = new SeasonalTipProvider(USER_REGION);
@@ -161,8 +161,29 @@ public class ConservationTipsController {
         scoreArc.setLength(-360.0 * fraction);
     }
 
-    /** Subtitle text for each score band. */
-    private static String subtitleForScore(int score) {
+    /**
+     * Subtitle for the score ring. When there is a real adjustment/percentChange to explain
+     * (i.e. an actual previous period was compared -- see {@link ConservationScoreCalculator.ScoreResult}),
+     * builds a genuine, non-hallucinated sentence directly from those real computed numbers
+     * (e.g. "Down 4 points -- your usage this week was 18% higher than your average."), same
+     * principle as {@link TipPhraser}: only ever state a real number, never invent or estimate one.
+     * Falls back to the static score-band text when there's nothing real to compare against yet
+     * (a fresh account, or the first-ever recorded period).
+     */
+    private static String subtitleForScore(ConservationScoreCalculator.ScoreResult result) {
+        if (!Double.isFinite(result.percentChange()) || result.adjustment() == 0) {
+            return subtitleForScoreBand(result.newScore());
+        }
+        String direction = result.adjustment() > 0 ? "Up" : "Down";
+        String usageDirection = result.percentChange() >= 0 ? "higher than" : "lower than";
+        return String.format(Locale.ROOT,
+            "%s %d point%s -- your usage was %.0f%% %s your average.",
+            direction, Math.abs(result.adjustment()), Math.abs(result.adjustment()) == 1 ? "" : "s",
+            Math.abs(result.percentChange()), usageDirection);
+    }
+
+    /** Static subtitle text for each score band -- used only when there's no real period-over-period change to explain. */
+    private static String subtitleForScoreBand(int score) {
         if (score >= 80) return "Excellent -- well above average conservation";
         if (score >= 60) return "Good -- above average for your household size";
         if (score >= 40) return "Average -- some room to improve";
