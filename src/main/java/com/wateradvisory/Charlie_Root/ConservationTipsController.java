@@ -162,23 +162,34 @@ public class ConservationTipsController {
     }
 
     /**
-     * Subtitle for the score ring. When there is a real adjustment/percentChange to explain
-     * (i.e. an actual previous period was compared -- see {@link ConservationScoreCalculator.ScoreResult}),
-     * builds a genuine, non-hallucinated sentence directly from those real computed numbers
-     * (e.g. "Down 4 points -- your usage this week was 18% higher than your average."), same
-     * principle as {@link TipPhraser}: only ever state a real number, never invent or estimate one.
-     * Falls back to the static score-band text when there's nothing real to compare against yet
-     * (a fresh account, or the first-ever recorded period).
+     * Subtitle for the score ring. When there is a real percentChange to explain (i.e. an actual
+     * previous period was compared -- see {@link ConservationScoreCalculator.ScoreResult}), builds
+     * a genuine, non-hallucinated sentence directly from those real computed numbers (e.g. "Down 4
+     * points -- your usage was 18% higher than your average."), same principle as {@link TipPhraser}:
+     * only ever state a real number, never invent or estimate one. Falls back to the static
+     * score-band text only when there's nothing real to compare against at all (a fresh account, or
+     * the first-ever recorded period -- {@code percentChange} is {@code NaN}).
+     *
+     * <p>Note: {@code adjustment} can legitimately round to 0 points for a real, tiny percentChange
+     * (e.g. +0.9% usage rounds the point adjustment away but is still a real, finite number) -- that
+     * case still gets a genuine "roughly unchanged" sentence built from the real percentChange below,
+     * rather than being silently swallowed by the generic score-band fallback.</p>
      */
     public static String subtitleForScore(ConservationScoreCalculator.ScoreResult result) {
-        if (!Double.isFinite(result.percentChange()) || result.adjustment() == 0) {
+        if (!Double.isFinite(result.percentChange())) {
             return subtitleForScoreBand(result.newScore());
         }
-        String direction = result.adjustment() > 0 ? "Up" : "Down";
         String usageDirection = result.percentChange() >= 0 ? "higher than" : "lower than";
+        if (result.adjustment() == 0) {
+            return String.format(Locale.ROOT,
+                "Roughly unchanged -- your usage was %.0f%% %s your average.",
+                Math.abs(result.percentChange()), usageDirection);
+        }
+        String direction = result.adjustment() > 0 ? "Up" : "Down";
+        int absAdjustment = Math.abs(result.adjustment());
         return String.format(Locale.ROOT,
             "%s %d point%s -- your usage was %.0f%% %s your average.",
-            direction, Math.abs(result.adjustment()), Math.abs(result.adjustment()) == 1 ? "" : "s",
+            direction, absAdjustment, absAdjustment == 1 ? "" : "s",
             Math.abs(result.percentChange()), usageDirection);
     }
 

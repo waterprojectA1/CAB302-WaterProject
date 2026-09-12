@@ -187,7 +187,7 @@ public class ConservationScoreCalculator {
         WaterData previous = records.get(records.size() - 2);
         WaterData current = records.get(records.size() - 1);
         if (previous == null || current == null) {
-            return new ScoreResult(clampScore(previousScore), 0, Double.NaN);
+            return unchanged(previousScore);
         }
         return applyFormula(previousScore, previous.getWaterUsage(), current.getWaterUsage());
     }
@@ -211,7 +211,7 @@ public class ConservationScoreCalculator {
             return freshStart();
         }
         if (previousUsage == 0.0) {
-            return new ScoreResult(clampScore(previousScore), 0, Double.NaN);
+            return unchanged(previousScore);
         }
         double percentChangeFraction = (currentUsage - previousUsage) / previousUsage;
         double adjustment;
@@ -228,6 +228,16 @@ public class ConservationScoreCalculator {
     /** No prior/current period to compare -- fresh STARTING_SCORE, no real adjustment or percent change to report. */
     private static ScoreResult freshStart() {
         return new ScoreResult(STARTING_SCORE, 0, Double.NaN);
+    }
+
+    /**
+     * A prior period record DID exist but can't be compared (zero previous usage -- can't divide;
+     * or a null record). Distinct from {@link #freshStart()}: this keeps the user's existing
+     * score untouched rather than resetting to {@link #STARTING_SCORE}, since a real (if
+     * unusable) prior record is not the same situation as no prior record at all.
+     */
+    private static ScoreResult unchanged(int previousScore) {
+        return new ScoreResult(clampScore(previousScore), 0, Double.NaN);
     }
 
     private static int clampScore(int score) {
