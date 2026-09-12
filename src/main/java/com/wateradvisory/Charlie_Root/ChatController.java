@@ -148,7 +148,7 @@ public class ChatController {
     private static final String MODEL_DIR = "./models/Qwen_Qwen2.5-1.5B-Instruct-JQ4";
 
     /** Whose recorded data the grounding context is built from (matches ConservationTipsController). */
-    private static final int CURRENT_USER_ID = 1;
+    private static final String CURRENT_USER_ID = "1";
 
     /** How far back to pull real daily_water_records for chat grounding (matches ConservationTipsController.HISTORY_MONTHS). */
     private static final int DATA_CONTEXT_HISTORY_MONTHS = 3;

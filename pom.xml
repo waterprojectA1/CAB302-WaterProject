@@ -52,7 +52,7 @@
         <dependency>
             <groupId>com.github.tjake</groupId>
             <artifactId>jlama-native</artifactId>
-            <classifier>${jlama.native.classifier}</classifier>
+            <classifier>osx-aarch_64</classifier>
             <version>0.8.4</version>
         </dependency>
 
@@ -63,7 +63,7 @@
             <version>2.13.2</version>
         </dependency>
 
-        <!-- Markdown renderer for the chat scene. The Qwen model emits Markdown
+        <!-- Markdown renderer for the chatbot scene. The Qwen model emits Markdown
              (**bold**, *italic*, "- " bullets, "## " headings); ChatController
              parses it to an AST with flexmark and walks that AST to build JavaFX
              nodes. Pure Java, no native code and a normally-named artifact, so it
@@ -114,7 +114,7 @@
                 </configuration>
                 <executions>
 
-<!-- Personal testing only: mvn clean compile exec:exec@charlie-preview
+<!-- Personal testing of application: mvn clean compile exec:exec@charlie-preview
                          Runs Charlie's screens in isolation without needing App_Root
                          or the login flow finished. Does not affect the default
                          execution above, which is what the whole team uses. -->

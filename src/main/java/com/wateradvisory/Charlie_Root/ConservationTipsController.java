@@ -47,7 +47,7 @@ public class ConservationTipsController {
      * {@code loggedUser}). The real path keys off the signed-in user's uuid from
      * {@link UserSession#getUserId()}.
      */
-    private static final int FALLBACK_USER_ID = 1;
+    private static final String FALLBACK_USER_ID = "1";
 
     /** How far back to pull the user's daily_water_records (covers month-over-month + week-over-week + buffer). */
     private static final int HISTORY_MONTHS = 3;

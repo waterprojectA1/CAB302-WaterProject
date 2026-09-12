@@ -14,61 +14,80 @@ public class WaterConsumptionService {
     private static final double WINDOW_CLEANING_LITRES_PER_MINUTE = 2.0;
     private static final double BATHTUB_LITRES_PER_MINUTE = 10.0;
 
-    public static double calculateShower(
-            int durationMinutes,
-            int amount
-    ) {
-
-        return durationMinutes
-                * amount
-                * SHOWER_LITRES_PER_MINUTE;
-    }
-
     public static double calculateActivity(
             String activity,
             int durationMinutes,
             int amount
     ) {
-        // test 1 fix solution code
-        if (durationMinutes <= 0 || amount <= 0) {
+        // test 1 & 2 fix solution code
+        if (activity == null || durationMinutes <= 0 || amount <= 0) {
             return 0;
         }
-        // test 1
+
+        activity = activity.trim().toLowerCase().replaceAll("\\s+", " ");
+
+        // Test 8 fix: only allow valid Shower duration options
+        if (activity.equals("shower")
+                && durationMinutes != 2
+                && durationMinutes != 5
+                && durationMinutes != 10
+                && durationMinutes != 15
+                && durationMinutes != 20) {
+
+            return 0;
+        }
 
         double rate;
+        int maxAmount = 5;
+        int maxDuration = 30;
 
         switch (activity) {
 
-            case "Shower":
+            case "shower":
                 rate = SHOWER_LITRES_PER_MINUTE;
+                maxDuration = 20;
                 break;
 
-            case "Dishes":
+            case "dishes":
                 rate = DISHES_LITRES_PER_MINUTE;
                 break;
 
-            case "Floor Cleaning":
+            case "floor cleaning":
                 rate = FLOOR_CLEANING_LITRES_PER_MINUTE;
                 break;
 
-            case "Laundry":
+            case "laundry":
                 rate = LAUNDRY_LITRES_PER_MINUTE;
+                maxDuration = 60;
                 break;
 
-            case "Car Wash":
+            case "car wash":
                 rate = CAR_WASH_LITRES_PER_MINUTE;
+                maxAmount = 3;
                 break;
 
-            case "Window Cleaning":
+            case "window cleaning":
                 rate = WINDOW_CLEANING_LITRES_PER_MINUTE;
                 break;
 
-            case "Bathtub":
+            case "bathtub":
                 rate = BATHTUB_LITRES_PER_MINUTE;
+                maxAmount = 3;
+                maxDuration = 45;
                 break;
 
             default:
                 return 0;
+        }
+
+        // Check if amount is above limit return 0
+        if (amount > maxAmount) {
+            return 0;
+        }
+
+        // Check if duration is above limit return 0
+        if (durationMinutes > maxDuration) {
+            return 0;
         }
 
         return durationMinutes * amount * rate;
