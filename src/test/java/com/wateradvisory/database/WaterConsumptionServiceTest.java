@@ -58,4 +58,22 @@ public class WaterConsumptionServiceTest {
                 0.001
         );
     }
+
+    // Test 4: Activity name should not be case-sensitive
+    @Test
+    void lowercaseActivityShouldCalculateCorrectly() {
+
+        double result =
+                WaterConsumptionService.calculateActivity(
+                        "shower",
+                        5,
+                        2
+                );
+
+        assertEquals(
+                90.0,
+                result,
+                0.001
+        );
+    }
 }
