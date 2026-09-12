@@ -834,6 +834,6 @@ public class HouseholdService {
             return false;
         }
 
-        return code.length() == 6;
+        return code.matches("[A-Za-z0-9]{6}");
     }
 }
