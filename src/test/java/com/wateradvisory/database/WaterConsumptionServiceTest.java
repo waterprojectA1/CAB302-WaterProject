@@ -112,4 +112,22 @@ public class WaterConsumptionServiceTest {
                 0.001
         );
     }
+
+    // Test 7: Shower duration above maximum should return zero
+    @Test
+    void showerDurationAboveMaximumShouldReturnZero() {
+
+        double result =
+                WaterConsumptionService.calculateActivity(
+                        "Shower",
+                        25,
+                        1
+                );
+
+        assertEquals(
+                0.0,
+                result,
+                0.001
+        );
+    }
 }
