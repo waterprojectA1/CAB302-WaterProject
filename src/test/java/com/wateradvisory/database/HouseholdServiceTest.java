@@ -55,4 +55,12 @@ public class HouseholdServiceTest {
         String result = HouseholdService.normaliseHouseholdAddress(null);
         assertEquals("", result);
     }
+
+    // Test 7: Household names should remove surrounding spaces
+    @Test
+    void householdNameShouldBeTrimmed() {
+
+        String result =HouseholdService.normaliseHouseholdName("   Smith Family   ");
+        assertEquals("Smith Family",result);
+    }
 }
