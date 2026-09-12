@@ -63,4 +63,12 @@ public class HouseholdServiceTest {
         String result = HouseholdService.normaliseHouseholdName("   Smith Family   ");
         assertEquals("Smith Family",result);
     }
+
+    // Test 8: Join code should remove spaces and convert to uppercase
+    @Test
+    void joinCodeShouldBeNormalised() {
+
+        String result = HouseholdService.normaliseJoinCode("   abk234   ");
+        assertEquals("ABK234",result);
+    }
 }
