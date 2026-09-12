@@ -170,7 +170,7 @@ public class ConservationTipsController {
      * Falls back to the static score-band text when there's nothing real to compare against yet
      * (a fresh account, or the first-ever recorded period).
      */
-    private static String subtitleForScore(ConservationScoreCalculator.ScoreResult result) {
+    public static String subtitleForScore(ConservationScoreCalculator.ScoreResult result) {
         if (!Double.isFinite(result.percentChange()) || result.adjustment() == 0) {
             return subtitleForScoreBand(result.newScore());
         }
