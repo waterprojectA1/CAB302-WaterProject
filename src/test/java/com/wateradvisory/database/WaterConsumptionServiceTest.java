@@ -130,4 +130,14 @@ public class WaterConsumptionServiceTest {
                 0.001
         );
     }
+
+    // Test 8: Unsupported shower duration should return zero
+    @Test
+    void unsupportedShowerDurationShouldReturnZero() {
+
+        double result =WaterConsumptionService.calculateActivity
+                ("Shower",3,1);
+
+        assertEquals(0.0,result,0.001);
+    }
 }
