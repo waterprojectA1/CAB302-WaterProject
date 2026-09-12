@@ -24,7 +24,7 @@ public class WaterConsumptionService {
             return 0;
         }
 
-        activity = activity.trim().toLowerCase();
+        activity = activity.trim().toLowerCase().replaceAll("\\s+", " ");
         double rate;
 
         switch (activity) {
