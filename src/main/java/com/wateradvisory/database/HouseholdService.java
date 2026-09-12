@@ -836,4 +836,13 @@ public class HouseholdService {
 
         return code.matches("[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}");
     }
+
+    public static boolean isValidHouseholdName(String name) {
+
+        if (name == null) {
+            return false;
+        }
+
+        return !name.trim().isEmpty();
+    }
 }
