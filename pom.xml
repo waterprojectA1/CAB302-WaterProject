@@ -44,14 +44,15 @@
             <version>0.8.4</version>
         </dependency>
 
-        <!-- Native SIMD library. osx-aarch_64 (Apple Silicon),
-             osx-x86_64 (Intel Mac), linux-x86_64 (Linux), or
-             windows-x86_64 (Windows) if you are on different hardware.
-             -->
+        <!-- Native SIMD library. Classifier is set by whichever os-detection
+             profile below activates for the building machine (osx-aarch_64,
+             osx-x86_64, linux-x86_64, or windows-x86_64); never hardcode
+             this, or the build breaks for every teammate on different
+             hardware. See the profiles at the bottom of this file. -->
         <dependency>
             <groupId>com.github.tjake</groupId>
             <artifactId>jlama-native</artifactId>
-            <classifier>windows-x86_64</classifier>
+            <classifier>${jlama.native.classifier}</classifier>
             <version>0.8.4</version>
         </dependency>
 
@@ -148,4 +149,65 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- Auto-select the jlama-native classifier for the building machine's
+         OS/arch, so the same pom.xml works unmodified for every teammate.
+         Exactly one of these activates per machine; jlama.native.classifier
+         is deliberately given no default outside these profiles, so an
+         unrecognized platform fails the build loudly (missing artifact)
+         instead of silently resolving the wrong native library. -->
+    <profiles>
+        <profile>
+            <id>jlama-native-osx-aarch_64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <jlama.native.classifier>osx-aarch_64</jlama.native.classifier>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>jlama-native-osx-x86_64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <jlama.native.classifier>osx-x86_64</jlama.native.classifier>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>jlama-native-linux-x86_64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>linux</name>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <jlama.native.classifier>linux-x86_64</jlama.native.classifier>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>jlama-native-windows-x86_64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <jlama.native.classifier>windows-x86_64</jlama.native.classifier>
+            </properties>
+        </profile>
+    </profiles>
 </project>
