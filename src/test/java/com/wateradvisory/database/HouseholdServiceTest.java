@@ -35,7 +35,7 @@ public class HouseholdServiceTest {
     @Test
     void joinCodeWithAmbiguousCharactersShouldReturnFalse() {
 
-        boolean result =HouseholdService.isValidJoinCode("ABO234");
+        boolean result = HouseholdService.isValidJoinCode("ABO234");
         assertFalse(result);
     }
 }
