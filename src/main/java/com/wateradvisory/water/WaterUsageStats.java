@@ -1,6 +1,8 @@
 package com.wateradvisory.water;
 
 import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * Pure aggregation helpers shared by the Daily/Seasonal/Compare
@@ -11,7 +13,7 @@ public class WaterUsageStats {
 
     public enum Season { SUMMER, AUTUMN, WINTER, SPRING }
 
-    /** Season boundaries defined once, by calendar month (Southern Hemisphere). */
+    /** Season boundaries defined once, by calendar month. */
     public static Season seasonForMonth(int month) {
         switch (month) {
             case 12: case 1: case 2: return Season.SUMMER;
@@ -20,7 +22,15 @@ public class WaterUsageStats {
             default: return Season.SPRING; // 9,10,11
         }
     }
-
+    public static Map<Season, Integer> aggregateSeasonTotals(List<WaterUsageEntry> entries) {
+        Map<Season, Integer> totals = new EnumMap<>(Season.class);
+        for (Season s : Season.values()) totals.put(s, 0);
+        for (WaterUsageEntry e : entries) {
+            Season s = seasonForMonth(e.getDate().getMonthValue());
+            totals.put(s, totals.get(s) + e.getLitres());
+        }
+        return totals;
+    }
     public static class Stats {
         public final Integer average;          // null if no data
         public final WaterUsageEntry highest;   // null if no data
