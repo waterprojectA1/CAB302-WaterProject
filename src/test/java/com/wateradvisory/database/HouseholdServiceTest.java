@@ -10,11 +10,7 @@ public class HouseholdServiceTest {
     @Test
     void validJoinCodeShouldReturnTrue() {
 
-        boolean result =
-                HouseholdService.isValidJoinCode(
-                        "ABC234"
-                );
-
+        boolean result = HouseholdService.isValidJoinCode("ABC234");
         assertTrue(result);
     }
 }

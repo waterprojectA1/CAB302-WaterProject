@@ -827,4 +827,13 @@ public class HouseholdService {
             return false;
         }
     }
+
+    public static boolean isValidJoinCode(String code) {
+
+        if (code == null) {
+            return false;
+        }
+
+        return code.length() == 6;
+    }
 }
