@@ -14,26 +14,15 @@ public class WaterConsumptionService {
     private static final double WINDOW_CLEANING_LITRES_PER_MINUTE = 2.0;
     private static final double BATHTUB_LITRES_PER_MINUTE = 10.0;
 
-    public static double calculateShower(
-            int durationMinutes,
-            int amount
-    ) {
-
-        return durationMinutes
-                * amount
-                * SHOWER_LITRES_PER_MINUTE;
-    }
-
     public static double calculateActivity(
             String activity,
             int durationMinutes,
             int amount
     ) {
-        // test 1 fix solution code
-        if (durationMinutes <= 0 || amount <= 0) {
+        // test 1 & 2 fix solution code
+        if (activity == null || durationMinutes <= 0 || amount <= 0) {
             return 0;
         }
-        // test 1
 
         double rate;
 
