@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import com.wateradvisory.Michael_Root.WaterData;
 import com.wateradvisory.Michael_Root.WaterDataList;
+import com.wateradvisory.water.DailyWaterRecord;
 
 import javafx.collections.ObservableList;
 
@@ -17,20 +18,32 @@ import javafx.collections.ObservableList;
  * does the fetching in plain Java, BEFORE the model runs, and hands the model a
  * short block of already-computed, already-verified text. Same principle as
  * {@link TipPhraser}: the model paraphrases facts, it never originates them. The
- * model is never given {@link WaterDataList} or any means to query it -- only the
- * finished string this class returns.</p>
+ * model is never given {@link WaterDataList}/{@link DailyWaterRecord} or any means
+ * to query them -- only the finished string this class returns.</p>
+ *
+ * <p><b>Single source of truth.</b> The conservation score line is computed by
+ * calling {@link ConservationScoreCalculator} directly on the SAME real
+ * {@code dailyRecords} (fetched via {@code WaterRecordService.getUserDailyRecords()})
+ * that {@code ConservationTipsController} uses for the tips screen -- this class
+ * does not re-derive or duplicate that math. When {@code dailyRecords} is empty
+ * (brand-new user / no DB connection), it falls back to
+ * {@link ConservationScoreCalculator#calculateDailyScoreFallback} on the seeded
+ * {@link WaterDataList}, exactly mirroring {@code ConservationTipsController}'s own
+ * real-data/fallback split, so the chatbot and the tips screen can never disagree
+ * about the score for the same underlying data.</p>
  *
  * <p>Flow (see {@code ChatController.onSend}):</p>
  * <ol>
  *   <li>{@link #buildContext(String, int)} runs a keyword intent check on the
  *       user's message -- "is this about their own usage / score / trend?";</li>
  *   <li>if not, it returns {@code null} and the model is prompted as normal;</li>
- *   <li>if so, it pulls the user's latest daily / weekly / monthly records from
- *       {@link WaterDataList} and formats usage, the % difference vs the user's
- *       own average ({@link WaterDataList#getUserDiff(WaterData)}) and the outlier
- *       rating ({@link WaterDataList#getZScore(WaterData)});</li>
- *   <li>if the intent matched but no usable data exists, it returns a block that
- *       tells the model to admit it has no data rather than inventing an answer.</li>
+ *   <li>if so, it reports the real score/adjustment/percentChange from
+ *       {@link ConservationScoreCalculator} (real data or fallback, as above), plus
+ *       the seeded {@link WaterDataList}'s weekly/monthly usage-vs-mean and outlier
+ *       rating lines (there is currently no real-data equivalent for those, so they
+ *       stay on the fallback path until one exists -- see CLAUDE.md);</li>
+ *   <li>if the intent matched but no usable data exists at all, it returns a block
+ *       that tells the model to admit it has no data rather than inventing an answer.</li>
  * </ol>
  *
  * <p><b>User id.</b> {@link WaterDataList}'s per-user aggregate methods
@@ -38,7 +51,7 @@ import javafx.collections.ObservableList;
  * field (currently {@code 1}), which matches
  * {@code ConservationTipsController.CURRENT_USER_ID}. The app is single-user for
  * now; {@code userId} is threaded through here so this class is ready for when
- * that changes, and is used directly for the "latest record" lookups.</p>
+ * that changes, and is used directly for the seeded-fallback "latest record" lookups.</p>
  *
  * <p><b>usageRating values.</b> {@code getZScore} sets {@code usageRating} to
  * "High" for a rounded z-score &gt;= 1 and "Normal" below it. Its "Extreme"
@@ -50,10 +63,19 @@ import javafx.collections.ObservableList;
  */
 public final class ChatDataContextBuilder {
 
-    private final WaterDataList data;
+    private final List<DailyWaterRecord> dailyRecords;
+    private final WaterDataList fallbackData;
 
-    public ChatDataContextBuilder(WaterDataList data) {
-        this.data = data;
+    /**
+     * @param dailyRecords the user's real {@code daily_water_records} rows (may be empty
+     *                      when there is no signed-in session or no Supabase history yet --
+     *                      never {@code null})
+     * @param fallbackData the seeded {@link WaterDataList}, used only when {@code dailyRecords}
+     *                      is empty, exactly like {@code ConservationTipsController}
+     */
+    public ChatDataContextBuilder(List<DailyWaterRecord> dailyRecords, WaterDataList fallbackData) {
+        this.dailyRecords = dailyRecords;
+        this.fallbackData = fallbackData;
     }
 
     /** Phrases that signal the user is asking about their OWN recorded numbers. */
@@ -95,11 +117,17 @@ public final class ChatDataContextBuilder {
             return null;
         }
 
-        WaterData daily = latestFor(data.getDailyWater(), userId);
-        WaterData weekly = latestFor(data.getWeeklyWater(), userId);
-        WaterData monthly = latestFor(data.getMonthlyWater(), userId);
-
         List<String> lines = new ArrayList<>();
+
+        String scoreLine = scoreLine(userId);
+        if (scoreLine != null) {
+            lines.add(scoreLine);
+        }
+
+        WaterData daily = latestFor(fallbackData.getDailyWater(), userId);
+        WaterData weekly = latestFor(fallbackData.getWeeklyWater(), userId);
+        WaterData monthly = latestFor(fallbackData.getMonthlyWater(), userId);
+
         addUsageLine(lines, "daily", daily);
         addUsageLine(lines, "weekly", weekly);
         addUsageLine(lines, "monthly", monthly);
@@ -119,6 +147,30 @@ public final class ChatDataContextBuilder {
         }
         sb.append(GROUNDING_INSTRUCTION);
         return sb.toString();
+    }
+
+    /**
+     * The real conservation score line -- computed by calling
+     * {@link ConservationScoreCalculator} directly on the same real {@code dailyRecords}
+     * (or the seeded fallback when empty), exactly like {@code ConservationTipsController}.
+     * This is the ONE place this class reports the score, so it can never drift from the
+     * tips screen's number for the same underlying data.
+     */
+    private String scoreLine(int userId) {
+        ConservationScoreCalculator calculator = new ConservationScoreCalculator();
+        ConservationScoreCalculator.ScoreResult result = dailyRecords.isEmpty()
+            ? calculator.calculateDailyScoreFallback(
+                  userId, ConservationScoreCalculator.STARTING_SCORE, fallbackData)
+            : calculator.calculateDailyScore(ConservationScoreCalculator.STARTING_SCORE, dailyRecords);
+
+        if (!Double.isFinite(result.percentChange())) {
+            return null;   // no real prior period to compare -- don't report a made-up trend
+        }
+        String direction = result.percentChange() >= 0 ? "higher than" : "lower than";
+        return String.format(Locale.ROOT,
+            "- Conservation score: %d (%s%d points vs the previous period) -- usage was %.0f%% %s the previous period.",
+            result.newScore(), result.adjustment() >= 0 ? "+" : "", result.adjustment(),
+            Math.abs(result.percentChange()), direction);
     }
 
     private static boolean looksDataRelated(String lowerMessage) {
@@ -147,7 +199,7 @@ public final class ChatDataContextBuilder {
         if (record == null) {
             return;
         }
-        double diff = data.getUserDiff(record);          // signed % vs this user's own mean for the period
+        double diff = fallbackData.getUserDiff(record);          // signed % vs this user's own mean for the period
         double mean = meanFor(record.getTimespan());
         if (!Double.isFinite(diff) || !Double.isFinite(mean)) {
             return;                                       // not enough history to compare -> skip, don't guess
@@ -165,7 +217,7 @@ public final class ChatDataContextBuilder {
         if (record == null) {
             return null;
         }
-        double z = data.getZScore(record);               // side effect: sets record.usageRating
+        double z = fallbackData.getZScore(record);               // side effect: sets record.usageRating
         if (!Double.isFinite(z)) {
             return null;
         }
@@ -182,9 +234,9 @@ public final class ChatDataContextBuilder {
             return Double.NaN;
         }
         return switch (timespan) {
-            case "DAILY" -> data.getUserDailyMean();
-            case "WEEKLY" -> data.getUserWeeklyMean();
-            case "MONTHLY" -> data.getUserMonthlyMean();
+            case "DAILY" -> fallbackData.getUserDailyMean();
+            case "WEEKLY" -> fallbackData.getUserWeeklyMean();
+            case "MONTHLY" -> fallbackData.getUserMonthlyMean();
             default -> Double.NaN;
         };
     }

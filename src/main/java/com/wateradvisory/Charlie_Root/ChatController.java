@@ -3,6 +3,7 @@ package com.wateradvisory.Charlie_Root;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +38,9 @@ import com.vladsch.flexmark.util.ast.TextCollectingVisitor;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 
 import com.wateradvisory.Michael_Root.WaterDataList;
+import com.wateradvisory.database.UserSession;
+import com.wateradvisory.database.WaterRecordService;
+import com.wateradvisory.water.DailyWaterRecord;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -140,6 +144,9 @@ public class ChatController {
 
     /** Whose recorded data the grounding context is built from (matches ConservationTipsController). */
     private static final int CURRENT_USER_ID = 1;
+
+    /** How far back to pull real daily_water_records for chat grounding (matches ConservationTipsController.HISTORY_MONTHS). */
+    private static final int DATA_CONTEXT_HISTORY_MONTHS = 3;
 
     private static final String LOADING_MSG = "Loading Ripple, please wait...";
     private static final String READY_MSG = "Ripple loaded. Ask it something.";
@@ -305,9 +312,17 @@ public class ChatController {
         // --- Part 3: rebuild the transcript so history survives navigation ------
         renderHistory();
 
-        // --- Part 1: the grounding builder needs a usage model. Fresh seeded
-        //     instance, same as ConservationTipsController -- still on sample data.
-        dataContextBuilder = new ChatDataContextBuilder(new WaterDataList());
+        // --- Part 1: the grounding builder needs the user's REAL usage history --
+        //     same Supabase-backed source ConservationTipsController uses (real
+        //     data or the seeded WaterDataList fallback), so the chatbot and the
+        //     tips screen can never disagree about the score for the same data.
+        UUID chatUserId = parseUuid(UserSession.getUserId());
+        LocalDate chatToday = LocalDate.now();
+        List<DailyWaterRecord> chatDailyRecords = (chatUserId == null)
+            ? List.of()
+            : WaterRecordService.getUserDailyRecords(
+                  chatUserId, chatToday.minusMonths(DATA_CONTEXT_HISTORY_MONTHS).withDayOfMonth(1), chatToday);
+        dataContextBuilder = new ChatDataContextBuilder(chatDailyRecords, new WaterDataList());
 
         AbstractModel shared = session.getModel();
         if (shared != null) {
@@ -1285,5 +1300,17 @@ public class ChatController {
         }
         String flat = text.replaceAll("\\s+", " ").strip();
         return flat.length() <= 160 ? flat : flat.substring(0, 160) + "...";
+    }
+
+    /** Parses the session's user id string to a {@link UUID}, or null if absent / not a uuid (matches ConservationTipsController). */
+    private static UUID parseUuid(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        try {
+            return UUID.fromString(raw.trim());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }
