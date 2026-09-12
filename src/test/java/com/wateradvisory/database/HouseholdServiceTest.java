@@ -30,4 +30,12 @@ public class HouseholdServiceTest {
         boolean result =HouseholdService.isValidJoinCode("abc234");
         assertFalse(result);
     }
+
+    // Test 4: Ambiguous characters should be rejected
+    @Test
+    void joinCodeWithAmbiguousCharactersShouldReturnFalse() {
+
+        boolean result =HouseholdService.isValidJoinCode("ABO234");
+        assertFalse(result);
+    }
 }
