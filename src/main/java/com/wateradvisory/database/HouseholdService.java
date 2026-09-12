@@ -124,10 +124,15 @@ public class HouseholdService {
     public static boolean joinHousehold(String joinCode) {
 
         try {
-            String accessToken = UserSession.getAccessToken();
+            String normalisedCode = normaliseJoinCode(joinCode);
 
+            if (!isValidJoinCode(normalisedCode)) {
+                return false;
+            }
+
+            String accessToken = UserSession.getAccessToken();
             JsonObject json = new JsonObject();
-            json.addProperty("p_join_code", joinCode);
+            json.addProperty("p_join_code",normalisedCode);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(
@@ -172,13 +177,20 @@ public class HouseholdService {
             JsonObject json = new JsonObject();
             String joinCode = generateJoinCode();
 
-            json.addProperty("household_name", householdName);
+            String normalisedName = normaliseHouseholdName(householdName);
+            json.addProperty("household_name", normalisedName);
             json.addProperty("household_size", 1);
             json.addProperty("created_by", userId);
             json.addProperty("join_code", joinCode);
 
-            if (!address.isBlank()) {
-                json.addProperty("household_address", address);
+            String normalisedAddress =
+                    normaliseHouseholdAddress(address);
+
+            if (!normalisedAddress.isBlank()) {
+                json.addProperty(
+                        "household_address",
+                        normalisedAddress
+                );
             }
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -826,5 +838,50 @@ public class HouseholdService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static boolean isValidJoinCode(String code) {
+
+        if (code == null) {
+            return false;
+        }
+
+        return code.matches("[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}");
+    }
+
+    public static boolean isValidHouseholdName(String name) {
+
+        if (name == null) {
+            return false;
+        }
+
+        return !name.trim().isEmpty();
+    }
+
+    public static String normaliseHouseholdAddress(String address) {
+
+        if (address == null) {
+            return "";
+        }
+
+        return address.trim();
+    }
+
+    public static String normaliseHouseholdName(String name) {
+
+        if (name == null) {
+            return "";
+        }
+
+        return name.trim();
+    }
+
+    public static String normaliseJoinCode(String code) {
+
+        if (code == null) {
+            return "";
+        }
+
+        return code.trim().toUpperCase();
     }
 }
