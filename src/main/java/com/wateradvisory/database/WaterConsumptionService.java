@@ -25,6 +25,18 @@ public class WaterConsumptionService {
         }
 
         activity = activity.trim().toLowerCase().replaceAll("\\s+", " ");
+
+        // Test 8 fix: only allow valid Shower duration options
+        if (activity.equals("shower")
+                && durationMinutes != 2
+                && durationMinutes != 5
+                && durationMinutes != 10
+                && durationMinutes != 15
+                && durationMinutes != 20) {
+
+            return 0;
+        }
+
         double rate;
         int maxAmount = 5;
         int maxDuration = 30;
