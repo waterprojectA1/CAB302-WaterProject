@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HouseholdServiceTest {
 
@@ -45,5 +46,13 @@ public class HouseholdServiceTest {
 
         boolean result = HouseholdService.isValidHouseholdName("   ");
         assertFalse(result);
+    }
+
+    // Test 6: Null optional household address should be handled safely
+    @Test
+    void nullHouseholdAddressShouldReturnEmptyString() {
+
+        String result = HouseholdService.normaliseHouseholdAddress(null);
+        assertEquals("", result);
     }
 }
