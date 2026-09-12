@@ -121,6 +121,11 @@ public class ChatController {
     private HBox typingRow;
     private final GenerationGuard generationGuard = new GenerationGuard();
 
+    /** Current session's own identifiers, resolved once in {@link #initialize()} -- used by
+     *  {@link UnauthorizedActionDetector} to tell "my own data" apart from a foreign identity. */
+    private UUID chatUserId;
+    private UUID chatHouseholdId;
+
     /** Live "how wide may a bubble be right now" value. Rebuilt from scrollPane.widthProperty() in {@link #initialize()}. */
     private DoubleBinding bubbleWidth;
     private final List<Animation> typingAnimations = new ArrayList<>();
@@ -316,12 +321,15 @@ public class ChatController {
         //     same Supabase-backed source ConservationTipsController uses (real
         //     data or the seeded WaterDataList fallback), so the chatbot and the
         //     tips screen can never disagree about the score for the same data.
-        UUID chatUserId = parseUuid(UserSession.getUserId());
+        // Also resolves this session's own user/household id, used by
+        // UnauthorizedActionDetector to tell "my own data" apart from a foreign identity.
+        chatUserId = parseUuid(UserSession.getUserId());
         LocalDate chatToday = LocalDate.now();
         List<DailyWaterRecord> chatDailyRecords = (chatUserId == null)
             ? List.of()
             : WaterRecordService.getUserDailyRecords(
                   chatUserId, chatToday.minusMonths(DATA_CONTEXT_HISTORY_MONTHS).withDayOfMonth(1), chatToday);
+        chatHouseholdId = firstHouseholdId(chatDailyRecords);
         dataContextBuilder = new ChatDataContextBuilder(chatDailyRecords, new WaterDataList());
 
         AbstractModel shared = session.getModel();
@@ -435,6 +443,22 @@ public class ChatController {
                 + oneLineForLog(userMessage));
             showAndRemember(Sender.USER, userMessage);
             showAndRemember(Sender.AI, PromptInjectionDetector.INJECTION_REPLY);
+            generationGuard.finish();
+            return;
+        }
+
+        // --- Defence layer 1b: structural unauthorized-action pre-check. A request phrased as
+        //     an ordinary water question can still reference another identity's data, or combine
+        //     a mutation verb with a mutable-data noun -- neither PromptInjectionDetector's
+        //     override-phrase list nor TopicFilter's on-topic vocabulary check was designed to
+        //     catch this (see CLAUDE.md gotcha #14 / UnauthorizedActionDetector). Also
+        //     deterministic, instant, no model call. ------------------------------------------
+        if (UnauthorizedActionDetector.containsUnauthorizedActionRequest(
+                userMessage, chatUserId, chatHouseholdId)) {
+            System.out.println("[ChatController] unauthorized-action request blocked (layer 1b, pre-model): "
+                + oneLineForLog(userMessage));
+            showAndRemember(Sender.USER, userMessage);
+            showAndRemember(Sender.AI, UnauthorizedActionDetector.UNAUTHORIZED_ACTION_REPLY);
             generationGuard.finish();
             return;
         }
@@ -1312,5 +1336,15 @@ public class ChatController {
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    /** First non-null householdId across {@code records} (matches ConservationTipsController.householdIdOf), or null. */
+    private static UUID firstHouseholdId(List<DailyWaterRecord> records) {
+        for (DailyWaterRecord record : records) {
+            if (record.getHouseholdId() != null) {
+                return record.getHouseholdId();
+            }
+        }
+        return null;
     }
 }
