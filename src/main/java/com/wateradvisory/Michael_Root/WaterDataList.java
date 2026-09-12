@@ -301,7 +301,7 @@ public class WaterDataList {
 
         return Math.sqrt(total / dailyWater.size());
     }
-    double getWeeklyStandardDeviation() {
+    public double getWeeklyStandardDeviation() {
 
         double mean = getWeeklyMean();
         double total = 0;
@@ -360,4 +360,5 @@ public class WaterDataList {
 
 
     }
+
 }
