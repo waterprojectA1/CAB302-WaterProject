@@ -26,6 +26,7 @@ public class WaterConsumptionService {
 
         activity = activity.trim().toLowerCase().replaceAll("\\s+", " ");
         double rate;
+        int maxAmount = 5;
 
         switch (activity) {
 
@@ -47,6 +48,7 @@ public class WaterConsumptionService {
 
             case "car wash":
                 rate = CAR_WASH_LITRES_PER_MINUTE;
+                maxAmount = 3;
                 break;
 
             case "window cleaning":
@@ -55,10 +57,15 @@ public class WaterConsumptionService {
 
             case "bathtub":
                 rate = BATHTUB_LITRES_PER_MINUTE;
+                maxAmount = 3;
                 break;
 
             default:
                 return 0;
+        }
+
+        if (amount > maxAmount) {
+            return 0;
         }
 
         return durationMinutes * amount * rate;
