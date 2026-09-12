@@ -94,4 +94,22 @@ public class WaterConsumptionServiceTest {
                 0.001
         );
     }
+
+    // Test 6: Activity amount above maximum should return zero
+    @Test
+    void carWashAmountAboveMaximumShouldReturnZero() {
+
+        double result =
+                WaterConsumptionService.calculateActivity(
+                        "Car Wash",
+                        5,
+                        4
+                );
+
+        assertEquals(
+                0.0,
+                result,
+                0.001
+        );
+    }
 }
