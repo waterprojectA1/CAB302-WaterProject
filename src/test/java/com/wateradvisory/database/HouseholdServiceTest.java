@@ -38,4 +38,12 @@ public class HouseholdServiceTest {
         boolean result = HouseholdService.isValidJoinCode("ABO234");
         assertFalse(result);
     }
+
+    // Test 5: Blank household names should be rejected
+    @Test
+    void blankHouseholdNameShouldReturnFalse() {
+
+        boolean result = HouseholdService.isValidHouseholdName("   ");
+        assertFalse(result);
+    }
 }
