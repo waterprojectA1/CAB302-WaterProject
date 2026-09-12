@@ -115,6 +115,7 @@ public class ChatController {
     private AbstractModel model;
     private HBox loadingRow;
     private HBox typingRow;
+    private final GenerationGuard generationGuard = new GenerationGuard();
 
     /** Live "how wide may a bubble be right now" value. Rebuilt from scrollPane.widthProperty() in {@link #initialize()}. */
     private DoubleBinding bubbleWidth;
@@ -401,6 +402,14 @@ public class ChatController {
             return;
         }
 
+        // inputField's own onAction fires independently of sendButton's disabled state (see
+        // ChatView.fxml), so pressing Enter while a generation Task is still running would
+        // otherwise start a second Task/Thread calling the shared AbstractModel's generate()
+        // concurrently with the first. Reject re-entry here, before anything else runs.
+        if (!generationGuard.tryStart()) {
+            return;
+        }
+
         inputField.clear();
 
         // --- Defence layer 1: prompt-injection / jailbreak pre-check. THE VERY
@@ -411,6 +420,7 @@ public class ChatController {
                 + oneLineForLog(userMessage));
             showAndRemember(Sender.USER, userMessage);
             showAndRemember(Sender.AI, PromptInjectionDetector.INJECTION_REPLY);
+            generationGuard.finish();
             return;
         }
 
@@ -419,6 +429,7 @@ public class ChatController {
         if (!TopicFilter.isLikelyOnTopic(userMessage)) {
             showAndRemember(Sender.USER, userMessage);
             showAndRemember(Sender.AI, TopicFilter.OFF_TOPIC_REPLY);
+            generationGuard.finish();
             return;
         }
 
@@ -477,12 +488,14 @@ public class ChatController {
             }
             showAndRemember(Sender.AI, reply);
             sendButton.setDisable(false);
+            generationGuard.finish();
         });
 
         generateTask.setOnFailed(e -> {
             removeTypingIndicator();
             addSystemMessage("Error: " + generateTask.getException().getMessage());
             sendButton.setDisable(false);
+            generationGuard.finish();
         });
 
 
