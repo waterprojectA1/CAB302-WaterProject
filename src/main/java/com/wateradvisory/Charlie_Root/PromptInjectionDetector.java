@@ -141,7 +141,9 @@ public final class PromptInjectionDetector {
      * "show me another user's daily water records" is caught here (via the "another user"
      * entry in {@link #UNAUTHORIZED_ACTION_PATTERNS}) even though {@link TopicFilter} alone
      * would wave it through as ordinary on-topic water/usage vocabulary -- it has no concept
-     * of "whose data" this message is asking for.</p>
+     * of "whose data" this message is asking for. {@code UnauthorizedDataMutationRequestBypassesFiltersTest}
+     * verifies the sibling gap: "delete my last water record" is caught here (via "delete my")
+     * even though {@link TopicFilter} has no concept of "read vs. write" either.</p>
      */
     public static boolean containsInjectionAttempt(String message) {
         if (message == null) {
