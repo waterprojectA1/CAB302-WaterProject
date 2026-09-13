@@ -14,6 +14,8 @@ public class AuthService {
 
     public static boolean login(String email, String password) {
 
+        email = normaliseEmail(email);
+
         if (!isValidLoginInput(email, password)) {
             return false;
         }
@@ -339,5 +341,14 @@ public class AuthService {
         }
 
         return email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+    }
+
+    public static String normaliseEmail(String email) {
+
+        if (email == null) {
+            return "";
+        }
+
+        return email.trim();
     }
 }
