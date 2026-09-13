@@ -174,6 +174,10 @@ public class ConservationTipsController {
      * (e.g. +0.9% usage rounds the point adjustment away but is still a real, finite number) -- that
      * case still gets a genuine "roughly unchanged" sentence built from the real percentChange below,
      * rather than being silently swallowed by the generic score-band fallback.</p>
+     *
+     * <p>{@code SubtitleForScoreNegativeAdjustmentTest} verifies the negative-adjustment wording:
+     * {@code ScoreResult(46, -4, 18.0)} -> {@code "Down 4 points -- your usage was 18% higher than
+     * your average."} (a negative {@code adjustment} renders as "Down N", never "Up -N").</p>
      */
     public static String subtitleForScore(ConservationScoreCalculator.ScoreResult result) {
         if (!Double.isFinite(result.percentChange())) {
