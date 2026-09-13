@@ -331,7 +331,13 @@ public class AuthService {
             return false;
         }
 
-        return !email.trim().isEmpty()
-                && !password.trim().isEmpty();
+        email = email.trim();
+        password = password.trim();
+
+        if (email.isEmpty() || password.isEmpty()) {
+            return false;
+        }
+
+        return email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
     }
 }
