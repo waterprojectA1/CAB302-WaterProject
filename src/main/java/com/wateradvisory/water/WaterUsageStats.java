@@ -57,6 +57,9 @@ public class WaterUsageStats {
         }
         return null; // valid
     }
+    public static String capitalize(String s) {
+        return s.charAt(0) + s.substring(1).toLowerCase();
+    }
     public static class Stats {
         public final Integer average;          // null if no data
         public final WaterUsageEntry highest;   // null if no data
