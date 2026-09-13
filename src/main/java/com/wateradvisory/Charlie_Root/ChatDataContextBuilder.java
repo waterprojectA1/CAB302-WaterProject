@@ -156,7 +156,7 @@ public final class ChatDataContextBuilder {
      * This is the ONE place this class reports the score, so it can never drift from the
      * tips screen's number for the same underlying data.
      */
-    private String scoreLine(String userId) {
+    private String scoreLine(int userId) {
         ConservationScoreCalculator calculator = new ConservationScoreCalculator();
         ConservationScoreCalculator.ScoreResult result = dailyRecords.isEmpty()
             ? calculator.calculateDailyScoreFallback(
