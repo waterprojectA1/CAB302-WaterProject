@@ -16,7 +16,7 @@ public class ChatDataContextBuilderReturnsNoDataBlockForUnknownUserTest {
         // WaterDataList fallback records either -- genuinely zero data anywhere.
         ChatDataContextBuilder builder = new ChatDataContextBuilder(List.of(), new WaterDataList());
 
-        String context = builder.buildContext("why did my score drop this week?", 999);
+        String context = builder.buildContext("why did my score drop this week?", "999");
 
         assertTrue(context != null && context.toLowerCase().contains("none is available"),
                 "With zero real records and zero matching seeded records, the builder must tell "

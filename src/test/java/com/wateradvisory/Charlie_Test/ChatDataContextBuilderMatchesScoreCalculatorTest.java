@@ -30,7 +30,7 @@ public class ChatDataContextBuilderMatchesScoreCalculatorTest {
                 .calculateDailyScore(ConservationScoreCalculator.STARTING_SCORE, dailyRecords);
 
         ChatDataContextBuilder builder = new ChatDataContextBuilder(dailyRecords, new WaterDataList());
-        String context = builder.buildContext("why did my score drop this week?", 1);
+        String context = builder.buildContext("why did my score drop this week?", "1");
 
         assertTrue(context != null && context.contains(String.valueOf(expected.newScore())),
                 "ChatDataContextBuilder's context should report the SAME score ("
