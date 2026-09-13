@@ -137,7 +137,11 @@ public class PersonalizedTipGenerator {
                 continue;
             }
             if (a.getDuration() <= 0) {
-                continue;   // malformed entry -- treat as no contribution, not a negative drag on the average
+                // Malformed entry -- treat as no contribution, not a negative drag on the average.
+                // Verified by NonPositiveDurationSafetyTest: a negative-duration entry mixed in
+                // alongside a valid one is excluded entirely, so it can neither pull the weighted
+                // average below the valid entries' true value nor produce a negative litresSavedPerWeek.
+                continue;
             }
             int amount = Math.max(1, a.getAmount());
             weightedMinutes += (double) a.getDuration() * amount;
