@@ -60,6 +60,13 @@ public class WaterUsageStats {
     public static String capitalize(String s) {
         return s.charAt(0) + s.substring(1).toLowerCase();
     }
+    public static LocalDate[] computeDefaultComparisonPeriods(LocalDate latest) {
+        LocalDate p2End = latest;
+        LocalDate p2Start = p2End.minusDays(29);
+        LocalDate p1End = p2Start.minusDays(1);
+        LocalDate p1Start = p1End.minusDays(29);
+        return new LocalDate[]{ p1Start, p1End, p2Start, p2End };
+    }
     public static class Stats {
         public final Integer average;          // null if no data
         public final WaterUsageEntry highest;   // null if no data
