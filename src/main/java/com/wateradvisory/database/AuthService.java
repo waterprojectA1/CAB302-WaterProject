@@ -114,6 +114,12 @@ public class AuthService {
 
     public static boolean register(String email,String username, String password) {
 
+        email = normaliseEmail(email);
+
+        if (!isValidRegistrationInput(email, username, password)) {
+            return false;
+        }
+
         try {
             String json = """
                     {
@@ -350,5 +356,17 @@ public class AuthService {
         }
 
         return email.trim();
+    }
+
+    public static boolean isValidRegistrationInput(
+            String email,
+            String username,
+            String password) {
+
+        if (username == null || username.trim().isEmpty()) {
+            return false;
+        }
+
+        return isValidLoginInput(email, password);
     }
 }
