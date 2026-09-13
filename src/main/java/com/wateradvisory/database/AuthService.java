@@ -14,6 +14,10 @@ public class AuthService {
 
     public static boolean login(String email, String password) {
 
+        if (!isValidLoginInput(email, password)) {
+            return false;
+        }
+
         try {
             String json = """
                 {
@@ -319,5 +323,15 @@ public class AuthService {
             e.printStackTrace();
             return "Unknown";
         }
+    }
+
+    public static boolean isValidLoginInput(String email, String password) {
+
+        if (email == null || password == null) {
+            return false;
+        }
+
+        return !email.trim().isEmpty()
+                && !password.trim().isEmpty();
     }
 }
