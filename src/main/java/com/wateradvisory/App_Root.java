@@ -9,6 +9,7 @@ import com.wateradvisory.database.WaterRecordService;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 
 public class App_Root {
@@ -23,27 +24,52 @@ public class App_Root {
     private Text waterTotalText;
 
     @FXML
+    private Label todayValueText;
+
+    @FXML
+    private Label weekValueText;
+
+    @FXML
     private void initialize() {
 
         String username = AuthService.getUsername();
-        String householdName = HouseholdService.getHouseholdName();
 
-        usernameText.setText("Welcome: " + username);
-        householdText.setText(householdName);
+        usernameText.setText("Welcome back, " + username);
+        householdText.setText(householdSubtitle());
 
         double waterTotal = WaterRecordService.getUserTotalWater();
 
-        waterTotalText.setText("Total Water Recorded: " + waterTotal + " L");
+        waterTotalText.setText(waterTotal + " L");
 
         Map<String, Double> summary =
                 WaterRecordService.getUserWaterSummary();
 
-        System.out.println(summary);
+        todayValueText.setText(summary.getOrDefault("today", 0.0) + " L");
+        weekValueText.setText(summary.getOrDefault("week", 0.0) + " L");
+    }
+
+    // "{Household name} · {N} members", or a no-household placeholder.
+    private String householdSubtitle() {
+
+        if (!HouseholdService.hasHousehold()) {
+            return "No household yet";
+        }
+
+        String householdName = HouseholdService.getHouseholdName();
+        int memberCount = HouseholdService.getHouseholdMembers().size();
+
+        return householdName + " · " + memberCount
+                + (memberCount == 1 ? " member" : " members");
     }
 
     @FXML
     private void handleRecordWater(ActionEvent event) {
         NavShell.go(event, NavShell.Route.RECORD_WATER);
+    }
+
+    @FXML
+    private void handleMyData(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.DAILY);
     }
 
     @FXML
