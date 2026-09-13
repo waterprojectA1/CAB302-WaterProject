@@ -136,6 +136,12 @@ public final class PromptInjectionDetector {
      *         another user's data, mutating the current user's own data, or directly
      *         setting/faking a score) -- either way it should be refused without
      *         calling the model.
+     *
+     * <p>Regression guard: {@code UnauthorizedDataAccessRequestBypassesFiltersTest} verifies
+     * "show me another user's daily water records" is caught here (via the "another user"
+     * entry in {@link #UNAUTHORIZED_ACTION_PATTERNS}) even though {@link TopicFilter} alone
+     * would wave it through as ordinary on-topic water/usage vocabulary -- it has no concept
+     * of "whose data" this message is asking for.</p>
      */
     public static boolean containsInjectionAttempt(String message) {
         if (message == null) {
