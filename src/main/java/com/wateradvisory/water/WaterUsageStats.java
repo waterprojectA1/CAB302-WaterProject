@@ -3,6 +3,7 @@ package com.wateradvisory.water;
 import java.util.List;
 import java.util.EnumMap;
 import java.util.Map;
+import java.time.LocalDate;
 
 /**
  * Pure aggregation helpers shared by the Daily/Seasonal/Compare
@@ -32,7 +33,29 @@ public class WaterUsageStats {
         return totals;
     }
     public static Season findBiggestSeasonalChange(Map<Season, Integer> before, Map<Season, Integer> after) {
-        return null;
+        Season biggest = null;
+        int biggestDelta = 0;
+        for (Season season : Season.values()) {
+            int delta = after.getOrDefault(season, 0) - before.getOrDefault(season, 0);
+            if (Math.abs(delta) > Math.abs(biggestDelta)) {
+                biggestDelta = delta;
+                biggest = season;
+            }
+        }
+        return biggest;
+    }
+    public static String validateDateRange(LocalDate start, LocalDate end) {
+        if (start == null || end == null) {
+            return "Please choose both a start and end date.";
+        }
+        if (start.isAfter(end)) {
+            return "Start date must be before end date.";
+        }
+        LocalDate today = LocalDate.now();
+        if (start.isAfter(today) || end.isAfter(today)) {
+            return "Dates cannot be in the future.";
+        }
+        return null; // valid
     }
     public static class Stats {
         public final Integer average;          // null if no data
