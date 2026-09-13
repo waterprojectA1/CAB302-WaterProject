@@ -35,3 +35,10 @@ jobs:
       # DO NOT DELETE ANY EXISTING TESTS
       - name: Run database and authentication JUnit tests
         run: mvn -B -Dtest=WaterConsumptionServiceTest,HouseholdServiceTest,AuthServiceTest test
+
+      # Charlie_Test/ -- grouped into two runs to keep the file tidy (18 classes total)
+      - name: Run Charlie Test Suite (Part 1)
+        run: mvn -B -Dtest=ChatDataContextBuilderMatchesScoreCalculatorTest,ChatDataContextBuilderReturnsNoDataBlockForUnknownUserTest,ConservationScoreCalculatorExposesAdjustmentAndPercentChangeTest,GenerationGuardRejectsConcurrentStartTest,HouseholdIdValidatorRejectsMalformedUuidTest,NonPositiveDurationSafetyTest,ShowerDurationWeightedAverageTest,SubtitleForScoreNegativeAdjustmentTest,SubtitleForScorePositiveAdjustmentTest test
+
+      - name: Run Charlie Test Suite (Part 2)
+        run: mvn -B -Dtest=SubtitleForScoreZeroRoundedAdjustmentTest,TipPhraserFallbackTest,UnauthorizedActionDetectorCatchesHouseholdIdTargetingTest,UnauthorizedActionDetectorCatchesOverrideScoreRewordingTest,UnauthorizedActionDetectorCatchesRawUuidForAnotherUserTest,UnauthorizedActionDetectorDoesNotFlagLegitimateQuestionsTest,UnauthorizedDataAccessRequestBypassesFiltersTest,UnauthorizedDataMutationRequestBypassesFiltersTest,UnauthorizedScoreMutationRequestBypassesFiltersTest test
