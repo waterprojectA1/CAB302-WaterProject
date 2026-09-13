@@ -1,47 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="603.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Arjay_Root.RecordWaterController">
-   <children>
-      <AnchorPane fx:id="mainRecord" prefHeight="617.0" prefWidth="882.0">
-         <children>
-            <Text layoutX="226.0" layoutY="72.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="Record Water Consumption">
-               <font>
-                  <Font name="Aptos" size="26.0" />
-               </font>
-            </Text>
-            <Button fx:id="activityBtn" layoutX="314.0" layoutY="155.0" mnemonicParsing="false" onAction="#handleActivityBtn" prefHeight="42.0" prefWidth="255.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Open Activity Page" />
-            <Button fx:id="returnToMainBtn2" layoutX="725.0" layoutY="544.0" mnemonicParsing="false" onAction="#handleReturnToMain" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Go Back" />
-            <Button fx:id="submitWaterBtn" layoutX="310.0" layoutY="545.0" mnemonicParsing="false" onAction="#handleSubmitWaterConsumption" prefHeight="35.0" prefWidth="264.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Submit &amp; Update Today's Report" />
-            <Text fx:id="pendingTotalText" layoutX="108.0" layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Total Water Consumption Reported: NaN" textAlignment="CENTER" wrappingWidth="667.033203125" />
-            <ScrollPane layoutX="192.0" layoutY="279.0" prefHeight="237.0" prefWidth="494.0" styleClass="member-scroll-pane" stylesheets="@../css/style1.css">
-               <content>
-                  <VBox fx:id="activityListBox" prefHeight="236.0" prefWidth="493.0" styleClass="member-list-box" stylesheets="@../css/style1.css" />
-               </content>
+<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root"
+            stylesheets="@../Charlie_FXML/app.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.wateradvisory.Arjay_Root.RecordWaterController">
+
+    <!-- Today's report -->
+    <AnchorPane fx:id="mainRecord" AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+        <VBox spacing="14.0" styleClass="page"
+              AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+
+            <Label styleClass="page-title" text="Record water consumption" />
+
+            <VBox styleClass="metric-card" spacing="4.0" maxWidth="Infinity">
+                <Label styleClass="metric-label" text="REPORTED TODAY" />
+                <Text fx:id="pendingTotalText" styleClass="metric-value"
+                      text="Total Water Consumption Reported: NaN" />
+            </VBox>
+
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label styleClass="section-title" text="Reported water usage (today)" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="activityBtn" mnemonicParsing="false" onAction="#handleActivityBtn"
+                        styleClass="btn, btn-primary" text="Add an activity" />
+            </HBox>
+
+            <ScrollPane fitToWidth="true" styleClass="member-scroll-pane" VBox.vgrow="ALWAYS">
+                <content>
+                    <VBox fx:id="activityListBox" styleClass="member-list-box" spacing="8.0" />
+                </content>
             </ScrollPane>
-            <Text layoutX="192.0" layoutY="257.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Reported Water Usage (Today)" wrappingWidth="494.0" />
-         </children>
-      </AnchorPane>
-      <AnchorPane fx:id="activityRecord" prefHeight="617.0" prefWidth="882.0" visible="false">
-         <children>
-            <Text layoutX="289.0" layoutY="81.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="Record Water Usage" />
-            <Text fx:id="activityDurationText" layoutX="223.0" layoutY="251.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Activity Duration" />
-            <MenuButton fx:id="activityDuration" layoutX="223.0" layoutY="270.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" styleClass="menu-dropdown" stylesheets="@../css/style1.css" text="Duration" />
-            <Text layoutX="485.0" layoutY="251.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="How many times?" />
-            <MenuButton fx:id="activityAmount" layoutX="486.0" layoutY="270.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="175.0" styleClass="menu-dropdown" stylesheets="@../css/style1.css" text="Select Amount" />
-            <Text fx:id="activityTotalText" layoutX="89.0" layoutY="360.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Water Consumption Total: NaN" textAlignment="CENTER" wrappingWidth="707.767578125" />
-            <Button fx:id="activitySubmit" layoutX="358.0" layoutY="391.0" mnemonicParsing="false" onAction="#handleSubmitActivity" prefHeight="35.0" prefWidth="175.0" styleClass="primary-button" stylesheets="@../css/style1.css" text="Submit" />
-            <Button fx:id="returnRecordMainBtn" layoutX="359.0" layoutY="439.0" mnemonicParsing="false" onAction="#handleReturnToRecordMain" prefHeight="37.0" prefWidth="175.0" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Back" />
-            <Text layoutX="373.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Select Activity" />
-            <MenuButton fx:id="selectActivity" layoutX="359.0" layoutY="162.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" styleClass="menu-dropdown" stylesheets="@../css/style1.css" text="Choose Activity" />
-         </children>
-      </AnchorPane>
-   </children>
+
+            <HBox spacing="10.0">
+                <Button fx:id="submitWaterBtn" mnemonicParsing="false"
+                        onAction="#handleSubmitWaterConsumption" styleClass="btn, btn-primary"
+                        text="Submit and update today's report" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="returnToMainBtn2" mnemonicParsing="false" onAction="#handleReturnToMain"
+                        styleClass="btn, btn-secondary" text="Back to home" />
+            </HBox>
+        </VBox>
+    </AnchorPane>
+
+    <!-- Single activity entry -->
+    <AnchorPane fx:id="activityRecord" visible="false"
+                AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+        <VBox spacing="14.0" styleClass="page"
+              AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+
+            <Label styleClass="page-title" text="Record water usage" />
+
+            <VBox styleClass="card" spacing="14.0" maxWidth="560.0">
+                <VBox spacing="4.0">
+                    <Label styleClass="form-label" text="Activity" />
+                    <MenuButton fx:id="selectActivity" mnemonicParsing="false"
+                                maxWidth="Infinity" text="Choose activity" />
+                </VBox>
+
+                <HBox spacing="12.0">
+                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                        <Text fx:id="activityDurationText" styleClass="form-label" text="Activity duration" />
+                        <MenuButton fx:id="activityDuration" mnemonicParsing="false"
+                                    maxWidth="Infinity" text="Duration" />
+                    </VBox>
+                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                        <Label styleClass="form-label" text="How many times?" />
+                        <MenuButton fx:id="activityAmount" mnemonicParsing="false"
+                                    maxWidth="Infinity" text="Select amount" />
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <VBox styleClass="metric-card" spacing="4.0" maxWidth="560.0">
+                <Label styleClass="metric-label" text="THIS ACTIVITY" />
+                <Text fx:id="activityTotalText" styleClass="metric-value"
+                      text="Water Consumption Total: NaN" />
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <HBox spacing="10.0">
+                <Button fx:id="activitySubmit" mnemonicParsing="false" onAction="#handleSubmitActivity"
+                        styleClass="btn, btn-primary" text="Submit activity" />
+                <Button fx:id="returnRecordMainBtn" mnemonicParsing="false"
+                        onAction="#handleReturnToRecordMain" styleClass="btn, btn-secondary"
+                        text="Back" />
+            </HBox>
+        </VBox>
+    </AnchorPane>
 </AnchorPane>

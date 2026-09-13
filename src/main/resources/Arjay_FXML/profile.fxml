@@ -1,23 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
+<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root"
+            stylesheets="@../Charlie_FXML/app.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.wateradvisory.Arjay_Root.Profile">
 
-<AnchorPane prefHeight="516.0" prefWidth="882.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Arjay_Root.Profile">
-   <children>
-      <AnchorPane fx:id="mainProfile" prefHeight="516.0" prefWidth="882.0">
-         <children>
-            <Text layoutX="23.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="page-title" text="User Profile" />
-            <Text fx:id="usernameText" layoutX="15.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Username: NULL" textAlignment="CENTER" wrappingWidth="852.2626953125" />
-            <Text fx:id="emailText" layoutX="11.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Email: NULL" textAlignment="CENTER" wrappingWidth="852.2626953125" />
-            <Text layoutX="313.0" layoutY="266.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-title" text="Water Summary On User" />
-            <Text fx:id="dailyTotalText" layoutX="313.0" layoutY="302.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Daily Total" wrappingWidth="255.986328125" />
-            <Text fx:id="weeklyTotalText" layoutX="313.0" layoutY="331.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="Weekly Total" wrappingWidth="249.2626953125" />
-            <Text fx:id="allTimeTotalText" layoutX="313.0" layoutY="360.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="form-label" text="All Time Total" wrappingWidth="249.2626953125" />
-            <Button fx:id="goBackBtn" layoutX="734.0" layoutY="446.0" mnemonicParsing="false" onAction="#handleReturnToMain" styleClass="secondary-button" stylesheets="@../css/style1.css" text="Go Back" />
-         </children>
-      </AnchorPane>
-   </children>
+    <AnchorPane fx:id="mainProfile" AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+        <VBox spacing="16.0" styleClass="page"
+              AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+
+            <Label styleClass="page-title" text="User profile" />
+
+            <VBox styleClass="card" spacing="6.0" maxWidth="420.0">
+                <Text fx:id="usernameText" styleClass="section-title" text="Username: NULL" />
+                <Text fx:id="emailText" styleClass="form-label" text="Email: NULL" />
+            </VBox>
+
+            <Label styleClass="section-title" text="Water summary" />
+
+            <HBox spacing="12.0">
+                <VBox styleClass="metric-card" spacing="4.0" HBox.hgrow="ALWAYS">
+                    <Label styleClass="metric-label" text="DAILY" />
+                    <Text fx:id="dailyTotalText" styleClass="metric-value" text="Daily Total" />
+                </VBox>
+                <VBox styleClass="metric-card" spacing="4.0" HBox.hgrow="ALWAYS">
+                    <Label styleClass="metric-label" text="THIS WEEK" />
+                    <Text fx:id="weeklyTotalText" styleClass="metric-value" text="Weekly Total" />
+                </VBox>
+                <VBox styleClass="metric-card" spacing="4.0" HBox.hgrow="ALWAYS">
+                    <Label styleClass="metric-label" text="ALL TIME" />
+                    <Text fx:id="allTimeTotalText" styleClass="metric-value" text="All Time Total" />
+                </VBox>
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <HBox>
+                <Button fx:id="goBackBtn" mnemonicParsing="false" onAction="#handleReturnToMain"
+                        styleClass="btn, btn-secondary" text="Back to home" />
+            </HBox>
+        </VBox>
+    </AnchorPane>
 </AnchorPane>

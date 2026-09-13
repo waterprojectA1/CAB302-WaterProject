@@ -345,6 +345,7 @@ public class RecordWaterController {
 
             row.setAlignment(Pos.CENTER_LEFT);
             row.setPadding(new Insets(5, 20, 5, 10));
+            row.getStyleClass().add("list-row");
 
             row.getChildren().addAll(
                     activityLabel,

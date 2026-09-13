@@ -253,6 +253,8 @@ public class ViewHousehold {
             Label memberLabel = new Label(
                     username + "     " + totalWater + " L"
             );
+            memberLabel.getStyleClass().add("list-row");
+            memberLabel.setMaxWidth(Double.MAX_VALUE);
 
             memberListBox.getChildren().add(memberLabel);
         }
