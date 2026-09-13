@@ -21,7 +21,12 @@ public final class GenerationGuard {
 
     private final AtomicBoolean inFlight = new AtomicBoolean(false);
 
-    /** @return {@code true} if no generation was already in flight (and this call started one); {@code false} if one was already running. */
+    /**
+     * @return {@code true} if no generation was already in flight (and this call started one); {@code false} if one was already running.
+     * Verified by {@code GenerationGuardRejectsConcurrentStartTest}: a second {@code tryStart()} call
+     * while the first is still in flight (no {@link #finish()} yet) returns {@code false}, without
+     * blocking or throwing -- the caller is expected to simply drop the second attempt.
+     */
     public boolean tryStart() {
         return inFlight.compareAndSet(false, true);
     }
