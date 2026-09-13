@@ -31,4 +31,12 @@ public class AuthServiceTest {
         String result = AuthService.normaliseEmail("  user@gmail.com  ");
         assertEquals("user@gmail.com", result);
     }
+
+    // Test 4: Blank username should be rejected during registration
+    @Test
+    void blankUsernameShouldReturnFalse() {
+
+        boolean result = AuthService.isValidRegistrationInput("user@gmail.com","   ","password123");
+        assertFalse(result);
+    }
 }
