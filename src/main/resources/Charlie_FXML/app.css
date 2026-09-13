@@ -759,3 +759,128 @@
     -fx-cursor: hand;
 }
 .dialog-pane .button-bar .button:hover { -fx-background-color: -color-accent-600; }
+
+/* ============================================================================
+   MOCKUP 2 ADDITIONS ; segmented pill tabs, avatars, jump cards, rank
+   highlighting, notification dots. Layered after everything above so nothing
+   here can be overridden by earlier, more generic rules.
+   ============================================================================ */
+
+/* Segmented pill control -- replaces the underline TabPane header look for
+   the Jainya My-data tabs, and the RadioButton/ToggleButton period switch on
+   the Michael table page. The TabPane itself supplies the pill "track"; each
+   tab/toggle becomes a pill inside it. */
+.seg-tabs { -fx-background-color: -color-surface; -fx-background-radius: 999; -fx-padding: 4; }
+.seg-tabs > .tab-header-area { -fx-padding: 0; }
+.seg-tabs > .tab-header-area > .tab-header-background { -fx-background-color: transparent; }
+.seg-tabs > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 999;
+    -fx-padding: 6 16 6 16;
+}
+.seg-tabs > .tab-header-area > .headers-region > .tab .tab-label {
+    -fx-font-size: 11.5px;
+    -fx-text-fill: rgba(59, 74, 78, 0.62);
+}
+.seg-tabs > .tab-header-area > .headers-region > .tab:selected { -fx-background-color: -color-accent-500; }
+.seg-tabs > .tab-header-area > .headers-region > .tab:selected .tab-label {
+    -fx-font-family: "Caprasimo";
+    -fx-text-fill: white;
+}
+.seg-tabs > .tab-header-area > .headers-region > .tab:selected .focus-indicator { -fx-border-width: 0; }
+.seg-tabs > .tab-content-area { -fx-background-color: transparent; -fx-padding: 12 0 0 0; }
+
+/* Period toggle (Daily/Weekly/Monthly, Total/Average) as filled pills rather
+   than the default RadioButton dot -- used with ToggleButton controls. */
+.seg-toggle {
+    -fx-background-color: transparent;
+    -fx-background-radius: 999;
+    -fx-border-width: 0;
+    -fx-padding: 6 16 6 16;
+    -fx-font-size: 11.5px;
+    -fx-text-fill: rgba(59, 74, 78, 0.62);
+    -fx-cursor: hand;
+}
+.seg-toggle:selected {
+    -fx-background-color: -color-accent-500;
+    -fx-text-fill: white;
+    -fx-font-family: "Caprasimo";
+}
+.seg-track { -fx-background-color: -color-surface; -fx-background-radius: 999; -fx-padding: 4; }
+
+/* Always-visible date-range pill bar -- replaces the collapsible TitledPane
+   used on the Daily/Seasonal tabs so the range control matches the mockup's
+   permanently-open bar. */
+.range-bar {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 999;
+    -fx-padding: 6 8 6 16;
+}
+
+/* Round avatar with initials -- home header, profile, household members,
+   leaderboard rows. Sizes vary per context via inline min/max width. */
+.avatar-circle {
+    -fx-background-color: -color-accent2-200;
+    -fx-background-radius: 999;
+    -fx-alignment: CENTER;
+}
+.avatar-circle-large { -fx-background-color: -color-accent-100; }
+.avatar-initials {
+    -fx-font-family: "Caprasimo";
+    -fx-text-fill: -color-accent2-800;
+}
+.avatar-initials-on-accent { -fx-text-fill: white; }
+
+/* Role / status pills, e.g. "Owner", "You". */
+.role-pill {
+    -fx-background-color: -color-accent-100;
+    -fx-text-fill: -color-accent-800;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 999;
+    -fx-padding: 2 8 2 8;
+}
+
+/* "Jump to" home-page cards -- a Button reskinned to look like a plain
+   tinted card with a title + subtitle graphic, so onAction/fx:id survive
+   while the visual matches the mockup's description cards. */
+.jump-card {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 22;
+    -fx-padding: 14 16 14 16;
+    -fx-cursor: hand;
+    -fx-alignment: TOP_LEFT;
+}
+.jump-card:hover { -fx-background-color: derive(-color-surface, -4%); }
+.jump-card-title { -fx-font-family: "Caprasimo"; -fx-font-size: 14px; -fx-text-fill: -color-text; }
+.jump-card-sub { -fx-font-size: 11px; -fx-text-fill: rgba(59, 74, 78, 0.6); }
+
+/* Leaderboard: rank-1 gets its own highlight, separate from "this is you". */
+.leaderboard-first {
+    -fx-background-color: -color-accent-100;
+    -fx-border-color: -color-accent-500;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+}
+.you-pill {
+    -fx-background-color: -color-accent-100;
+    -fx-text-fill: -color-accent-800;
+    -fx-font-size: 10px;
+    -fx-background-radius: 999;
+    -fx-padding: 2 8 2 8;
+}
+
+/* Notification list cells: unread dot + title + subtitle + timestamp. */
+.notif-card {
+    -fx-background-color: -color-accent-100;
+    -fx-background-radius: 22;
+    -fx-padding: 14 16 14 16;
+}
+.notif-card-read { -fx-background-color: -color-neutral-100; }
+.notif-dot { -fx-fill: -color-accent-500; }
+.notif-dot-read { -fx-fill: rgba(59, 74, 78, 0.2); }
+.notif-title { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-text; }
+.notif-title-read { -fx-text-fill: rgba(59, 74, 78, 0.75); }
+.notif-sub { -fx-font-size: 11.5px; -fx-text-fill: rgba(59, 74, 78, 0.62); }
+.notif-time { -fx-font-size: 11px; -fx-text-fill: rgba(59, 74, 78, 0.55); }
