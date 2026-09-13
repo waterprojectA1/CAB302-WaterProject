@@ -1,19 +1,21 @@
 package com.wateradvisory;
 
+import java.io.IOException;
+import java.util.Map;
+
+import com.wateradvisory.Charlie_Root.SceneNavigator;
 import com.wateradvisory.database.AuthService;
 import com.wateradvisory.database.HouseholdService;
 import com.wateradvisory.database.WaterRecordService;
-import javafx.fxml.FXML;
+
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 import javafx.scene.text.Text;
-import java.util.Map;
-
-import java.io.IOException;
+import javafx.stage.Stage;
 
 public class App_Root {
 
@@ -144,9 +146,9 @@ public class App_Root {
     }
 
     @FXML
-    private void handleChatBot(ActionEvent event) {
-        // Charlie
-        System.out.println("Chatbot clicked");
+    private void handleConservationTips(ActionEvent event) {
+        SceneNavigator.goTo(event, "/Charlie_FXML/ConservationTipsView.fxml");
+        System.out.println("The user wants some conservation tips!");
     }
 
     @FXML
