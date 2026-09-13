@@ -177,7 +177,10 @@ public class ConservationTipsController {
      *
      * <p>{@code SubtitleForScoreNegativeAdjustmentTest} verifies the negative-adjustment wording:
      * {@code ScoreResult(46, -4, 18.0)} -> {@code "Down 4 points -- your usage was 18% higher than
-     * your average."} (a negative {@code adjustment} renders as "Down N", never "Up -N").</p>
+     * your average."} (a negative {@code adjustment} renders as "Down N", never "Up -N").
+     * {@code SubtitleForScorePositiveAdjustmentTest} verifies the mirror-image positive case:
+     * {@code ScoreResult(60, 10, -50.0)} -> {@code "Up 10 points -- your usage was 50% lower than
+     * your average."}</p>
      */
     public static String subtitleForScore(ConservationScoreCalculator.ScoreResult result) {
         if (!Double.isFinite(result.percentChange())) {
