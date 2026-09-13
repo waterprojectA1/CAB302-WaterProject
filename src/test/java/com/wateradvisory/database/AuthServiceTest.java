@@ -47,4 +47,5 @@ public class AuthServiceTest {
         String result = AuthService.normaliseUsername("  Pogoy  ");
         assertEquals("Pogoy", result);
     }
+
 }

@@ -115,6 +115,7 @@ public class AuthService {
     public static boolean register(String email,String username, String password) {
 
         email = normaliseEmail(email);
+        username = normaliseUsername(username);
 
         if (!isValidRegistrationInput(email, username, password)) {
             return false;
@@ -369,4 +370,14 @@ public class AuthService {
 
         return isValidLoginInput(email, password);
     }
+
+    public static String normaliseUsername(String username) {
+
+        if (username == null) {
+            return "";
+        }
+
+        return username.trim();
+    }
 }
+
