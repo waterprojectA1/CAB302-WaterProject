@@ -48,17 +48,25 @@ public class WaterDataListTest {
 
         waterDataList.setDailyWater(daily);
         waterDataList.setWeeklyWater(weekly);
-        waterDataList.setMonthlyWater(monthly); }
+        waterDataList.setMonthlyWater(monthly);
+
+        //Set the current user
+        waterDataList.testSetUser("1");
+    }
+
+
+
+
     //GETTER / SETTER TESTS //
     @Test
     void testGetDailyWater() {
-        assertEquals(4, waterDataList.getDailyWater().size()); }
+        assertEquals(8, waterDataList.getDailyWater().size()); }
 
     @Test
-    void testGetWeeklyWater() { assertEquals(4, waterDataList.getWeeklyWater().size()); }
+    void testGetWeeklyWater() { assertEquals(8, waterDataList.getWeeklyWater().size()); }
 
     @Test
-    void testGetMonthlyWater() { assertEquals(4, waterDataList.getMonthlyWater().size()); }
+    void testGetMonthlyWater() { assertEquals(8, waterDataList.getMonthlyWater().size()); }
 
 
     //ADD TESTS //

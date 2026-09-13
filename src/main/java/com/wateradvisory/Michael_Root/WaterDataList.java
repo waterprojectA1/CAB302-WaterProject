@@ -8,13 +8,18 @@ import javafx.collections.ObservableList;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//
+
 
 public class WaterDataList {
+
+    /* the water data list is made to take in data from the water database and process the data for additional
+    * information for the user to use for comparison and understanding each day/week/month water usage.
+    * this then feed into the page to display*/
 
     String loggedUser = UserSession.getUserId();
 
@@ -25,7 +30,7 @@ public class WaterDataList {
     private ObservableList<WaterData> monthlyWater = FXCollections.observableArrayList();
 
     public WaterDataList(){
-        loadDailyWaterForCurrentUser();
+        loadWaterForCurrentUser();
 
         /*dailyWater.add(new WaterData(1,  755, "02-09-2026", "02-09-2026", "DAILY", 1));
         dailyWater.add(new WaterData(2,  844, "03-09-2026", "03-09-2026", "DAILY", 1));
@@ -38,18 +43,22 @@ public class WaterDataList {
         weeklyWater.add(new WaterData(9,  5379, "02-09-2026", "08-09-2026","WEEKLY", loggedUser));
         weeklyWater.add(new WaterData(10,  5821, "09-09-2026", "15-09-2026","WEEKLY", loggedUser));
         weeklyWater.add(new WaterData(11,  5058, "16-09-2026", "22-09-2026","WEEKLY", loggedUser));
-        weeklyWater.add(new WaterData(12,  5603, "16-09-2026", "22-09-2026","WEEKLY", "2")); */
+        weeklyWater.add(new WaterData(12,  5603, "16-09-2026", "22-09-2026","WEEKLY", "2"));
         monthlyWater.add(new WaterData(13,  23647, "01-09-2026", "30-09-2026","MONTHLY", loggedUser));
         monthlyWater.add(new WaterData(14,  20745, "01-10-2026", "31-10-2026","MONTHLY", loggedUser));
         monthlyWater.add(new WaterData(15,  27315, "01-11-2026", "30-11-2026","MONTHLY", loggedUser));
-        monthlyWater.add(new WaterData(16,  26045, "01-11-2026", "30-11-2026","MONTHLY", "2"));
+        monthlyWater.add(new WaterData(16,  26045, "01-11-2026", "30-11-2026","MONTHLY", "2"));*/
     }
 
-    public void loadDailyWaterForCurrentUser() {
-        loadDailyWaterForCurrentUser(LocalDate.now().minusDays(30), LocalDate.now());
-        loadWeeklyWaterForCurrentUser(LocalDate.now().minusDays(30), LocalDate.now());
+    public void loadWaterForCurrentUser() {
+        loadDailyWaterForCurrentUser(LocalDate.now().minusDays(365), LocalDate.now());
+        loadWeeklyWaterForCurrentUser(LocalDate.now().minusDays(365), LocalDate.now());
+        loadMonthlyWaterForCurrentUser(LocalDate.now().minusDays(365), LocalDate.now());
     }
 
+
+
+    //methods to retrieve the water data of the active user
     public void loadDailyWaterForCurrentUser(LocalDate from, LocalDate to) {
         if (from == null || to == null) {
             return;
@@ -149,6 +158,76 @@ public class WaterDataList {
         }
     }
 
+    public void loadMonthlyWaterForCurrentUser(LocalDate from, LocalDate to) {
+        if (from == null || to == null) {
+            return;
+        }
+
+        String userId = UserSession.getUserId();
+        if (userId == null || userId.isBlank()) {
+            return;
+        }
+
+        try {
+            UUID sessionUserId = UUID.fromString(userId);
+
+            List<DailyWaterRecord> records =
+                    WaterRecordService.getUserDailyRecords(sessionUserId, from, to);
+
+            monthlyWater.clear();
+
+            DateTimeFormatter formatter =
+                    DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+            // Group records by year and month
+            Map<YearMonth, List<DailyWaterRecord>> monthlyRecords =
+                    records.stream()
+                            .collect(Collectors.groupingBy(record ->
+                                    YearMonth.from(record.getRecordDate())
+                            ));
+
+            int nextId = 1;
+
+            // Sort the months chronologically
+            List<YearMonth> months = new ArrayList<>(monthlyRecords.keySet());
+            Collections.sort(months);
+
+            for (YearMonth month : months) {
+
+                List<DailyWaterRecord> monthRecords =
+                        monthlyRecords.get(month);
+
+                // Add together all water usage for the month
+                double monthlyWaterUsage = monthRecords.stream()
+                        .mapToDouble(DailyWaterRecord::getTotalWaterConsumptionDay)
+                        .sum();
+
+                // First and last day of the month
+                LocalDate monthStart = month.atDay(1);
+                LocalDate monthEnd = month.atEndOfMonth();
+
+                monthlyWater.add(new WaterData(
+                        nextId++,
+                        monthlyWaterUsage,
+                        monthStart.format(formatter),
+                        monthEnd.format(formatter),
+                        "MONTHLY",
+                        loggedUser
+                ));
+            }
+
+        } catch (IllegalArgumentException e) {
+            System.out.println(
+                    "Could not load monthly water data for current user: "
+                            + e.getMessage()
+            );
+        }
+    }
+
+
+
+
+    // basic getters, setter and adding to list
     public ObservableList<WaterData> getDailyWater() {
         return dailyWater;
     }
@@ -161,22 +240,20 @@ public class WaterDataList {
         return weeklyWater;
     }
 
+
     public void addDailyWater(WaterData aqua) {
         dailyWater.add(aqua);
         if (getZScore(aqua) >= 2){
-            // createNotfication(); - to be made
         }
     }
     public void addWeeklyWater(WaterData aqua){
         weeklyWater.add(aqua);
         if (getZScore(aqua) >= 2){
-            // createNotfication(); - to be made
         }
     }
     public void addMonthlyWater(WaterData aqua){
         monthlyWater.add(aqua);
         if (getZScore(aqua) >= 2){
-            // createNotfication(); - to be made
         }
     }
 
@@ -192,6 +269,8 @@ public class WaterDataList {
         this.weeklyWater = weeklyWater;
     }
 
+
+    //get the mean of the water data
     public double getDailyMean(){
         double total = 0;
         for (WaterData aqua : dailyWater){
@@ -253,6 +332,8 @@ public class WaterDataList {
         return total / count;
     }
 
+
+    //finds the % difference of each data point from the average
     public double getGlobalDiff(WaterData water){
         double mean = 0;
         if(water.getTimespan().equals("DAILY")){
@@ -289,7 +370,7 @@ public class WaterDataList {
         return roundedpercdiff;
     }
 
-
+    //gets the standard deviation
     public double getDailyStandardDeviation() {
 
         double mean = getDailyMean();
@@ -324,7 +405,7 @@ public class WaterDataList {
         return Math.sqrt(total / monthlyWater.size());
     }
 
-
+    //gets the zscore
     public double getZScore(WaterData water) {
 
         double mean = 0;
@@ -345,9 +426,9 @@ public class WaterDataList {
         double zscore = (water.getWaterUsage() - mean) / standardDeviation;
         double zScoreRounded = Math.round(zscore * 100);
         zScoreRounded = zScoreRounded / 100;
-        if (zScoreRounded >= 1){
+        if (zScoreRounded >= 1 & zScoreRounded < 2){
             water.setUsageRating("High");
-        } else if (zScoreRounded >= 2) {
+        } else if (zScoreRounded >= 2 & zScoreRounded < 3) {
             water.setUsageRating("Extreme");
 
         } else if (zScoreRounded >= 3) {
@@ -359,6 +440,11 @@ public class WaterDataList {
         return zScoreRounded;
 
 
+    }
+
+    //used for the test
+    public void testSetUser(String id){
+        loggedUser = id;
     }
 
 }
