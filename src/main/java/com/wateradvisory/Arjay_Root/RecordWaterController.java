@@ -19,10 +19,8 @@ import javafx.scene.text.Text;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.Priority;
 import javafx.geometry.Pos;
-import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 
 // Java collections used to store the user's current daily water activities.
@@ -314,19 +312,22 @@ public class RecordWaterController {
 
         for (WaterActivityEntry entry : pendingActivities) {
 
-            String text =
-                    entry.getActivity()
-                            + " | "
-                            + entry.getDuration()
-                            + " min × "
-                            + entry.getAmount()
-                            + " | "
-                            + entry.getLitres()
-                            + " L";
+            Label nameLabel = new Label(entry.getActivity());
+            nameLabel.getStyleClass().add("list-row-name");
 
-            Label activityLabel = new Label(text);
+            Label subLabel = new Label(
+                    entry.getDuration() + " min × " + entry.getAmount()
+            );
+            subLabel.getStyleClass().add("form-label");
+
+            VBox textBox = new VBox(2, nameLabel, subLabel);
+            HBox.setHgrow(textBox, Priority.ALWAYS);
+
+            Label amountLabel = new Label(entry.getLitres() + " L");
+            amountLabel.getStyleClass().add("list-row-value");
 
             Button removeButton = new Button("Remove");
+            removeButton.getStyleClass().addAll("btn", "btn-danger", "btn-sm");
 
             removeButton.setOnAction(event -> {
                 pendingActivities.remove(entry);
@@ -335,21 +336,14 @@ public class RecordWaterController {
                 refreshActivityList();
             });
 
-            // row set up
-
-            Region spacer = new Region();
-
-            HBox.setHgrow(spacer, Priority.ALWAYS);
-
             HBox row = new HBox(15);
 
             row.setAlignment(Pos.CENTER_LEFT);
-            row.setPadding(new Insets(5, 20, 5, 10));
             row.getStyleClass().add("list-row");
 
             row.getChildren().addAll(
-                    activityLabel,
-                    spacer,
+                    textBox,
+                    amountLabel,
                     removeButton
             );
 

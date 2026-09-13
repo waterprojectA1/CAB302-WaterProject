@@ -890,3 +890,6 @@
 
 /* Bold name in a list row, e.g. household members, without a full section-title bump. */
 .list-row-name { -fx-font-weight: bold; -fx-text-fill: -color-text; }
+
+/* Right-aligned litre/value readout inside a list row (smaller than .metric-value). */
+.list-row-value { -fx-font-family: "Caprasimo"; -fx-font-size: 14px; -fx-text-fill: -color-text; }
