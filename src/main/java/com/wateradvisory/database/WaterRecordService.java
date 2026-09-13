@@ -681,4 +681,297 @@ public class WaterRecordService {
         JsonElement e = o.get(key);
         return (e == null || e.isJsonNull()) ? fallback : e.getAsDouble();
     }
+
+
+    public static double getGlobalDailyMean() {
+
+        try {
+            String accessToken = UserSession.getAccessToken();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            SupabaseConfig.SUPABASE_URL
+                                    + "/rest/v1/rpc/get_global_daily_mean"
+                    ))
+                    .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                    .header(
+                            "Authorization",
+                            "Bearer " + accessToken
+                    )
+                    .header("Content-Type", "application/json")
+                    .POST(
+                            HttpRequest.BodyPublishers.ofString("{}")
+                    )
+                    .build();
+
+            HttpResponse<String> response =
+                    HttpClient.newHttpClient().send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            if (response.statusCode() < 200
+                    || response.statusCode() >= 300) {
+
+                System.out.println(
+                        "Failed Global Daily mean: "
+                                + response.body()
+                );
+
+                return 0;
+            }
+
+            return JsonParser
+                    .parseString(response.body())
+                    .getAsDouble();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public static double getGlobalWeeklyMean() {
+
+        try {
+            String accessToken = UserSession.getAccessToken();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            SupabaseConfig.SUPABASE_URL
+                                    + "/rest/v1/rpc/get_global_weekly_mean"
+                    ))
+                    .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                    .header(
+                            "Authorization",
+                            "Bearer " + accessToken
+                    )
+                    .header("Content-Type", "application/json")
+                    .POST(
+                            HttpRequest.BodyPublishers.ofString("{}")
+                    )
+                    .build();
+
+            HttpResponse<String> response =
+                    HttpClient.newHttpClient().send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            if (response.statusCode() < 200
+                    || response.statusCode() >= 300) {
+
+                System.out.println(
+                        "Failed Global weekly mean: "
+                                + response.body()
+                );
+
+                return 0;
+            }
+
+            return JsonParser
+                    .parseString(response.body())
+                    .getAsDouble();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public static double getGlobalMonthlyMean() {
+
+        try {
+            String accessToken = UserSession.getAccessToken();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            SupabaseConfig.SUPABASE_URL
+                                    + "/rest/v1/rpc/get_global_monthly_mean"
+                    ))
+                    .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                    .header(
+                            "Authorization",
+                            "Bearer " + accessToken
+                    )
+                    .header("Content-Type", "application/json")
+                    .POST(
+                            HttpRequest.BodyPublishers.ofString("{}")
+                    )
+                    .build();
+
+            HttpResponse<String> response =
+                    HttpClient.newHttpClient().send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            if (response.statusCode() < 200
+                    || response.statusCode() >= 300) {
+
+                System.out.println(
+                        "Failed Global monthly mean: "
+                                + response.body()
+                );
+
+                return 0;
+            }
+
+            return JsonParser
+                    .parseString(response.body())
+                    .getAsDouble();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+
+    public static double getGlobalDailyStandDev() {
+
+        try {
+            String accessToken = UserSession.getAccessToken();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            SupabaseConfig.SUPABASE_URL
+                                    + "/rest/v1/rpc/get_global_standard_deviation"
+                    ))
+                    .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                    .header(
+                            "Authorization",
+                            "Bearer " + accessToken
+                    )
+                    .header("Content-Type", "application/json")
+                    .POST(
+                            HttpRequest.BodyPublishers.ofString("{}")
+                    )
+                    .build();
+
+            HttpResponse<String> response =
+                    HttpClient.newHttpClient().send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            if (response.statusCode() < 200
+                    || response.statusCode() >= 300) {
+
+                System.out.println(
+                        "Failed Global Daily Standard Deviation: "
+                                + response.body()
+                );
+
+                return 0;
+            }
+
+            return JsonParser
+                    .parseString(response.body())
+                    .getAsDouble();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public static double getGlobalweeklyStandDev() {
+
+        try {
+            String accessToken = UserSession.getAccessToken();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            SupabaseConfig.SUPABASE_URL
+                                    + "/rest/v1/rpc/get_global_weekly_standard_deviation"
+                    ))
+                    .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                    .header(
+                            "Authorization",
+                            "Bearer " + accessToken
+                    )
+                    .header("Content-Type", "application/json")
+                    .POST(
+                            HttpRequest.BodyPublishers.ofString("{}")
+                    )
+                    .build();
+
+            HttpResponse<String> response =
+                    HttpClient.newHttpClient().send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            if (response.statusCode() < 200
+                    || response.statusCode() >= 300) {
+
+                System.out.println(
+                        "Failed Global Weeklu Standard Deviation: "
+                                + response.body()
+                );
+
+                return 0;
+            }
+
+            return JsonParser
+                    .parseString(response.body())
+                    .getAsDouble();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public static double getGlobalMonthlyStandDev() {
+
+        try {
+            String accessToken = UserSession.getAccessToken();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            SupabaseConfig.SUPABASE_URL
+                                    + "/rest/v1/rpc/get_global_monthly_standard_deviation"
+                    ))
+                    .header("apikey", SupabaseConfig.SUPABASE_KEY)
+                    .header(
+                            "Authorization",
+                            "Bearer " + accessToken
+                    )
+                    .header("Content-Type", "application/json")
+                    .POST(
+                            HttpRequest.BodyPublishers.ofString("{}")
+                    )
+                    .build();
+
+            HttpResponse<String> response =
+                    HttpClient.newHttpClient().send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            if (response.statusCode() < 200
+                    || response.statusCode() >= 300) {
+
+                System.out.println(
+                        "Failed Global Monthly Standard Deviation: "
+                                + response.body()
+                );
+
+                return 0;
+            }
+
+            return JsonParser
+                    .parseString(response.body())
+                    .getAsDouble();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }
+
+
+

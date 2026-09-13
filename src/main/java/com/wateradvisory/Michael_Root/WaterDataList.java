@@ -29,6 +29,15 @@ public class WaterDataList {
 
     private ObservableList<WaterData> monthlyWater = FXCollections.observableArrayList();
 
+    private double dailyMean = WaterRecordService.getGlobalDailyMean();
+    private double dailyStandev = WaterRecordService.getGlobalDailyStandDev();
+
+    private double weeklyMean = WaterRecordService.getGlobalWeeklyMean();
+    private double weeklyStandev = WaterRecordService.getGlobalweeklyStandDev();
+
+    private double monthlyMean = WaterRecordService.getGlobalMonthlyMean();
+    private double monthlyStandev = WaterRecordService.getGlobalMonthlyStandDev();
+
     public WaterDataList(){
         loadWaterForCurrentUser();
 
@@ -49,6 +58,8 @@ public class WaterDataList {
         monthlyWater.add(new WaterData(15,  27315, "01-11-2026", "30-11-2026","MONTHLY", loggedUser));
         monthlyWater.add(new WaterData(16,  26045, "01-11-2026", "30-11-2026","MONTHLY", "2"));*/
     }
+
+
 
     public void loadWaterForCurrentUser() {
         loadDailyWaterForCurrentUser(LocalDate.now().minusDays(365), LocalDate.now());
@@ -88,6 +99,7 @@ public class WaterDataList {
                         loggedUser
                 ));
             }
+            System.out.println("test" + dailyWater.size());
         } catch (IllegalArgumentException e) {
             System.out.println("Could not load daily water data for current user: " + e.getMessage());
         }
@@ -271,14 +283,14 @@ public class WaterDataList {
 
 
     //get the mean of the water data
-    public double getDailyMean(){
+    /*public double getDailyMean(){
         double total = 0;
         for (WaterData aqua : dailyWater){
             total += aqua.getWaterUsage();
         }
         return total / dailyWater.size();
-    }
-
+        return WaterRecordService.getGlobalDailyMean();
+    }*/
     public double getUserDailyMean(){
         double total = 0;
         int count = 0;
@@ -291,14 +303,14 @@ public class WaterDataList {
         return total / count;
     }
 
-    public double getWeeklyMean(){
+    /*public double getWeeklyMean(){
         double total = 0;
         for (WaterData aqua : weeklyWater){
             total += aqua.getWaterUsage();
 
         }
         return total / weeklyWater.size();
-    }
+    }*/
 
     public double getUserWeeklyMean(){
         double total = 0;
@@ -312,13 +324,13 @@ public class WaterDataList {
         return total / count;
     }
 
-    public double getMonthlyMean(){
+    /*public double getMonthlyMean(){
         double total = 0;
         for (WaterData aqua : monthlyWater){
             total += aqua.getWaterUsage();
         }
         return total / monthlyWater.size();
-    }
+    }*/
 
     public double getUserMonthlyMean(){
         double total = 0;
@@ -337,13 +349,13 @@ public class WaterDataList {
     public double getGlobalDiff(WaterData water){
         double mean = 0;
         if(water.getTimespan().equals("DAILY")){
-            mean = getDailyMean();
+            mean = dailyMean;
         }
         if(water.getTimespan().equals("WEEKLY")){
-            mean = getWeeklyMean();
+            mean = weeklyMean;
         }
         if(water.getTimespan().equals("MONTHLY")){
-            mean = getMonthlyMean();
+            mean = monthlyMean;
         }
 
         double percdiff = (water.getWaterUsage() - mean) / mean * 100;
@@ -371,7 +383,7 @@ public class WaterDataList {
     }
 
     //gets the standard deviation
-    public double getDailyStandardDeviation() {
+   /* public double getDailyStandardDeviation() {
 
         double mean = getDailyMean();
         double total = 0;
@@ -381,10 +393,11 @@ public class WaterDataList {
         }
 
         return Math.sqrt(total / dailyWater.size());
-    }
-    public double getWeeklyStandardDeviation() {
+        return WaterRecordService.getGlobalDailyStandDev();
+    }*/
+    /*public double getWeeklyStandardDeviation() {
 
-        double mean = getWeeklyMean();
+        double mean = weeklyMean;
         double total = 0;
 
         for (WaterData aqua : weeklyWater) {
@@ -403,7 +416,7 @@ public class WaterDataList {
         }
 
         return Math.sqrt(total / monthlyWater.size());
-    }
+    }*/
 
     //gets the zscore
     public double getZScore(WaterData water) {
@@ -411,16 +424,16 @@ public class WaterDataList {
         double mean = 0;
         double standardDeviation = 0;
         if(water.getTimespan().equals("DAILY")){
-            mean = getDailyMean();
-            standardDeviation = getDailyStandardDeviation();
+            mean = dailyMean;
+            standardDeviation = dailyStandev;
         }
         if(water.getTimespan().equals("WEEKLY")){
-            mean = getWeeklyMean();
-            standardDeviation = getWeeklyStandardDeviation();
+            mean = weeklyMean;
+            standardDeviation = weeklyStandev;
         }
         if(water.getTimespan().equals("MONTHLY")){
-            mean = getMonthlyMean();
-            standardDeviation = getMonthlyStandardDeviation();
+            mean = monthlyMean;
+            standardDeviation = monthlyStandev;
         }
 
         double zscore = (water.getWaterUsage() - mean) / standardDeviation;
