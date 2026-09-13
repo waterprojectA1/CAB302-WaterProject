@@ -31,6 +31,9 @@ public class WaterUsageStats {
         }
         return totals;
     }
+    public static Season findBiggestSeasonalChange(Map<Season, Integer> before, Map<Season, Integer> after) {
+        return null;
+    }
     public static class Stats {
         public final Integer average;          // null if no data
         public final WaterUsageEntry highest;   // null if no data
