@@ -3,14 +3,21 @@ package com.wateradvisory.Jainya_Root.Controllers;
 import com.wateradvisory.database.WaterRecordService;
 import com.wateradvisory.water.WaterUsageEntry;
 import com.wateradvisory.water.WaterUsageStats;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -41,6 +48,29 @@ public class DailyController {
         endPicker.setValue(rangeEnd);
         xAxis.setTickLabelRotation(90);
         render();
+    }
+
+    @FXML
+    private void onBackToDashboard(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/Michael_FXML/TableDisplayPage.fxml")
+            );
+
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource())
+                    .getScene()
+                    .getWindow();
+
+            stage.setScene(new Scene(root));
+            stage.sizeToScene();
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

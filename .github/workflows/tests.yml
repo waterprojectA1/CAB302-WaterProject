@@ -45,3 +45,6 @@ jobs:
 
       - name: Run Jainya Tests
         run: mvn -B -Dtest=SeasonalAggregationTest,WaterUsageStatsTest test
+
+      - name: Run Jainya Tests
+        run: mvn -B -Dtest=SeasonalAggregationTest,WaterUsageStatsTest test
