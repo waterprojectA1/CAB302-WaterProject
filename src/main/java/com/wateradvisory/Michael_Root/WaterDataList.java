@@ -1,10 +1,22 @@
 package com.wateradvisory.Michael_Root;
 
+import com.wateradvisory.database.UserSession;
+import com.wateradvisory.database.WaterRecordService;
+import com.wateradvisory.water.DailyWaterRecord;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+
+//
 
 public class WaterDataList {
+
+    String loggedUser = UserSession.getUserId();
 
     private ObservableList<WaterData> dailyWater = FXCollections.observableArrayList();
 
@@ -12,27 +24,130 @@ public class WaterDataList {
 
     private ObservableList<WaterData> monthlyWater = FXCollections.observableArrayList();
 
-    private int loggedUser = 1;
-
     public WaterDataList(){
-        dailyWater.add(new WaterData(1,  755, "02-09-2026", "02-09-2026", "DAILY", 1));
+        loadDailyWaterForCurrentUser();
+
+        /*dailyWater.add(new WaterData(1,  755, "02-09-2026", "02-09-2026", "DAILY", 1));
         dailyWater.add(new WaterData(2,  844, "03-09-2026", "03-09-2026", "DAILY", 1));
-        dailyWater.add(new WaterData(3,  734,"04-09-2026", "04-09-2026", "DAILY" , 1));
+        dailyWater.add(new WaterData(3,  734,"04-09-2026", "04-09-2026", "DAILY" , 1))
         dailyWater.add(new WaterData(4,  765, "05-09-2026", "05-09-2026","DAILY" , 1));
         dailyWater.add(new WaterData(5,  688, "06-09-2026", "06-09-2026","DAILY" , 1));
         dailyWater.add(new WaterData(6,  889, "07-09-2026", "07-09-2026", "DAILY", 1));
         dailyWater.add(new WaterData(7,  714, "08-09-2026", "08-09-2026","DAILY", 1));
         dailyWater.add(new WaterData(8,  912, "08-09-2026", "08-09-2026","DAILY", 2));
-        weeklyWater.add(new WaterData(9,  5379, "02-09-2026", "08-09-2026","WEEKLY", 1));
-        weeklyWater.add(new WaterData(10,  5821, "09-09-2026", "15-09-2026","WEEKLY", 1));
-        weeklyWater.add(new WaterData(11,  5058, "16-09-2026", "22-09-2026","WEEKLY", 1));
-        weeklyWater.add(new WaterData(12,  5603, "16-09-2026", "22-09-2026","WEEKLY", 2));
-        monthlyWater.add(new WaterData(13,  23647, "01-09-2026", "30-09-2026","MONTHLY", 1));
-        monthlyWater.add(new WaterData(14,  20745, "01-10-2026", "31-10-2026","MONTHLY", 1));
-        monthlyWater.add(new WaterData(15,  27315, "01-11-2026", "30-11-2026","MONTHLY", 1));
-        monthlyWater.add(new WaterData(16,  26045, "01-11-2026", "30-11-2026","MONTHLY", 2));
+        weeklyWater.add(new WaterData(9,  5379, "02-09-2026", "08-09-2026","WEEKLY", loggedUser));
+        weeklyWater.add(new WaterData(10,  5821, "09-09-2026", "15-09-2026","WEEKLY", loggedUser));
+        weeklyWater.add(new WaterData(11,  5058, "16-09-2026", "22-09-2026","WEEKLY", loggedUser));
+        weeklyWater.add(new WaterData(12,  5603, "16-09-2026", "22-09-2026","WEEKLY", "2")); */
+        monthlyWater.add(new WaterData(13,  23647, "01-09-2026", "30-09-2026","MONTHLY", loggedUser));
+        monthlyWater.add(new WaterData(14,  20745, "01-10-2026", "31-10-2026","MONTHLY", loggedUser));
+        monthlyWater.add(new WaterData(15,  27315, "01-11-2026", "30-11-2026","MONTHLY", loggedUser));
+        monthlyWater.add(new WaterData(16,  26045, "01-11-2026", "30-11-2026","MONTHLY", "2"));
     }
 
+    public void loadDailyWaterForCurrentUser() {
+        loadDailyWaterForCurrentUser(LocalDate.now().minusDays(30), LocalDate.now());
+        loadWeeklyWaterForCurrentUser(LocalDate.now().minusDays(30), LocalDate.now());
+    }
+
+    public void loadDailyWaterForCurrentUser(LocalDate from, LocalDate to) {
+        if (from == null || to == null) {
+            return;
+        }
+
+        String userId = UserSession.getUserId();
+        if (userId == null || userId.isBlank()) {
+            return;
+        }
+
+        try {
+            UUID sessionUserId = UUID.fromString(userId);
+            List<DailyWaterRecord> records = WaterRecordService.getUserDailyRecords(sessionUserId, from, to);
+
+            dailyWater.clear();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+            int nextId = 1;
+            for (DailyWaterRecord record : records) {
+                String dateText = record.getRecordDate().format(formatter);
+                dailyWater.add(new WaterData(
+                        nextId++,
+                        record.getTotalWaterConsumptionDay(),
+                        dateText,
+                        dateText,
+                        "DAILY",
+                        loggedUser
+                ));
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Could not load daily water data for current user: " + e.getMessage());
+        }
+    }
+
+    public void loadWeeklyWaterForCurrentUser(LocalDate from, LocalDate to) {
+        if (from == null || to == null) {
+            return;
+        }
+
+        String userId = UserSession.getUserId();
+        if (userId == null || userId.isBlank()) {
+            return;
+        }
+
+        try {
+            UUID sessionUserId = UUID.fromString(userId);
+
+            List<DailyWaterRecord> records =
+                    WaterRecordService.getUserDailyRecords(sessionUserId, from, to);
+
+            weeklyWater.clear();
+
+            DateTimeFormatter formatter =
+                    DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+            // Group records by the Monday of their week
+            Map<LocalDate, List<DailyWaterRecord>> weeklyRecords =
+                    records.stream()
+                            .collect(Collectors.groupingBy(record ->
+                                    record.getRecordDate()
+                                            .with(DayOfWeek.MONDAY)
+                            ));
+
+            int nextId = 1;
+
+            // Sort the weeks chronologically
+            List<LocalDate> weeks = new ArrayList<>(weeklyRecords.keySet());
+            Collections.sort(weeks);
+
+            for (LocalDate weekStart : weeks) {
+
+                List<DailyWaterRecord> weekRecords =
+                        weeklyRecords.get(weekStart);
+
+                // Add together all water usage for the week
+                double weeklyWaterUsage = weekRecords.stream()
+                        .mapToDouble(DailyWaterRecord::getTotalWaterConsumptionDay)
+                        .sum();
+
+                LocalDate weekEnd = weekStart.plusDays(6);
+
+                weeklyWater.add(new WaterData(
+                        nextId++,
+                        weeklyWaterUsage,
+                        weekStart.format(formatter),
+                        weekEnd.format(formatter),
+                        "WEEKLY",
+                        loggedUser
+                ));
+            }
+
+        } catch (IllegalArgumentException e) {
+            System.out.println(
+                    "Could not load weekly water data for current user: "
+                            + e.getMessage()
+            );
+        }
+    }
 
     public ObservableList<WaterData> getDailyWater() {
         return dailyWater;

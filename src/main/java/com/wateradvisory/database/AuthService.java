@@ -14,6 +14,12 @@ public class AuthService {
 
     public static boolean login(String email, String password) {
 
+        email = normaliseEmail(email);
+
+        if (!isValidLoginInput(email, password)) {
+            return false;
+        }
+
         try {
             String json = """
                 {
@@ -107,6 +113,13 @@ public class AuthService {
     }
 
     public static boolean register(String email,String username, String password) {
+
+        email = normaliseEmail(email);
+        username = normaliseUsername(username);
+
+        if (!isValidRegistrationInput(email, username, password)) {
+            return false;
+        }
 
         try {
             String json = """
@@ -320,4 +333,51 @@ public class AuthService {
             return "Unknown";
         }
     }
+
+    public static boolean isValidLoginInput(String email, String password) {
+
+        if (email == null || password == null) {
+            return false;
+        }
+
+        email = email.trim();
+        password = password.trim();
+
+        if (email.isEmpty() || password.isEmpty()) {
+            return false;
+        }
+
+        return email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+    }
+
+    public static String normaliseEmail(String email) {
+
+        if (email == null) {
+            return "";
+        }
+
+        return email.trim();
+    }
+
+    public static boolean isValidRegistrationInput(
+            String email,
+            String username,
+            String password) {
+
+        if (username == null || username.trim().isEmpty()) {
+            return false;
+        }
+
+        return isValidLoginInput(email, password);
+    }
+
+    public static String normaliseUsername(String username) {
+
+        if (username == null) {
+            return "";
+        }
+
+        return username.trim();
+    }
 }
+

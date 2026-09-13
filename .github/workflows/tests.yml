@@ -1,0 +1,37 @@
+name: Java Tests
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # Add your JUnit test below using this format:
+      # - name: Run <feature name> JUnit tests
+      #   run: mvn -B -Dtest=<TestClassName> test
+      #
+      # Example:
+      # - name: Run Charlie AI Chat JUnit tests
+      #   run: mvn -B -Dtest=ChatServiceTest test
+      #
+      #   Note: can also add more test script, separate them by commas
+      #   run: mvn -B -Dtest=ChatServiceTest,DatabaseTest,WaterRecordTest test
+
+      # DO NOT DELETE ANY EXISTING TESTS
+      - name: Run database and authentication JUnit tests
+        run: mvn -B -Dtest=WaterConsumptionServiceTest,HouseholdServiceTest,AuthServiceTest test

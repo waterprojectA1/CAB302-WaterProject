@@ -77,7 +77,7 @@ public class PersonalizedTipGenerator {
     /** Need at least this many days of history before a weekly-rate judgement is meaningful. */
     private static final int MIN_DAYS_FOR_WEEKLY_RATE = 7;
     /** User id for the seeded {@link WaterDataList} fallback (its {@code loggedUser}). */
-    private static final int FALLBACK_USER_ID = 1;
+    private static final String  FALLBACK_USER_ID = "1";
 
     /** Confirmed real activity names (exact casing) — match case-insensitively. */
     private static final List<String> KNOWN_ACTIVITIES = List.of(
@@ -339,7 +339,7 @@ public class PersonalizedTipGenerator {
         }
     }
 
-    private static WaterData latestWeeklyFor(WaterDataList data, int userId) {
+    private static WaterData latestWeeklyFor(WaterDataList data, String userId) {
         WaterData latest = null;
         for (WaterData w : data.getWeeklyWater()) {
             if (w != null && w.getUserID() == userId && "WEEKLY".equals(w.getTimespan())) {
