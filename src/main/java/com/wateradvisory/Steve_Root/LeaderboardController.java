@@ -8,7 +8,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
@@ -67,31 +66,37 @@ public class LeaderboardController {
         row.setSpacing(12);
         row.getStyleClass().add("leaderboard-row");
 
-        if (entry.getUserId().equals(currentUserId)) {
+        boolean isCurrentUser = entry.getUserId().equals(currentUserId);
+
+        if (rank == 1) {
+            row.getStyleClass().add("leaderboard-first");
+        } else if (isCurrentUser) {
             row.getStyleClass().add("current-user-row");
         }
 
-        Label rankLabel = new Label(rank + ".");
+        Label rankLabel = new Label(String.valueOf(rank));
         rankLabel.getStyleClass().add("rank-label");
+        rankLabel.setMinWidth(24);
 
-        String displayName = entry.getUsername();
-
-        if (entry.getUserId().equals(currentUserId)) {
-            displayName = displayName + " (You)";
-        }
-
-        Label usernameLabel = new Label(displayName);
+        Label usernameLabel = new Label(entry.getUsername());
         usernameLabel.getStyleClass().add("username-label");
 
-        Region space = new Region();
-        HBox.setHgrow(space, Priority.ALWAYS);
+        HBox nameBox = new HBox(8, usernameLabel);
+        nameBox.setAlignment(Pos.CENTER_LEFT);
+
+        if (isCurrentUser) {
+            Label youPill = new Label("You");
+            youPill.getStyleClass().add("you-pill");
+            nameBox.getChildren().add(youPill);
+        }
+        HBox.setHgrow(nameBox, Priority.ALWAYS);
 
         Label pointsLabel = new Label(entry.getPoints() + " PTS");
         pointsLabel.getStyleClass().add("points-label");
 
         row.getChildren().add(rankLabel);
-        row.getChildren().add(usernameLabel);
-        row.getChildren().add(space);
+        row.getChildren().add(NavShell.avatar(entry.getUsername(), 30));
+        row.getChildren().add(nameBox);
         row.getChildren().add(pointsLabel);
 
         return row;
