@@ -11,10 +11,14 @@ import com.wateradvisory.database.WaterRecordService;
 // displaying text, handling events, and navigating between pages.
 import java.util.Map;
 import javafx.scene.text.Text;
+import javafx.scene.layout.StackPane;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
 public class Profile {
+
+    @FXML
+    private StackPane avatarHolder;
 
     @FXML
     private Text usernameText;
@@ -38,13 +42,12 @@ public class Profile {
         String username = AuthService.getUsername();
         String email = AuthService.getUserEmail();
 
-        usernameText.setText(
-                "Username: " + username
-        );
+        StackPane avatar = NavShell.avatar(username, 70);
+        avatar.getStyleClass().add("avatar-circle-large");
+        avatarHolder.getChildren().setAll(avatar);
 
-        emailText.setText(
-                "Email: " + email
-        );
+        usernameText.setText(username);
+        emailText.setText(email);
 
         Map<String, Double> summary =
                 WaterRecordService.getUserWaterSummary();
@@ -58,22 +61,24 @@ public class Profile {
         double allTime =
                 summary.getOrDefault("allTime", 0.0);
 
-        dailyTotalText.setText(
-                "Daily Total: " + daily + " L"
-        );
-
-        weeklyTotalText.setText(
-                "Weekly Total: " + weekly + " L"
-        );
-
-        allTimeTotalText.setText(
-                "All Time Total: " + allTime + " L"
-        );
+        dailyTotalText.setText(daily + " L");
+        weeklyTotalText.setText(weekly + " L");
+        allTimeTotalText.setText(allTime + " L");
     }
 
     // Returns the user from the profile page to the main application screen.
     @FXML
     private void handleReturnToMain(ActionEvent event) {
         NavShell.go(event, NavShell.Route.HOME);
+    }
+
+    @FXML
+    private void handleViewHousehold(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.HOUSEHOLD);
+    }
+
+    @FXML
+    private void handleRecordWater(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.RECORD_WATER);
     }
 }

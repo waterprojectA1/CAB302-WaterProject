@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
@@ -20,33 +20,38 @@
               AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
 
-            <Label styleClass="page-title" text="User profile" />
+            <HBox styleClass="seasonal-banner" spacing="18.0" alignment="CENTER_LEFT">
+                <StackPane fx:id="avatarHolder" />
+                <VBox spacing="1.0" HBox.hgrow="ALWAYS">
+                    <Text fx:id="usernameText" styleClass="section-title" text="User not found" />
+                    <Text fx:id="emailText" styleClass="page-subtitle" text="Unknown" />
+                </VBox>
+                <Button mnemonicParsing="false" onAction="#handleViewHousehold"
+                        styleClass="btn, btn-secondary" text="View household &#8594;" />
+            </HBox>
 
-            <VBox styleClass="card" spacing="6.0" maxWidth="420.0">
-                <Text fx:id="usernameText" styleClass="section-title" text="Username: NULL" />
-                <Text fx:id="emailText" styleClass="form-label" text="Email: NULL" />
-            </VBox>
-
-            <Label styleClass="section-title" text="Water summary" />
+            <Label styleClass="metric-label" text="WATER SUMMARY" />
 
             <HBox spacing="12.0">
                 <VBox styleClass="metric-card" spacing="4.0" HBox.hgrow="ALWAYS">
-                    <Label styleClass="metric-label" text="DAILY" />
-                    <Text fx:id="dailyTotalText" styleClass="metric-value" text="Daily Total" />
+                    <Label styleClass="metric-label" text="DAILY TOTAL" />
+                    <Text fx:id="dailyTotalText" styleClass="metric-value" text="0.0 L" />
                 </VBox>
                 <VBox styleClass="metric-card" spacing="4.0" HBox.hgrow="ALWAYS">
                     <Label styleClass="metric-label" text="THIS WEEK" />
-                    <Text fx:id="weeklyTotalText" styleClass="metric-value" text="Weekly Total" />
+                    <Text fx:id="weeklyTotalText" styleClass="metric-value" text="0.0 L" />
                 </VBox>
                 <VBox styleClass="metric-card" spacing="4.0" HBox.hgrow="ALWAYS">
                     <Label styleClass="metric-label" text="ALL TIME" />
-                    <Text fx:id="allTimeTotalText" styleClass="metric-value" text="All Time Total" />
+                    <Text fx:id="allTimeTotalText" styleClass="metric-value" text="0.0 L" />
                 </VBox>
             </HBox>
 
             <Region VBox.vgrow="ALWAYS" />
 
-            <HBox>
+            <HBox spacing="10.0">
+                <Button mnemonicParsing="false" onAction="#handleRecordWater"
+                        styleClass="btn, btn-primary" text="Record water" />
                 <Button fx:id="goBackBtn" mnemonicParsing="false" onAction="#handleReturnToMain"
                         styleClass="btn, btn-secondary" text="Back to home" />
             </HBox>
