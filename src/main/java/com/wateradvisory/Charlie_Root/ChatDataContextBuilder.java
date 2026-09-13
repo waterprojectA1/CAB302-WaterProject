@@ -155,6 +155,12 @@ public final class ChatDataContextBuilder {
      * (or the seeded fallback when empty), exactly like {@code ConservationTipsController}.
      * This is the ONE place this class reports the score, so it can never drift from the
      * tips screen's number for the same underlying data.
+     *
+     * <p>Guarantee verified by {@code ChatDataContextBuilderMatchesScoreCalculatorTest}:
+     * for identical {@code dailyRecords} input, the {@code newScore()} embedded in the
+     * returned context string is byte-for-byte the same value an independent, separately
+     * constructed {@link ConservationScoreCalculator} call produces -- the chat surface
+     * and the tips screen can never disagree on the score for the same underlying data.</p>
      */
     private String scoreLine(int userId) {
         ConservationScoreCalculator calculator = new ConservationScoreCalculator();
