@@ -23,4 +23,12 @@ public class AuthServiceTest {
         boolean result = AuthService.isValidLoginInput("not-an-email","password123");
         assertFalse(result);
     }
+
+    // Test 3: Email should remove surrounding spaces
+    @Test
+    void emailShouldRemoveSurroundingSpaces() {
+
+        String result = AuthService.normaliseEmail("  user@gmail.com  ");
+        assertEquals("user@gmail.com", result);
+    }
 }
