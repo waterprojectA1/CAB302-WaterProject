@@ -86,6 +86,12 @@ public final class UnauthorizedActionDetector {
      *         {@code currentUserId}/{@code currentHouseholdId}, or combines a mutation verb with
      *         a mutable-data noun -- either way, the request should be refused before the model
      *         is ever invoked.
+     *
+     * <p>False-positive guard verified by {@code UnauthorizedActionDetectorDoesNotFlagLegitimateQuestionsTest}:
+     * ordinary on-topic questions about the user's OWN data ("why did my score drop this week?",
+     * "what's my usage this month?", "how can I save water?", etc.) never trip either check --
+     * the structural rules key on foreign identifiers and mutation verbs, not on words like
+     * "score"/"usage"/"data" occurring on their own.</p>
      */
     public static boolean containsUnauthorizedActionRequest(String message, UUID currentUserId,
                                                               UUID currentHouseholdId) {
