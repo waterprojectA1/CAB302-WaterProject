@@ -33,5 +33,5 @@ jobs:
       #   run: mvn -B -Dtest=ChatServiceTest,DatabaseTest,WaterRecordTest test
 
       # DO NOT DELETE ANY EXISTING TESTS
-      - name: Run Arjay database JUnit tests
-        run: mvn -B -Dtest=WaterConsumptionServiceTest,HouseholdServiceTest test
+      - name: Run database and authentication JUnit tests
+        run: mvn -B -Dtest=WaterConsumptionServiceTest,HouseholdServiceTest,AuthServiceTest test
