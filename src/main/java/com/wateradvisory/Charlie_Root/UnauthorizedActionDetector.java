@@ -128,6 +128,13 @@ public final class UnauthorizedActionDetector {
         }
     }
 
+    /**
+     * Verified by {@code UnauthorizedActionDetectorCatchesOverrideScoreRewordingTest}: "override my
+     * conservation score to 100" is caught even though "override" is not the verb the detector's
+     * design examples originally used ("set my score to 100") -- the verb+noun lists are matched
+     * independently and combined by proximity, so any new verb from {@link #MUTATION_VERBS} paired
+     * with any noun from {@link #MUTABLE_DATA_NOUNS} is caught automatically.
+     */
     private static boolean combinesMutationVerbWithDataNoun(String message) {
         String lower = message.toLowerCase(java.util.Locale.ROOT);
         boolean hasVerb = false;
