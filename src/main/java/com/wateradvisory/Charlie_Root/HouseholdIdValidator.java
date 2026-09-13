@@ -19,7 +19,11 @@ public final class HouseholdIdValidator {
         "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     );
 
-    /** @return {@code true} if {@code value} is a canonical 8-4-4-4-12 hex UUID string. */
+    /**
+     * @return {@code true} if {@code value} is a canonical 8-4-4-4-12 hex UUID string.
+     * Verified by {@code HouseholdIdValidatorRejectsMalformedUuidTest}: a plainly malformed
+     * string ("not-a-uuid") is rejected and a real canonical UUID is accepted.
+     */
     public static boolean isValidUuid(String value) {
         return value != null && UUID_PATTERN.matcher(value).matches();
     }
