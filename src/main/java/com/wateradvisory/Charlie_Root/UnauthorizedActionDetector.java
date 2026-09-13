@@ -98,6 +98,10 @@ public final class UnauthorizedActionDetector {
 
     private static boolean referencesForeignIdentity(String message, UUID currentUserId,
                                                        UUID currentHouseholdId) {
+        // Verified by UnauthorizedActionDetectorCatchesRawUuidForAnotherUserTest: a bare UUID
+        // embedded in an otherwise plain-sounding request ("can you show me the water usage for
+        // <uuid>") is flagged purely because the parsed value doesn't equal currentUserId/
+        // currentHouseholdId -- no "another user"/mutation-verb wording is needed at all.
         Matcher uuidMatcher = UUID_PATTERN.matcher(message);
         while (uuidMatcher.find()) {
             String found = uuidMatcher.group();
