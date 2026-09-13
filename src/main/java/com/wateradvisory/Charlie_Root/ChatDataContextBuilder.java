@@ -166,7 +166,7 @@ public final class ChatDataContextBuilder {
      * constructed {@link ConservationScoreCalculator} call produces -- the chat surface
      * and the tips screen can never disagree on the score for the same underlying data.</p>
      */
-    private String scoreLine(int userId) {
+    private String scoreLine(String userId) {
         ConservationScoreCalculator calculator = new ConservationScoreCalculator();
         ConservationScoreCalculator.ScoreResult result = dailyRecords.isEmpty()
             ? calculator.calculateDailyScoreFallback(
