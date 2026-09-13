@@ -215,17 +215,31 @@ public final class NavShell {
     }
 
     private static Label initialsLabel() {
-        String username = AuthService.getUsername();
-        String initials = "U";
-        if (username != null && !username.isBlank()) {
-            String[] parts = username.trim().split("\\s+");
-            initials = parts.length > 1
-                    ? ("" + parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
-                    : username.trim().substring(0, 1).toUpperCase();
-        }
-        Label label = new Label(initials);
+        Label label = new Label(initialsOf(AuthService.getUsername()));
         label.getStyleClass().add("nav-avatar-initials");
         return label;
+    }
+
+    /** First letter of each of a name's first two words, or one letter for a single word. */
+    public static String initialsOf(String name) {
+        if (name == null || name.isBlank()) {
+            return "U";
+        }
+        String[] parts = name.trim().split("\\s+");
+        return parts.length > 1
+                ? ("" + parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
+                : name.trim().substring(0, 1).toUpperCase();
+    }
+
+    /** A round avatar circle showing a name's initials, for reuse outside the nav bar. */
+    public static StackPane avatar(String name, double size) {
+        Label label = new Label(initialsOf(name));
+        label.getStyleClass().add("avatar-initials");
+        StackPane circle = new StackPane(label);
+        circle.getStyleClass().add("avatar-circle");
+        circle.setMinSize(size, size);
+        circle.setMaxSize(size, size);
+        return circle;
     }
 
     private static VBox buildDrawer(Route active) {

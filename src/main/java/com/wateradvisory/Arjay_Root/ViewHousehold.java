@@ -9,9 +9,12 @@ import com.wateradvisory.database.WaterRecordService;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 
 // Java imports used for error handling and storing household data.
@@ -244,19 +247,38 @@ public class ViewHousehold {
         Map<String, Double> memberTotals =
                 WaterRecordService.getHouseholdMemberTotals();
 
+        String owner = HouseholdService.getHouseholdOwner();
+
         for (Map.Entry<String, Double> member
                 : memberTotals.entrySet()) {
 
             String username = member.getKey();
             double totalWater = member.getValue();
 
-            Label memberLabel = new Label(
-                    username + "     " + totalWater + " L"
-            );
-            memberLabel.getStyleClass().add("list-row");
-            memberLabel.setMaxWidth(Double.MAX_VALUE);
+            HBox row = new HBox(10);
+            row.getStyleClass().add("list-row");
+            row.setAlignment(Pos.CENTER_LEFT);
 
-            memberListBox.getChildren().add(memberLabel);
+            Label nameLabel = new Label(username);
+            nameLabel.getStyleClass().add("list-row-name");
+            HBox.setHgrow(nameLabel, Priority.ALWAYS);
+            nameLabel.setMaxWidth(Double.MAX_VALUE);
+
+            Label totalLabel = new Label(totalWater + " L");
+            totalLabel.getStyleClass().add("form-label");
+
+            row.getChildren().add(NavShell.avatar(username, 26));
+            row.getChildren().add(nameLabel);
+
+            if (username.equals(owner)) {
+                Label ownerPill = new Label("Owner");
+                ownerPill.getStyleClass().add("role-pill");
+                row.getChildren().add(ownerPill);
+            }
+
+            row.getChildren().add(totalLabel);
+
+            memberListBox.getChildren().add(row);
         }
 
         householdTotalText.setText(
