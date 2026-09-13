@@ -11,7 +11,7 @@
             styleClass="main-background"
             prefWidth="882.0" prefHeight="516.0">
     <top>
-        <Label text="Water Usage — Trends &amp; Seasonal Patterns" styleClass="page-title" BorderPane.alignment="CENTER" maxWidth="Infinity"/>
+        <Label text="Water Usage — Trends &amp; Seasonal Patterns" styleClass="page-title" alignment="CENTER" textAlignment="CENTER" maxWidth="Infinity" BorderPane.alignment="CENTER"/>
     </top>
     <center>
         <TabPane tabClosingPolicy="UNAVAILABLE">

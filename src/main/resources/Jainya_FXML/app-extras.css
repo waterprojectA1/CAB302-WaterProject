@@ -133,8 +133,7 @@
     -fx-text-fill: -color-text-primary;
 }
 /* TITLED PANE (Custom Date Range) blend into the card instead of
-   standing out as its own white box. Same background as .card,
-   no border, so it reads as part of the page rather than a panel. */
+   standing out as its own white box. */
 .titled-pane {
     -fx-background-color: transparent;
 }
@@ -172,4 +171,34 @@
 /* Day-of-week headers and date cells */
 .date-picker-popup .label {
     -fx-text-fill: #222222;
+}
+/* TAB PANE (Daily / Seasonal / Compare) */
+.tab-pane > .tab-header-area {
+    -fx-background-color: -color-background-main;
+    -fx-padding: 8px 8px 0 8px;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: -color-secondary-button;
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-border-width: 0;
+    -fx-padding: 8px 18px;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:hover {
+    -fx-background-color: -color-secondary-button-hover;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: -color-primary-button;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab .tab-label {
+    -fx-text-fill: -color-text-secondary;
+    -fx-font-weight: bold;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:selected .tab-label {
+    -fx-text-fill: -color-text-primary;
+}
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: -color-background-main;
+}
+.tab-pane {
+    -fx-tab-min-width: 90px;
 }
