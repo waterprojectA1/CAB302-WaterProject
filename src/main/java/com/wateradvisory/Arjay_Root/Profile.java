@@ -3,6 +3,7 @@
 package com.wateradvisory.Arjay_Root;
 
 // Project services used to retrieve account details and water usage information.
+import com.wateradvisory.Charlie_Root.NavShell;
 import com.wateradvisory.database.AuthService;
 import com.wateradvisory.database.WaterRecordService;
 
@@ -12,13 +13,6 @@ import java.util.Map;
 import javafx.scene.text.Text;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class Profile {
 
@@ -80,24 +74,6 @@ public class Profile {
     // Returns the user from the profile page to the main application screen.
     @FXML
     private void handleReturnToMain(ActionEvent event) {
-
-        try {
-            Parent root = FXMLLoader.load(
-                    getClass().getResource("/App_Root-view.fxml")
-            );
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.setScene(new Scene(root));
-
-            stage.sizeToScene();
-            stage.centerOnScreen();
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.HOME);
     }
 }

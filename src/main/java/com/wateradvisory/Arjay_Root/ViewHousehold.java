@@ -3,22 +3,18 @@
 package com.wateradvisory.Arjay_Root;
 
 // Project services used for household management and household water usage data.
+import com.wateradvisory.Charlie_Root.NavShell;
 import com.wateradvisory.database.HouseholdService;
 import com.wateradvisory.database.WaterRecordService;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 // Java imports used for error handling and storing household data.
-import java.io.IOException;
 import java.util.Map;
 
 import javafx.scene.control.TextField;
@@ -237,22 +233,7 @@ public class ViewHousehold {
     // Returns the user from the household page to the main application screen.
     @FXML
     private void handleReturnToMain(ActionEvent event) {
-        // return to main interface
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/App_Root-view.fxml")
-            );
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.HOME);
     }
 
     // Loads household members and displays each member's total water usage.

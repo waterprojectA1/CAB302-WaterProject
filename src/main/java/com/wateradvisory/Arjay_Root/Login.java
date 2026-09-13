@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 // Project authentication service used to log users in and check account setup.
+import com.wateradvisory.Charlie_Root.NavShell;
 import com.wateradvisory.database.AuthService;
 
 // JavaFX password field used to hide entered passwords.
@@ -105,20 +106,8 @@ public class Login {
 
     // Opens the AI chat page while keeping the current window size.
     @FXML
-    private void handleChatViewNavigation(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Charlie_FXML/ChatView.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-        double width = stage.getWidth();
-        double height = stage.getHeight();
-
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setWidth(width);
-        stage.setHeight(height);
-
-        stage.show();
+    private void handleChatViewNavigation(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.CHAT);
     }
 
     // Checks the entered login details and opens the appropriate page after login.
@@ -141,16 +130,13 @@ public class Login {
             // Save successful login locally for prototype testing
             saveRecentLogin(email, password);
 
-            String nextPage;
-
             if (AuthService.isSetupComplete()) {
-                nextPage = "/App_Root-view.fxml";
-            } else {
-                nextPage = "/Arjay_FXML/postregister.fxml";
+                NavShell.go(event, NavShell.Route.HOME);
+                return;
             }
 
             Parent root = FXMLLoader.load(
-                    getClass().getResource(nextPage)
+                    getClass().getResource("/Arjay_FXML/postregister.fxml")
             );
 
             Stage stage =

@@ -1,11 +1,11 @@
 package com.wateradvisory.Michael_Root;
+import com.wateradvisory.Charlie_Root.NavShell;
 import com.wateradvisory.database.UserSession;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
@@ -53,35 +53,18 @@ public class TablePageController {
     private RadioButton monthlyRadio;
 
     @FXML
-    private void handleReturnToMain(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/App_Root-view.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
-    }
-    @FXML
-    private void handleGoToNotification(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Michael_FXML/NotificationPage.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+    private void handleReturnToMain(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.HOME);
     }
 
     @FXML
-    private void handleGoToGraph(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Jainya_FXML/MainView.fxml"));
+    private void handleGoToNotification(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.NOTIFICATIONS);
+    }
 
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+    @FXML
+    private void handleGoToGraph(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.DAILY);
     }
 
 
@@ -223,14 +206,12 @@ public class TablePageController {
 
             controller.setWaterData(aqua);
 
-            Stage stage = (Stage) tableView.getScene().getWindow();
+            Scene scene = tableView.getScene();
+            scene.setRoot(NavShell.wrap(root, NavShell.Route.DETAIL));
 
-            stage.setScene(
-                    new Scene(root, 500, 400)
-            );
-
-            stage.setTitle("Details");
-
+            if (scene.getWindow() instanceof Stage stage) {
+                stage.sizeToScene();
+            }
 
         } catch (IOException e) {
             e.printStackTrace();

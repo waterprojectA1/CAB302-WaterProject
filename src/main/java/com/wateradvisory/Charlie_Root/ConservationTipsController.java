@@ -71,7 +71,7 @@ public class ConservationTipsController {
 
     @FXML
     private void onOpenChat(ActionEvent event) {
-        SceneNavigator.goTo(event, "/Charlie_FXML/ChatView.fxml");
+        NavShell.go(event, NavShell.Route.CHAT);
     }
 
     /**

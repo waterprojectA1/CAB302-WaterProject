@@ -3,21 +3,17 @@
 package com.wateradvisory.Arjay_Root;
 
 // Project services used for account setup and household management.
+import com.wateradvisory.Charlie_Root.NavShell;
 import com.wateradvisory.database.AuthService;
 import com.wateradvisory.database.HouseholdService;
 
 // JavaFX imports used for button events, FXML controls, page navigation, and form fields.
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.TextField;
 
-// Handles input/output errors that may occur while loading application pages.
+// Handles input/output errors that may occur while marking setup complete.
 import java.io.IOException;
 
 public class PostRegister {
@@ -60,22 +56,12 @@ public class PostRegister {
         // move user straight to main screen interface
         try {
             AuthService.markSetupComplete();
-
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/App_Root-view.fxml")
-            );
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            return;
         }
+
+        NavShell.go(event, NavShell.Route.HOME);
     }
 
     // Household Creation Section
@@ -123,23 +109,6 @@ public class PostRegister {
 
         System.out.println("User successfully linked to household.");
 
-        try {
-
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/App_Root-view.fxml")
-            );
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.HOME);
     }
 }

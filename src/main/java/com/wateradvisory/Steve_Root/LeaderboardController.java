@@ -1,21 +1,16 @@
 package com.wateradvisory.Steve_Root;
 
+import com.wateradvisory.Charlie_Root.NavShell;
 import com.wateradvisory.database.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.List;
 
 public class LeaderboardController {
@@ -114,18 +109,6 @@ public class LeaderboardController {
 
     @FXML
     private void handleGoHome(ActionEvent event) {
-
-        try {
-            Parent root = FXMLLoader.load(
-                    getClass().getResource("/App_Root-view.fxml")
-            );
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.HOME);
     }
 }
