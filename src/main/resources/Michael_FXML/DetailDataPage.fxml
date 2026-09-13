@@ -4,11 +4,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" styleClass="root" stylesheets="@../Charlie_FXML/app.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.DetailPageController">
+<VBox alignment="CENTER" prefHeight="520.0" prefWidth="888.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.DetailPageController">
    <children>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="500.0" spacing="20.0">
+      <HBox alignment="CENTER" prefHeight="180.0" prefWidth="800.0" spacing="30.0">
          <children>
-            <VBox prefHeight="200.0" prefWidth="240.0" styleClass="tag-accent">
+            <VBox prefHeight="200.0" prefWidth="410.0" styleClass="context-menu">
                <children>
                     <Label fx:id="sDateLabel" styleClass="tag-accent" textFill="WHITE">
                      <VBox.margin>
@@ -36,13 +36,13 @@
                      </VBox.margin></Label>
                </children>
             </VBox>
-            <Pane prefHeight="200.0" prefWidth="240.0" styleClass="tag-accent" />
+            <VBox prefHeight="24.0" prefWidth="410.0" styleClass="context-menu" />
          </children>
          <VBox.margin>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            <Insets bottom="30.0" left="20.0" right="20.0" top="20.0" />
          </VBox.margin>
       </HBox>
-      <Pane prefHeight="100.0" prefWidth="200.0" styleClass="tag-accent">
+      <Pane prefHeight="160.0" prefWidth="800.0" styleClass="context-menu">
          <VBox.margin>
             <Insets bottom="20.0" left="20.0" right="20.0" />
          </VBox.margin>
@@ -54,7 +54,7 @@
          </children>
       </Pane>
 
-      <Button mnemonicParsing="false" styleClass="btn" text="Back" onAction="#handleReturnTable">
+      <Button mnemonicParsing="false" onAction="#handleReturnTable" styleClass="primary-button" text="Back">
          <VBox.margin>
             <Insets bottom="20.0" />
          </VBox.margin></Button>

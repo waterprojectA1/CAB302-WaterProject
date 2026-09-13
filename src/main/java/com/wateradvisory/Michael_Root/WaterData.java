@@ -1,7 +1,10 @@
 package com.wateradvisory.Michael_Root;
 
+import com.wateradvisory.water.ActivityEntry;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class WaterData {
 
@@ -14,8 +17,12 @@ public class WaterData {
     private String timeSpan;
     private String usageRating;
     private double watercost = 0.008;
+    private double globaldiff;
+    private double userdiff;
+    private List<ActivityEntry> activities;
 
     public WaterData(int id, double waterUsage, String startDate, String endDate, String timeSpan, String userID){
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         this.id = id;
         this.waterUsage = waterUsage;
@@ -25,6 +32,9 @@ public class WaterData {
         this.userID = userID;
     }
 
+    public void setActivities(List<ActivityEntry> activities){
+        this.activities = activities;
+    }
 
 
     public void setUsageRating(String usageRating){

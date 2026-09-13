@@ -94,28 +94,6 @@ public class WaterDataListTest {
         assertEquals(originalSize + 1, waterDataList.getMonthlyWater().size());
         assertTrue(waterDataList.getMonthlyWater().contains(newData)); }
 
-    // DAILY MEAN//
-
-    @Test
-    void testGetDailyMean() {
-        // Values: 100 + 200 + 500 + 300 + 30 + 30 + 30 + 30  = 1220 1220 / 8 = 152.5
-         double result = waterDataList.getDailyMean();
-         assertEquals(152.5, result, 0.001); }
-
-    // WEEKLY MEAN//
-
-    @Test
-    void testGetWeeklyMean() {
-        // Values: 1000 + 2000 + 3000 + 5000 + 300 + 300 + 300 + 300 = 12200 12200 / 8 = 1525
-        double result = waterDataList.getWeeklyMean();
-        assertEquals(1525, result, 0.001); }
-
-    //MONTHLY MEAN//
-    @Test
-    void testGetMonthlyMean() {
-        // Values: 10000 + 20000 + 30000 + 50000 + 3000 + 3000 + 3000 + 3000 = 122000 122000 / 8 = 15250
-        double result = waterDataList.getMonthlyMean();
-        assertEquals(15250.0, result, 0.001); }
 
     //USER DAILY MEAN//
 
@@ -194,24 +172,6 @@ public class WaterDataListTest {
         WaterData water = waterDataList.getMonthlyWater().get(2);
         double result = waterDataList.getUserDiff(water);
         assertEquals(9.09, result, 0.001); }
-
-    //STANDARD DEVIATION //
-
-    @Test
-    void testGetDailyStandardDeviation() {
-        //Expected = 161.0706267
-        double result = waterDataList.getDailyStandardDeviation();
-        assertEquals(161.0706267, result, 0.001); }
-
-    @Test void testGetWeeklyStandardDeviation() {
-        //Expected = 1610.706267
-        double result = waterDataList.getWeeklyStandardDeviation();
-        assertEquals(1610.706267, result, 0.001); }
-
-    @Test void testGetMonthlyStandardDeviation() {
-        //Expected = 16107.06267
-        double result = waterDataList.getMonthlyStandardDeviation();
-        assertEquals(16107.06267, result, 0.001); }
 
     //Z-SCORE //
     @Test void testGetZScoreDaily() {

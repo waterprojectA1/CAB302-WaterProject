@@ -99,7 +99,6 @@ public class WaterDataList {
                         loggedUser
                 ));
             }
-            System.out.println("test" + dailyWater.size());
         } catch (IllegalArgumentException e) {
             System.out.println("Could not load daily water data for current user: " + e.getMessage());
         }
