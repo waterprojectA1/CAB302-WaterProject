@@ -15,4 +15,12 @@ public class AuthServiceTest {
         boolean result = AuthService.isValidLoginInput("   ","password123");
         assertFalse(result);
     }
+
+    // Test 2: Invalid email format should be rejected
+    @Test
+    void invalidEmailFormatShouldReturnFalse() {
+
+        boolean result = AuthService.isValidLoginInput("not-an-email","password123");
+        assertFalse(result);
+    }
 }
