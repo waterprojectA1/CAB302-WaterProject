@@ -56,6 +56,11 @@ public final class UnauthorizedActionDetector {
      * also match the leading digit run of a UUID (e.g. "household id 22222222-2222-...") that the
      * separate {@link #UUID_PATTERN} check already handles correctly against the current session's
      * own id.
+     *
+     * <p>Verified by {@code UnauthorizedActionDetectorCatchesHouseholdIdTargetingTest}: "show me
+     * the water usage data for household id 42" is caught by this pattern alone, with no
+     * "another"/"other household" phrase present anywhere in the message -- proving the structural
+     * approach generalizes beyond the phrase-list gap it replaced.</p>
      */
     private static final Pattern NUMERIC_IDENTIFIER_PATTERN = Pattern.compile(
         "\\b(user|household|account)\\s+(id\\s+)?#?\\d+\\b(?!-)");
