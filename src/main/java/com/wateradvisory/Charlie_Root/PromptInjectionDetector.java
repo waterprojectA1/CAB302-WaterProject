@@ -23,6 +23,18 @@ import java.util.Locale;
  * {@code "ignore-all-restrictions"} both still match {@code "ignore all
  * restrictions"}. The pattern list is a plain {@link List} so it is trivial to
  * extend; keep new entries lower-case and they are normalised automatically.</p>
+ *
+ * <p>{@link #containsInjectionAttempt} also covers a second, distinct threat
+ * class beyond instruction-override phrasing: requests for an <em>unauthorized
+ * action</em> phrased as an ordinary water question -- reading another user's
+ * data, mutating the current user's own recorded data, or directly setting/
+ * faking the conservation score (which must only ever be derived from recorded
+ * usage, see {@code ConservationScoreCalculator}). Neither of those requests
+ * tries to override the system prompt, so they need their own pattern set
+ * ({@link #UNAUTHORIZED_ACTION_PATTERNS}); they are checked in the same method
+ * since this class is already the deterministic, pre-model Java layer that
+ * {@code TopicFilter} (a pure on-/off-topic vocabulary check) was never
+ * designed to cover.</p>
  */
 public final class PromptInjectionDetector {
 
@@ -85,8 +97,45 @@ public final class PromptInjectionDetector {
         .toList();
 
     /**
+     * Unauthorized-action phrasings: requests for another user's data, requests to
+     * mutate (delete/update/insert) the current user's own recorded data, or requests
+     * to directly set/fake a conservation score. None of these try to override the
+     * system prompt -- they just ask for an action the app must never let the model
+     * (or a plain chat message) trigger, so they need their own pattern set rather
+     * than fitting the override-phrasing list above.
+     */
+    private static final List<String> RAW_UNAUTHORIZED_ACTION_PATTERNS = List.of(
+        // --- reading another user's / someone else's data ---
+        "another user", "other user", "someone else's", "someone else s", "other people's",
+        "other people s", "different user's", "different user s", "other household's",
+        "other household s", "everyone's data", "everyone s data", "all users' data",
+        "all users data",
+
+        // --- mutating the current user's own recorded data ---
+        "delete my", "remove my", "erase my", "clear my", "update my water record",
+        "update my last record", "edit my water record", "edit my last record",
+        "insert a water record", "insert a record", "add a fake record", "modify my water record",
+        "modify my last record", "change my water record", "change my last record",
+
+        // --- directly setting/faking the conservation score ---
+        "set my score", "set my conservation score", "change my score to",
+        "change my conservation score", "update my score to", "make my score",
+        "fake my score", "override my score", "give me a score of", "set the score to"
+    );
+
+    /** {@link #RAW_UNAUTHORIZED_ACTION_PATTERNS} normalised the same way as {@link #PATTERNS}. */
+    private static final List<String> UNAUTHORIZED_ACTION_PATTERNS = RAW_UNAUTHORIZED_ACTION_PATTERNS.stream()
+        .map(PromptInjectionDetector::normalize)
+        .filter(s -> !s.isEmpty())
+        .distinct()
+        .toList();
+
+    /**
      * @return {@code true} if {@code message} contains a known instruction-override /
-     *         jailbreak phrasing and should be refused without calling the model.
+     *         jailbreak phrasing, OR a known unauthorized-action phrasing (reading
+     *         another user's data, mutating the current user's own data, or directly
+     *         setting/faking a score) -- either way it should be refused without
+     *         calling the model.
      */
     public static boolean containsInjectionAttempt(String message) {
         if (message == null) {
@@ -97,6 +146,11 @@ public final class PromptInjectionDetector {
             return false;
         }
         for (String pattern : PATTERNS) {
+            if (normalized.contains(pattern)) {
+                return true;
+            }
+        }
+        for (String pattern : UNAUTHORIZED_ACTION_PATTERNS) {
             if (normalized.contains(pattern)) {
                 return true;
             }

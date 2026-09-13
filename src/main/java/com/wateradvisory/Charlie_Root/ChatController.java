@@ -3,6 +3,7 @@ package com.wateradvisory.Charlie_Root;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +38,9 @@ import com.vladsch.flexmark.util.ast.TextCollectingVisitor;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 
 import com.wateradvisory.Michael_Root.WaterDataList;
+import com.wateradvisory.database.UserSession;
+import com.wateradvisory.database.WaterRecordService;
+import com.wateradvisory.water.DailyWaterRecord;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -115,6 +119,12 @@ public class ChatController {
     private AbstractModel model;
     private HBox loadingRow;
     private HBox typingRow;
+    private final GenerationGuard generationGuard = new GenerationGuard();
+
+    /** Current session's own identifiers, resolved once in {@link #initialize()} -- used by
+     *  {@link UnauthorizedActionDetector} to tell "my own data" apart from a foreign identity. */
+    private UUID chatUserId;
+    private UUID chatHouseholdId;
 
     /** Live "how wide may a bubble be right now" value. Rebuilt from scrollPane.widthProperty() in {@link #initialize()}. */
     private DoubleBinding bubbleWidth;
@@ -139,6 +149,9 @@ public class ChatController {
 
     /** Whose recorded data the grounding context is built from (matches ConservationTipsController). */
     private static final String CURRENT_USER_ID = "1";
+
+    /** How far back to pull real daily_water_records for chat grounding (matches ConservationTipsController.HISTORY_MONTHS). */
+    private static final int DATA_CONTEXT_HISTORY_MONTHS = 3;
 
     private static final String LOADING_MSG = "Loading Ripple, please wait...";
     private static final String READY_MSG = "Ripple loaded. Ask it something.";
@@ -304,9 +317,20 @@ public class ChatController {
         // --- Part 3: rebuild the transcript so history survives navigation ------
         renderHistory();
 
-        // --- Part 1: the grounding builder needs a usage model. Fresh seeded
-        //     instance, same as ConservationTipsController -- still on sample data.
-        dataContextBuilder = new ChatDataContextBuilder(new WaterDataList());
+        // --- Part 1: the grounding builder needs the user's REAL usage history --
+        //     same Supabase-backed source ConservationTipsController uses (real
+        //     data or the seeded WaterDataList fallback), so the chatbot and the
+        //     tips screen can never disagree about the score for the same data.
+        // Also resolves this session's own user/household id, used by
+        // UnauthorizedActionDetector to tell "my own data" apart from a foreign identity.
+        chatUserId = parseUuid(UserSession.getUserId());
+        LocalDate chatToday = LocalDate.now();
+        List<DailyWaterRecord> chatDailyRecords = (chatUserId == null)
+            ? List.of()
+            : WaterRecordService.getUserDailyRecords(
+                  chatUserId, chatToday.minusMonths(DATA_CONTEXT_HISTORY_MONTHS).withDayOfMonth(1), chatToday);
+        chatHouseholdId = firstHouseholdId(chatDailyRecords);
+        dataContextBuilder = new ChatDataContextBuilder(chatDailyRecords, new WaterDataList());
 
         AbstractModel shared = session.getModel();
         if (shared != null) {
@@ -401,6 +425,14 @@ public class ChatController {
             return;
         }
 
+        // inputField's own onAction fires independently of sendButton's disabled state (see
+        // ChatView.fxml), so pressing Enter while a generation Task is still running would
+        // otherwise start a second Task/Thread calling the shared AbstractModel's generate()
+        // concurrently with the first. Reject re-entry here, before anything else runs.
+        if (!generationGuard.tryStart()) {
+            return;
+        }
+
         inputField.clear();
 
         // --- Defence layer 1: prompt-injection / jailbreak pre-check. THE VERY
@@ -411,6 +443,23 @@ public class ChatController {
                 + oneLineForLog(userMessage));
             showAndRemember(Sender.USER, userMessage);
             showAndRemember(Sender.AI, PromptInjectionDetector.INJECTION_REPLY);
+            generationGuard.finish();
+            return;
+        }
+
+        // --- Defence layer 1b: structural unauthorized-action pre-check. A request phrased as
+        //     an ordinary water question can still reference another identity's data, or combine
+        //     a mutation verb with a mutable-data noun -- neither PromptInjectionDetector's
+        //     override-phrase list nor TopicFilter's on-topic vocabulary check was designed to
+        //     catch this (see CLAUDE.md gotcha #14 / UnauthorizedActionDetector). Also
+        //     deterministic, instant, no model call. ------------------------------------------
+        if (UnauthorizedActionDetector.containsUnauthorizedActionRequest(
+                userMessage, chatUserId, chatHouseholdId)) {
+            System.out.println("[ChatController] unauthorized-action request blocked (layer 1b, pre-model): "
+                + oneLineForLog(userMessage));
+            showAndRemember(Sender.USER, userMessage);
+            showAndRemember(Sender.AI, UnauthorizedActionDetector.UNAUTHORIZED_ACTION_REPLY);
+            generationGuard.finish();
             return;
         }
 
@@ -419,6 +468,7 @@ public class ChatController {
         if (!TopicFilter.isLikelyOnTopic(userMessage)) {
             showAndRemember(Sender.USER, userMessage);
             showAndRemember(Sender.AI, TopicFilter.OFF_TOPIC_REPLY);
+            generationGuard.finish();
             return;
         }
 
@@ -477,12 +527,14 @@ public class ChatController {
             }
             showAndRemember(Sender.AI, reply);
             sendButton.setDisable(false);
+            generationGuard.finish();
         });
 
         generateTask.setOnFailed(e -> {
             removeTypingIndicator();
             addSystemMessage("Error: " + generateTask.getException().getMessage());
             sendButton.setDisable(false);
+            generationGuard.finish();
         });
 
 
@@ -1272,5 +1324,27 @@ public class ChatController {
         }
         String flat = text.replaceAll("\\s+", " ").strip();
         return flat.length() <= 160 ? flat : flat.substring(0, 160) + "...";
+    }
+
+    /** Parses the session's user id string to a {@link UUID}, or null if absent / not a uuid (matches ConservationTipsController). */
+    private static UUID parseUuid(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        try {
+            return UUID.fromString(raw.trim());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /** First non-null householdId across {@code records} (matches ConservationTipsController.householdIdOf), or null. */
+    private static UUID firstHouseholdId(List<DailyWaterRecord> records) {
+        for (DailyWaterRecord record : records) {
+            if (record.getHouseholdId() != null) {
+                return record.getHouseholdId();
+            }
+        }
+        return null;
     }
 }

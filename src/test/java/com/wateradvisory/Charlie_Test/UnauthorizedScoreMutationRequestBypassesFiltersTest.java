@@ -7,28 +7,17 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
- * KNOWN GAP (found via adversarial probing after the item 7/8 TDD cycles, per
- * project owner's request). Neither {@link TopicFilter} nor
- * {@link PromptInjectionDetector} was designed to catch a request to directly
- * set/fake the user's own conservation score when phrased as an ordinary
- * water question:
- * <ul>
- *   <li>{@code TopicFilter} sees legitimate water/score vocabulary and calls
- *       it on-topic -- it has no concept of "read vs. write".</li>
- *   <li>{@code PromptInjectionDetector} only matches instruction-override
- *       phrasing ("ignore your rules", "you are now", ...) -- this request
- *       doesn't try to override the system prompt at all, it just asks the
- *       model to fabricate/mutate a score value it should never be able to
- *       set directly (the real score is derived from recorded usage, per
- *       {@code ConservationScoreCalculator}).</li>
- * </ul>
- * CLAUDE.md's three-layer defence (gotcha #14) documents Layer 3 as
- * re-checking the model's OUTPUT for off-topic drift only -- not for the
- * model complying with a score-mutation request. There is currently no layer
- * that covers this at all, so this assertion fails (documenting the gap)
- * rather than passing. This is intentionally left failing/unfixed -- a real
- * fix needs a new detector (or a same-user-only data-scope check) that is
- * bigger than the scope of today's TDD list.
+ * Regression guard for a previously-known gap (found via adversarial probing
+ * after the item 7/8 TDD cycles). {@link TopicFilter} alone sees legitimate
+ * water/score vocabulary and calls this on-topic -- it has no concept of
+ * "read vs. write". The gap is now closed in
+ * {@link PromptInjectionDetector#containsInjectionAttempt(String)}, which
+ * also matches unauthorized-action phrasing (directly setting/faking a
+ * score, which must only ever be derived from recorded usage per
+ * {@code ConservationScoreCalculator}) alongside the original
+ * instruction-override patterns, so this request is now caught before the
+ * model is ever invoked. Kept as a permanent regression test against a
+ * future narrowing of that pattern set.
  */
 public class UnauthorizedScoreMutationRequestBypassesFiltersTest {
 

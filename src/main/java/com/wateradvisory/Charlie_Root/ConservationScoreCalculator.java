@@ -38,6 +38,27 @@ import javafx.collections.ObservableList;
  */
 public class ConservationScoreCalculator {
 
+    /**
+     * Result of a score update: the final clamped score, PLUS the real numbers that
+     * explain it, so a genuine (non-hallucinated) explanatory sentence can be built
+     * from them -- e.g. "Your score dropped 4 points because this week's usage was
+     * 18% higher than your average."
+     *
+     * @param newScore      the new score, always in [0, 100]
+     * @param adjustment    the point change actually applied by the formula (+/- up to 10,
+     *                      before the FINAL score is clamped to [0, 100] -- so this can differ
+     *                      from {@code newScore - previousScore} when that final clamp bites,
+     *                      e.g. a previousScore of 95 with a +10 adjustment still only reaches
+     *                      newScore 100, a "+5 actually applied" difference the raw adjustment
+     *                      value does not hide)
+     * @param percentChange the raw signed percent difference between current and previous
+     *                      period usage ({@code (current - previous) / previous * 100}); positive
+     *                      means MORE usage, negative means LESS. {@code Double.NaN} when there is
+     *                      no prior/current period to compare, or previous usage was 0 (can't divide).
+     */
+    public record ScoreResult(int newScore, int adjustment, double percentChange) {
+    }
+
     /** Score everyone starts on, and the value returned when there is no prior period to compare against. */
     public static final int STARTING_SCORE = 50;
 
@@ -63,9 +84,9 @@ public class ConservationScoreCalculator {
      *
      * @param previousScore the score before this update
      * @param records       the user's {@code daily_water_records} rows (any order; may be null/empty)
-     * @return the new score, always in [0, 100]
+     * @return the new score (always in [0, 100]) plus the adjustment/percentChange that explain it
      */
-    public int calculateDailyScore(int previousScore, List<DailyWaterRecord> records) {
+    public ScoreResult calculateDailyScore(int previousScore, List<DailyWaterRecord> records) {
         Double[] pair = mostRecentDayPair(records);
         return applyFormula(previousScore, pair[0], pair[1]);
     }
@@ -75,7 +96,7 @@ public class ConservationScoreCalculator {
      * user's most recent <b>logged calendar month</b> against the previous logged
      * calendar month.
      */
-    public int calculateMonthlyScore(int previousScore, List<DailyWaterRecord> records) {
+    public ScoreResult calculateMonthlyScore(int previousScore, List<DailyWaterRecord> records) {
         Double[] pair = mostRecentMonthPair(records);
         return applyFormula(previousScore, pair[0], pair[1]);
     }
@@ -131,7 +152,7 @@ public class ConservationScoreCalculator {
     /** Fallback for zero-Supabase-data / no-DB-connection: compare the user's two most recent DAILY {@link WaterData} records. */
     public int calculateDailyScoreFallback(String userId, int previousScore, WaterDataList data) {
         if (data == null) {
-            return STARTING_SCORE;
+            return freshStart();
         }
         return scoreFromWaterData(previousScore, userRecords(userId, data.getDailyWater()));
     }
@@ -139,7 +160,7 @@ public class ConservationScoreCalculator {
     /** Fallback counterpart to {@link #calculateMonthlyScore}. See {@link #calculateDailyScoreFallback}. */
     public int calculateMonthlyScoreFallback(String userId, int previousScore, WaterDataList data) {
         if (data == null) {
-            return STARTING_SCORE;
+            return freshStart();
         }
         return scoreFromWaterData(previousScore, userRecords(userId, data.getMonthlyWater()));
     }
@@ -159,14 +180,14 @@ public class ConservationScoreCalculator {
     }
 
     /** Applies the formula to the last two entries of {@code records} (fallback path). */
-    private int scoreFromWaterData(int previousScore, List<WaterData> records) {
+    private ScoreResult scoreFromWaterData(int previousScore, List<WaterData> records) {
         if (records == null || records.size() < 2) {
-            return STARTING_SCORE;
+            return freshStart();
         }
         WaterData previous = records.get(records.size() - 2);
         WaterData current = records.get(records.size() - 1);
         if (previous == null || current == null) {
-            return clampScore(previousScore);
+            return unchanged(previousScore);
         }
         return applyFormula(previousScore, previous.getWaterUsage(), current.getWaterUsage());
     }
@@ -185,21 +206,38 @@ public class ConservationScoreCalculator {
      *   <li>final score always clamped to [0, 100].</li>
      * </ul>
      */
-    private int applyFormula(int previousScore, Double previousUsage, Double currentUsage) {
+    private ScoreResult applyFormula(int previousScore, Double previousUsage, Double currentUsage) {
         if (previousUsage == null || currentUsage == null) {
-            return STARTING_SCORE;
+            return freshStart();
         }
         if (previousUsage == 0.0) {
-            return clampScore(previousScore);
+            return unchanged(previousScore);
         }
+        double percentChangeFraction = (currentUsage - previousUsage) / previousUsage;
         double adjustment;
         if (currentUsage == 0.0) {
             adjustment = MAX_ADJUSTMENT;
         } else {
-            double percentChangeFraction = (currentUsage - previousUsage) / previousUsage;
             adjustment = clamp(-MAX_ADJUSTMENT, MAX_ADJUSTMENT, -(percentChangeFraction * ADJUSTMENT_SCALE));
         }
-        return clampScore((int) Math.round(previousScore + adjustment));
+        int roundedAdjustment = (int) Math.round(adjustment);
+        int newScore = clampScore(previousScore + roundedAdjustment);
+        return new ScoreResult(newScore, roundedAdjustment, percentChangeFraction * 100.0);
+    }
+
+    /** No prior/current period to compare -- fresh STARTING_SCORE, no real adjustment or percent change to report. */
+    private static ScoreResult freshStart() {
+        return new ScoreResult(STARTING_SCORE, 0, Double.NaN);
+    }
+
+    /**
+     * A prior period record DID exist but can't be compared (zero previous usage -- can't divide;
+     * or a null record). Distinct from {@link #freshStart()}: this keeps the user's existing
+     * score untouched rather than resetting to {@link #STARTING_SCORE}, since a real (if
+     * unusable) prior record is not the same situation as no prior record at all.
+     */
+    private static ScoreResult unchanged(int previousScore) {
+        return new ScoreResult(clampScore(previousScore), 0, Double.NaN);
     }
 
     private static int clampScore(int score) {
