@@ -8,7 +8,8 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.wateradvisory.Jainya_Root.Controllers.MainController"
             stylesheets="@../css/style1.css, @app-extras.css"
-            styleClass="main-background">
+            styleClass="main-background"
+            prefWidth="882.0" prefHeight="516.0">
     <top>
         <Label text="Water Usage — Trends &amp; Seasonal Patterns" styleClass="page-title" BorderPane.alignment="CENTER" maxWidth="Infinity"/>
     </top>
