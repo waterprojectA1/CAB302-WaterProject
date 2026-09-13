@@ -8,7 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
@@ -44,13 +44,13 @@ public class TablePageController {
     private TableColumn<WaterData, String> userIDColumn;
 
     @FXML
-    private RadioButton dailyRadio;
+    private ToggleButton dailyRadio;
 
     @FXML
-    private RadioButton weeklyRadio;
+    private ToggleButton weeklyRadio;
 
     @FXML
-    private RadioButton monthlyRadio;
+    private ToggleButton monthlyRadio;
 
     @FXML
     private void handleReturnToMain(ActionEvent event) {
@@ -85,7 +85,7 @@ public class TablePageController {
         filteredDailyWater.setPredicate(water -> water.getUserID() == loggedUser);
 
         setupTable();
-        setupRadioButtons();
+        setupToggleButtons();
 
         tableView.setItems(filteredDailyWater);
 
@@ -154,7 +154,7 @@ public class TablePageController {
         );
 
     }
-    private void setupRadioButtons() {
+    private void setupToggleButtons() {
 
         ToggleGroup group = new ToggleGroup();
 
