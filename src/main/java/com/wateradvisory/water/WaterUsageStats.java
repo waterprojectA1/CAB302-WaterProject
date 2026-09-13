@@ -3,6 +3,7 @@ package com.wateradvisory.water;
 import java.util.List;
 import java.util.EnumMap;
 import java.util.Map;
+import java.time.LocalDate;
 
 /**
  * Pure aggregation helpers shared by the Daily/Seasonal/Compare
@@ -30,6 +31,46 @@ public class WaterUsageStats {
             totals.put(s, totals.get(s) + e.getLitres());
         }
         return totals;
+    }
+    public static Season findBiggestSeasonalChange(Map<Season, Integer> before, Map<Season, Integer> after) {
+        Season biggest = null;
+        int biggestDelta = 0;
+        for (Season season : Season.values()) {
+            int delta = after.getOrDefault(season, 0) - before.getOrDefault(season, 0);
+            if (Math.abs(delta) > Math.abs(biggestDelta)) {
+                biggestDelta = delta;
+                biggest = season;
+            }
+        }
+        return biggest;
+    }
+    public static String determineChangeDirection(int pctChange) {
+        if (pctChange < -1) return "down";
+        if (pctChange > 1) return "up";
+        return "flat";
+    }
+    public static String validateDateRange(LocalDate start, LocalDate end) {
+        if (start == null || end == null) {
+            return "Please choose both a start and end date.";
+        }
+        if (start.isAfter(end)) {
+            return "Start date must be before end date.";
+        }
+        LocalDate today = LocalDate.now();
+        if (start.isAfter(today) || end.isAfter(today)) {
+            return "Dates cannot be in the future.";
+        }
+        return null; // valid
+    }
+    public static String capitalize(String s) {
+        return s.charAt(0) + s.substring(1).toLowerCase();
+    }
+    public static LocalDate[] computeDefaultComparisonPeriods(LocalDate latest) {
+        LocalDate p2End = latest;
+        LocalDate p2Start = p2End.minusDays(29);
+        LocalDate p1End = p2Start.minusDays(1);
+        LocalDate p1Start = p1End.minusDays(29);
+        return new LocalDate[]{ p1Start, p1End, p2Start, p2End };
     }
     public static class Stats {
         public final Integer average;          // null if no data
