@@ -23,8 +23,8 @@
             <VBox styleClass="auth-card" spacing="12.0" maxHeight="-Infinity" maxWidth="420.0">
                 <Text fx:id="postRegisterText" styleClass="page-title"
                       text="Would you like to create a household?" />
-                <Label styleClass="page-subtitle"
-                       text="Households let everyone under one roof share a water total." />
+                <Label styleClass="page-subtitle" wrapText="true"
+                       text="Households let everyone under one roof share a water total and appear on the same leaderboard." />
                 <Button fx:id="yesHouseholdBtn" mnemonicParsing="false"
                         onAction="#handleYesHousehold" styleClass="btn, btn-primary, btn-block"
                         text="Yes, I live with other tenants" />
