@@ -1,6 +1,7 @@
 package com.wateradvisory.Steve_Root;
 
 import com.wateradvisory.Charlie_Root.NavShell;
+import com.wateradvisory.database.AuthService;
 import com.wateradvisory.database.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,8 +28,12 @@ public class LeaderboardController {
     private Label currentPointsLabel;
 
     @FXML
+    private Label profileSymbolLabel;
+
+    @FXML
     private void initialize() {
         seasonLabel.setText(formatSeasonName(LeaderboardService.getCurrentSeason()));
+        profileSymbolLabel.setText(NavShell.initialsOf(AuthService.getUsername()));
         loadLeaderboard();
     }
 

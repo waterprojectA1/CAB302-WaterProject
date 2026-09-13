@@ -32,7 +32,7 @@
 
         <VBox alignment="CENTER" spacing="12.0" prefWidth="180.0" maxHeight="-Infinity"
               styleClass="profile-card">
-            <Label styleClass="profile-symbol" text="U" />
+            <Label fx:id="profileSymbolLabel" styleClass="profile-symbol" text="U" />
             <Label styleClass="form-label" text="Your seasonal points" wrapText="true" />
             <Label fx:id="currentPointsLabel" styleClass="current-points-label" text="0 PTS" />
         </VBox>
