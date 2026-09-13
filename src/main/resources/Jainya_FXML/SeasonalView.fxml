@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -35,15 +34,13 @@
 
     <Label fx:id="rangeLabel" styleClass="range-label"/>
 
-    <TitledPane text="Custom date range" expanded="false">
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Start" styleClass="form-label"/>
-            <DatePicker fx:id="startPicker"/>
-            <Label text="End" styleClass="form-label"/>
-            <DatePicker fx:id="endPicker"/>
-            <Button text="Apply" onAction="#onApplyRange" styleClass="btn, btn-primary, btn-sm"/>
-        </HBox>
-    </TitledPane>
+    <HBox styleClass="range-bar" spacing="10" alignment="CENTER_LEFT">
+        <Label text="Custom date range" styleClass="form-label"/>
+        <DatePicker fx:id="startPicker"/>
+        <Label text="&#8594;" styleClass="range-label"/>
+        <DatePicker fx:id="endPicker"/>
+        <Button text="Apply" onAction="#onApplyRange" styleClass="btn, btn-primary, btn-sm"/>
+    </HBox>
 
     <Label fx:id="errorLabel" styleClass="error-label" wrapText="true"/>
 </VBox>

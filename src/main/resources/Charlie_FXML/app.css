@@ -768,11 +768,18 @@
 
 /* Segmented pill control -- replaces the underline TabPane header look for
    the Jainya My-data tabs, and the RadioButton/ToggleButton period switch on
-   the Michael table page. The TabPane itself supplies the pill "track"; each
-   tab/toggle becomes a pill inside it. */
-.seg-tabs { -fx-background-color: -color-surface; -fx-background-radius: 999; -fx-padding: 4; }
-.seg-tabs > .tab-header-area { -fx-padding: 0; }
+   the Michael table page. The pill "track" background sits on just the
+   headers-region (the row of tab buttons), sized to its content, not on the
+   whole TabPane -- otherwise the pill background would paint behind the
+   page content too. */
+.seg-tabs { -fx-background-color: transparent; }
+.seg-tabs > .tab-header-area { -fx-padding: 0 0 10 0; }
 .seg-tabs > .tab-header-area > .tab-header-background { -fx-background-color: transparent; }
+.seg-tabs > .tab-header-area > .headers-region {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 999;
+    -fx-padding: 4;
+}
 .seg-tabs > .tab-header-area > .headers-region > .tab {
     -fx-background-color: transparent;
     -fx-background-radius: 999;
@@ -788,7 +795,7 @@
     -fx-text-fill: white;
 }
 .seg-tabs > .tab-header-area > .headers-region > .tab:selected .focus-indicator { -fx-border-width: 0; }
-.seg-tabs > .tab-content-area { -fx-background-color: transparent; -fx-padding: 12 0 0 0; }
+.seg-tabs > .tab-content-area { -fx-background-color: transparent; -fx-padding: 0; }
 
 /* Period toggle (Daily/Weekly/Monthly, Total/Average) as filled pills rather
    than the default RadioButton dot -- used with ToggleButton controls. */

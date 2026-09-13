@@ -15,7 +15,7 @@
         <Label styleClass="page-subtitle" text="Trends and seasonal patterns" />
     </VBox>
 
-    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" styleClass="seg-tabs" VBox.vgrow="ALWAYS">
         <tabs>
             <Tab text="Daily">
                 <fx:include source="DailyView.fxml" />
