@@ -1,9 +1,13 @@
+// Summary: Controls the Record Water feature, including selecting activities,
+// calculating water usage, managing the daily activity list, and saving daily records.
 package com.wateradvisory.Arjay_Root;
 
+// Project services and models used for water calculations and daily water records.
 import com.wateradvisory.database.WaterConsumptionService;
 import com.wateradvisory.water.WaterActivityEntry;
 import com.wateradvisory.database.WaterRecordService;
 
+// JavaFX imports used for events, FXML controls, page navigation, and interface elements.
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,8 +20,6 @@ import javafx.stage.Stage;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.text.Text;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -26,6 +28,10 @@ import javafx.scene.layout.Priority;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
+
+// Java collections used to store the user's current daily water activities.
+import java.util.ArrayList;
+import java.util.List;
 
 import java.io.IOException;
 
@@ -68,6 +74,7 @@ public class RecordWaterController {
     @FXML
     private VBox activityListBox;
 
+    // Sets up the Record Water page and loads today's saved water activities.
     @FXML
     private void initialize() {
 
@@ -92,6 +99,7 @@ public class RecordWaterController {
         recalculatePendingTotal();
     }
 
+    // Returns the user from the Record Water page to the main application screen.
     @FXML
     private void handleReturnToMain(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/App_Root-view.fxml"));
@@ -103,6 +111,7 @@ public class RecordWaterController {
         stage.show();
     }
 
+    // Opens the activity recording form and resets the activity selections.
     @FXML
     private void handleActivityBtn(ActionEvent event) {
 
@@ -126,6 +135,7 @@ public class RecordWaterController {
 
     }
 
+    // Returns from the activity form to the main Record Water screen.
     @FXML
     private void handleReturnToRecordMain(ActionEvent event) {
 
@@ -136,6 +146,7 @@ public class RecordWaterController {
         mainRecord.setManaged(true);
     }
 
+    // Creates the list of available water-use activities for the activity menu.
     private void setupActivityMenu() {
 
         String[] activities = {
@@ -165,6 +176,7 @@ public class RecordWaterController {
         }
     }
 
+    // Sets the available duration and amount options for the selected activity.
     private void setupInputsForActivity() {
 
         activityDuration.getItems().clear();
@@ -263,6 +275,7 @@ public class RecordWaterController {
         }
     }
 
+    // Resets the selected duration, amount, and calculated activity total.
     private void resetActivityInputs() {
 
         selectedActivityDuration = 0;
@@ -277,6 +290,7 @@ public class RecordWaterController {
         );
     }
 
+    // Calculates and displays the water usage for the currently selected activity.
     private void updateActivityTotal() {
 
         if (selectedActivity.isEmpty()
@@ -305,6 +319,7 @@ public class RecordWaterController {
         );
     }
 
+    // Refreshes the daily activity list and adds a remove option to each activity.
     private void refreshActivityList() {
 
         activityListBox.getChildren().clear();
@@ -353,6 +368,7 @@ public class RecordWaterController {
         }
     }
 
+    // Adds the completed activity to the user's current daily activity list.
     @FXML
     private void handleSubmitActivity() {
 
@@ -408,6 +424,7 @@ public class RecordWaterController {
         mainRecord.setManaged(true);
     }
 
+    // Recalculates the total water usage from all activities currently in the daily list.
     private void recalculatePendingTotal() {
 
         pendingWaterTotal = 0;
@@ -419,6 +436,7 @@ public class RecordWaterController {
         updatePendingTotalText();
     }
 
+    // Saves the user's current daily water activities and displays the save result.
     @FXML
     private void handleSubmitWaterConsumption() {
 
@@ -470,6 +488,7 @@ public class RecordWaterController {
         }
     }
 
+    // Updates the displayed total water consumption for the current day.
     private void updatePendingTotalText() {
 
         pendingTotalText.setText(

@@ -1,7 +1,11 @@
+// Summary: Controls the household page, including viewing household details,
+// managing members, joining or creating households, and editing household settings.
 package com.wateradvisory.Arjay_Root;
 
+// Project services used for household management and household water usage data.
 import com.wateradvisory.database.HouseholdService;
 import com.wateradvisory.database.WaterRecordService;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,8 +16,9 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
+
+// Java imports used for error handling and storing household data.
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import javafx.scene.control.TextField;
@@ -73,6 +78,7 @@ public class ViewHousehold {
     @FXML
     private Text householdWaterTotalText;
 
+    // Loads the correct household view and displays the current household information.
     @FXML
     private void initialize() {
 
@@ -133,6 +139,7 @@ public class ViewHousehold {
         }
     }
 
+    // Opens the household settings screen and loads editable household members.
     @FXML
     private void handleHouseSettings(ActionEvent event) {
 
@@ -145,6 +152,7 @@ public class ViewHousehold {
         loadEditableMembers();
     }
 
+    // Loads household members that the owner is allowed to remove.
     private void loadEditableMembers() {
 
         editMemberListBox.getChildren().clear();
@@ -164,6 +172,7 @@ public class ViewHousehold {
         }
     }
 
+    // Closes household settings and returns to the household overview.
     @FXML
     private void handleCancelSettings(ActionEvent event) {
 
@@ -174,6 +183,7 @@ public class ViewHousehold {
         viewHouseholdPane.setManaged(true);
     }
 
+    // Applies household name changes and removes any selected household members.
     @FXML
     private void handleApplyChanges() {
 
@@ -224,6 +234,7 @@ public class ViewHousehold {
         initialize();
     }
 
+    // Returns the user from the household page to the main application screen.
     @FXML
     private void handleReturnToMain(ActionEvent event) {
         // return to main interface
@@ -244,6 +255,7 @@ public class ViewHousehold {
         }
     }
 
+    // Loads household members and displays each member's total water usage.
     private void loadHouseholdMembers() {
 
         memberListBox.getChildren().clear();
@@ -269,6 +281,7 @@ public class ViewHousehold {
         );
     }
 
+    // Validates a join code and attempts to join the selected household.
     @FXML
     private void handleJoinHousehold() {
 
@@ -301,6 +314,7 @@ public class ViewHousehold {
         }
     }
 
+    // Removes the current user from their household and refreshes the page.
     @FXML
     private void handleLeaveHousehold() {
 
@@ -316,6 +330,7 @@ public class ViewHousehold {
         }
     }
 
+    // Creates a new household, links the current user to it, and refreshes the page.
     @FXML
     private void handleCreateHousehold() {
 
@@ -348,6 +363,7 @@ public class ViewHousehold {
         initialize();
     }
 
+    // Confirms and deletes the current household when requested by the owner.
     @FXML
     private void handleDeleteHousehold() {
 

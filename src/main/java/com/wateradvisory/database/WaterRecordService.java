@@ -1,19 +1,26 @@
+// Summary: Handles water record database operations, including saving daily
+// water activities, retrieving user and household totals, and loading water history.
 package com.wateradvisory.database;
+
+// Water data models used to store activities, daily records, and usage entries.
 import com.wateradvisory.water.ActivityEntry;
 import com.wateradvisory.water.DailyWaterRecord;
 import com.wateradvisory.water.WaterActivityEntry;
 import com.wateradvisory.water.WaterUsageEntry;
 
+// Gson imports used to create and read JSON data sent to and received from Supabase.
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
 
+// Java networking imports used to send water record requests to Supabase.
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+// Java utilities used for storing water data, dates, lists, maps, and IDs.
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.time.LocalDate;
@@ -23,6 +30,7 @@ import java.util.UUID;
 
 public class WaterRecordService {
 
+    // Retrieves and calculates the current user's total recorded water usage.
     public static double getUserTotalWater() {
 
         try {
@@ -83,6 +91,7 @@ public class WaterRecordService {
         }
     }
 
+    // Retrieves the total recorded water usage for the current user's household.
     public static double getHouseholdTotalWater() {
 
         try {
@@ -131,6 +140,7 @@ public class WaterRecordService {
         }
     }
 
+    // Retrieves each household member and their total recorded water usage.
     public static Map<String, Double> getHouseholdMemberTotals() {
 
         Map<String, Double> memberTotals = new LinkedHashMap<>();
@@ -194,6 +204,7 @@ public class WaterRecordService {
         return memberTotals;
     }
 
+    // Retrieves the current user's daily, weekly, and all-time water usage totals.
     public static Map<String, Double> getUserWaterSummary() {
 
         Map<String, Double> summary = new LinkedHashMap<>();
@@ -273,6 +284,7 @@ public class WaterRecordService {
         return summary;
     }
 
+    // Converts the user's daily activities to JSON and saves the water record to Supabase.
     public static boolean saveDailyWaterSubmission(List<WaterActivityEntry> activities) {
 
         if (activities == null || activities.isEmpty()) {
@@ -371,6 +383,7 @@ public class WaterRecordService {
         }
     }
 
+    // Loads the current user's saved water activities for today's date.
     public static List<WaterActivityEntry> getTodayActivities() {
 
         List<WaterActivityEntry> activities = new ArrayList<>();

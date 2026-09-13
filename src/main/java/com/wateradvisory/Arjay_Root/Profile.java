@@ -1,7 +1,13 @@
+// Summary: Controls the user profile page, including displaying
+// account information, water usage totals, and returning to the main application.
 package com.wateradvisory.Arjay_Root;
 
+// Project services used to retrieve account details and water usage information.
 import com.wateradvisory.database.AuthService;
 import com.wateradvisory.database.WaterRecordService;
+
+// Java and JavaFX imports used for storing summary data,
+// displaying text, handling events, and navigating between pages.
 import java.util.Map;
 import javafx.scene.text.Text;
 import javafx.event.ActionEvent;
@@ -31,6 +37,7 @@ public class Profile {
     @FXML
     private Text allTimeTotalText;
 
+    // Loads the user's account details and water usage totals when the profile page opens.
     @FXML
     private void initialize() {
 
@@ -70,6 +77,7 @@ public class Profile {
         );
     }
 
+    // Returns the user from the profile page to the main application screen.
     @FXML
     private void handleReturnToMain(ActionEvent event) {
 

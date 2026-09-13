@@ -1,3 +1,5 @@
+// Summary: Handles household-related database operations, including creating,
+// joining, editing, leaving, deleting households, and managing household members.
 package com.wateradvisory.database;
 
 import com.google.gson.JsonArray;
@@ -7,6 +9,7 @@ import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.List;
 
+// Used to securely generate random household join codes.
 import java.security.SecureRandom;
 
 import java.net.URI;
@@ -21,6 +24,7 @@ public class HouseholdService {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    // Generates a random six-character join code for a new household.
     private static String generateJoinCode() {
 
         StringBuilder code = new StringBuilder();
@@ -36,6 +40,7 @@ public class HouseholdService {
         return code.toString();
     }
 
+    // Retrieves the join code for the current user's household.
     public static String getJoinCode() {
 
         try {
@@ -121,6 +126,7 @@ public class HouseholdService {
         return "N/A";
     }
 
+    // Validates a join code and attempts to add the current user to that household.
     public static boolean joinHousehold(String joinCode) {
 
         try {
@@ -168,6 +174,7 @@ public class HouseholdService {
         }
     }
 
+    // Creates a new household in Supabase and returns its household ID.
     public static String createHousehold(String householdName, String address) {
 
         try {
@@ -235,6 +242,7 @@ public class HouseholdService {
         return null;
     }
 
+    // Links the current user's account to a household and completes their setup.
     public static boolean linkUserToHousehold(String householdId) {
 
         try {
@@ -282,6 +290,7 @@ public class HouseholdService {
         }
     }
 
+    // Retrieves the name of the household linked to the current user.
     public static String getHouseholdName() {
 
         try {
@@ -365,6 +374,7 @@ public class HouseholdService {
         return "No Household";
     }
 
+    // Updates the name of the current user's household.
     public static boolean changeHouseholdName(String newName) {
 
         try {
@@ -449,6 +459,7 @@ public class HouseholdService {
         }
     }
 
+    // Retrieves the usernames of all members in the current household.
     public static List<String> getHouseholdMembers() {
 
         List<String> members = new ArrayList<>();
@@ -535,6 +546,7 @@ public class HouseholdService {
         return members;
     }
 
+    // Retrieves the username of the user who created the current household.
     public static String getHouseholdOwner() {
 
         try {
@@ -649,6 +661,7 @@ public class HouseholdService {
         return "Unknown";
     }
 
+    // Checks whether the current user is currently linked to a household.
     public static boolean hasHousehold() {
 
         try {
@@ -692,6 +705,7 @@ public class HouseholdService {
         }
     }
 
+    // Removes a selected member from the current household.
     public static boolean removeHouseholdMember(String username) {
 
         try {
@@ -734,6 +748,7 @@ public class HouseholdService {
         }
     }
 
+    // Removes the current user from their household.
     public static boolean leaveHousehold() {
 
         try {
@@ -769,6 +784,7 @@ public class HouseholdService {
         }
     }
 
+    // Checks whether the current user is the owner of a household.
     public static boolean isCurrentUserOwner() {
 
         try {
@@ -805,6 +821,7 @@ public class HouseholdService {
         }
     }
 
+    // Deletes the household owned by the current user.
     public static boolean deleteHousehold() {
 
         try {
@@ -840,6 +857,7 @@ public class HouseholdService {
         }
     }
 
+    // Checks whether a household join code follows the required six-character format.
     public static boolean isValidJoinCode(String code) {
 
         if (code == null) {
@@ -849,6 +867,7 @@ public class HouseholdService {
         return code.matches("[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}");
     }
 
+    // Checks that a household name is not null or empty.
     public static boolean isValidHouseholdName(String name) {
 
         if (name == null) {
@@ -858,6 +877,7 @@ public class HouseholdService {
         return !name.trim().isEmpty();
     }
 
+    // Removes unnecessary spaces from the beginning and end of a household address.
     public static String normaliseHouseholdAddress(String address) {
 
         if (address == null) {
@@ -867,6 +887,7 @@ public class HouseholdService {
         return address.trim();
     }
 
+    // Removes unnecessary spaces from the beginning and end of a household name.
     public static String normaliseHouseholdName(String name) {
 
         if (name == null) {
@@ -876,6 +897,7 @@ public class HouseholdService {
         return name.trim();
     }
 
+    // Cleans a join code and converts it to uppercase before validation.
     public static String normaliseJoinCode(String code) {
 
         if (code == null) {

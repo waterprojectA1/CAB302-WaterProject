@@ -1,3 +1,5 @@
+// Summary: Controls the user registration screen, including validating
+// account details, creating accounts, showing messages, and returning to login.
 package com.wateradvisory.Arjay_Root;
 
 import com.wateradvisory.database.AuthService;
@@ -29,7 +31,7 @@ public class Register {
     @FXML
     private PasswordField confirmPasswordField;
 
-
+    // Validates the entered registration details and creates a new user account.
     @FXML
     private void handleRegister(ActionEvent event) throws IOException {
 
@@ -96,13 +98,13 @@ public class Register {
         }
     }
 
-
+    // Returns the user from the registration screen to the login page.
     @FXML
     private void handleBack(ActionEvent event) throws IOException {
         openLoginPage(event);
     }
 
-
+    // Loads and displays the login page while keeping the current window size.
     private void openLoginPage(ActionEvent event) throws IOException {
 
         Parent root = FXMLLoader.load(
@@ -127,7 +129,7 @@ public class Register {
         stage.show();
     }
 
-
+    // Displays a message window to inform the user about registration results or errors.
     private void showMessage(
             String title,
             String message

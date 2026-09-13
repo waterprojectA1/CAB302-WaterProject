@@ -1,3 +1,5 @@
+// Summary: Calculates estimated water usage for household activities
+// using activity type, duration, and amount while validating user input.
 package com.wateradvisory.database;
 
 public class WaterConsumptionService {
@@ -5,8 +7,7 @@ public class WaterConsumptionService {
     // Shower Litre per minute modifiers
     private static final double SHOWER_LITRES_PER_MINUTE = 9.0;
 
-    // Temporary estimated rates.
-    // We can replace these later with researched values.
+    // Water usage rates used to calculate litres consumed per minute for each activity.
     private static final double DISHES_LITRES_PER_MINUTE = 6.0;
     private static final double FLOOR_CLEANING_LITRES_PER_MINUTE = 3.0;
     private static final double LAUNDRY_LITRES_PER_MINUTE = 4.0;
@@ -14,6 +15,7 @@ public class WaterConsumptionService {
     private static final double WINDOW_CLEANING_LITRES_PER_MINUTE = 2.0;
     private static final double BATHTUB_LITRES_PER_MINUTE = 10.0;
 
+    // Validates the selected activity inputs and calculates the estimated water usage in litres.
     public static double calculateActivity(
             String activity,
             int durationMinutes,

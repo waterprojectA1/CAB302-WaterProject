@@ -1,17 +1,22 @@
+// Summary: Handles user authentication and account-related database actions,
+// including login, logout, registration, setup status, and account information.
 package com.wateradvisory.database;
 
+// Java networking imports used to send HTTP requests to Supabase.
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.io.IOException;
 
+// Gson imports used to read and process JSON responses from Supabase.
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonArray;
 
 public class AuthService {
 
+    // Validates the login details, authenticates the user with Supabase, and stores the user session.
     public static boolean login(String email, String password) {
 
         email = normaliseEmail(email);
@@ -78,6 +83,7 @@ public class AuthService {
         }
     }
 
+    // Logs the user out of Supabase and clears the current user session.
     public static void logout() {
 
         String accessToken = UserSession.getAccessToken();
@@ -112,6 +118,7 @@ public class AuthService {
         }
     }
 
+    // Validates the registration details and creates a new user account through Supabase.
     public static boolean register(String email,String username, String password) {
 
         email = normaliseEmail(email);
@@ -160,6 +167,7 @@ public class AuthService {
         }
     }
 
+    // Checks whether the current user has completed the initial account setup.
     public static boolean isSetupComplete() {
 
         try {
@@ -207,6 +215,7 @@ public class AuthService {
         return false;
     }
 
+    // Updates the user's account to show that the initial setup has been completed.
     public static void markSetupComplete() throws IOException, InterruptedException {
 
         String userId = UserSession.getUserId();
@@ -240,6 +249,7 @@ public class AuthService {
         }
     }
 
+    // Retrieves the current user's username from the accounts database.
     public static String getUsername() {
 
         try {
@@ -286,6 +296,7 @@ public class AuthService {
         return "User";
     }
 
+    // Retrieves the current user's email address from Supabase authentication.
     public static String getUserEmail() {
 
         try {
@@ -334,6 +345,7 @@ public class AuthService {
         }
     }
 
+    // Checks that the login email and password are valid before authentication.
     public static boolean isValidLoginInput(String email, String password) {
 
         if (email == null || password == null) {
@@ -350,6 +362,7 @@ public class AuthService {
         return email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
     }
 
+    // Removes unnecessary spaces from the beginning and end of an email address.
     public static String normaliseEmail(String email) {
 
         if (email == null) {
@@ -359,6 +372,7 @@ public class AuthService {
         return email.trim();
     }
 
+    // Checks that the registration email, username, and password contain valid input.
     public static boolean isValidRegistrationInput(
             String email,
             String username,
@@ -371,6 +385,7 @@ public class AuthService {
         return isValidLoginInput(email, password);
     }
 
+    // Removes unnecessary spaces from the beginning and end of a username.
     public static String normaliseUsername(String username) {
 
         if (username == null) {

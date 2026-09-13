@@ -1,7 +1,12 @@
+// Summary: Controls the post-registration household setup process,
+// including skipping setup, creating a household, and opening the main application.
 package com.wateradvisory.Arjay_Root;
 
+// Project services used for account setup and household management.
 import com.wateradvisory.database.AuthService;
 import com.wateradvisory.database.HouseholdService;
+
+// JavaFX imports used for button events, FXML controls, page navigation, and form fields.
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +17,7 @@ import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.TextField;
 
+// Handles input/output errors that may occur while loading application pages.
 import java.io.IOException;
 
 public class PostRegister {
@@ -24,6 +30,7 @@ public class PostRegister {
     @FXML
     private AnchorPane postRegister2;
 
+    // Displays the first household setup screen when the page opens.
     @FXML
     private void initialize() {
         postRegister1.setVisible(true);
@@ -32,6 +39,7 @@ public class PostRegister {
         postRegister2.setManaged(false);
     }
 
+    // Opens the household creation screen when the user chooses to create a household.
     @FXML
     private void handleYesHousehold() {
         postRegister1.setVisible(false);
@@ -40,11 +48,13 @@ public class PostRegister {
         postRegister2.setManaged(true);
     }
 
+    // Returns the user to the first household setup screen.
     @FXML
     private void handleReturnHousehold() {
         initialize();
     }
 
+    // Skips household setup, marks setup as complete, and opens the main application.
     @FXML
     private void handleNoHousehold(ActionEvent event) {
         // move user straight to main screen interface
@@ -76,6 +86,7 @@ public class PostRegister {
     @FXML
     private TextField addressField;
 
+    // Creates a household, links the current user to it, and opens the main application.
     @FXML
     private void handleCreateHousehold(ActionEvent event) {
 

@@ -1,7 +1,11 @@
+// Summary: Controls the login screen, including user authentication,
+// password visibility, recent login accounts, and page navigation.
+
 package com.wateradvisory.Arjay_Root;
 
 import java.io.IOException;
 
+// JavaFX imports used for events, FXML connections, page navigation, and UI controls.
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,16 +16,21 @@ import javafx.stage.Stage;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ComboBox;
+
+// Utility imports used for storing and managing recent login accounts.
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-// Database Imports
+// Project authentication service used to log users in and check account setup.
 import com.wateradvisory.database.AuthService;
+
+// JavaFX password field used to hide entered passwords.
 import javafx.scene.control.PasswordField;
 
 public class Login {
 
+    // FXML fields connected to the login interface.
     @FXML
     private TextField emailField;
 
@@ -34,15 +43,18 @@ public class Login {
     @FXML
     private ToggleButton showPasswordBtn;
 
+    // Stores recent login details locally for prototype convenience.
     @FXML
     private ComboBox<String> recentLoginBox;
 
     private final Preferences preferences =
             Preferences.userNodeForPackage(Login.class);
 
+    // Sets up the login page when it first loads.
     @FXML
     private void initialize() {
 
+        // Keeps the hidden and visible password fields using the same text.
         visiblePasswordField.textProperty()
                 .bindBidirectional(passwordField.textProperty());
 
@@ -72,6 +84,7 @@ public class Login {
         });
     }
 
+    // Shows or hides the user's password on the login screen.
     @FXML
     private void handleShowPassword(ActionEvent event) {
 
@@ -90,6 +103,7 @@ public class Login {
         }
     }
 
+    // Opens the AI chat page while keeping the current window size.
     @FXML
     private void handleChatViewNavigation(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/Charlie_FXML/ChatView.fxml"));
@@ -107,6 +121,7 @@ public class Login {
         stage.show();
     }
 
+    // Checks the entered login details and opens the appropriate page after login.
     @FXML
     private void handleLogin(ActionEvent event) throws IOException {
 
@@ -156,6 +171,7 @@ public class Login {
         }
     }
 
+    // Opens the registration page for users who need to create an account.
     @FXML
     private void handleSignUp(ActionEvent event) throws IOException {
 
@@ -175,6 +191,7 @@ public class Login {
         stage.show();
     }
 
+    // Saves a successful login to the recent accounts list.
     private void saveRecentLogin(String email, String password) {
 
         String savedLogins =
@@ -220,6 +237,7 @@ public class Login {
         );
     }
 
+    // Loads previously saved account emails into the recent login dropdown.
     private void loadRecentLogins() {
 
         String savedLogins =
