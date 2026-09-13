@@ -6,17 +6,13 @@ package com.wateradvisory.Arjay_Root;
 import com.wateradvisory.database.WaterConsumptionService;
 import com.wateradvisory.water.WaterActivityEntry;
 import com.wateradvisory.database.WaterRecordService;
+import com.wateradvisory.Charlie_Root.NavShell;
 
 // JavaFX imports used for events, FXML controls, page navigation, and interface elements.
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.text.Text;
@@ -32,8 +28,6 @@ import javafx.scene.control.Alert;
 // Java collections used to store the user's current daily water activities.
 import java.util.ArrayList;
 import java.util.List;
-
-import java.io.IOException;
 
 public class RecordWaterController {
 
@@ -101,14 +95,8 @@ public class RecordWaterController {
 
     // Returns the user from the Record Water page to the main application screen.
     @FXML
-    private void handleReturnToMain(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/App_Root-view.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+    private void handleReturnToMain(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.HOME);
     }
 
     // Opens the activity recording form and resets the activity selections.
@@ -355,6 +343,7 @@ public class RecordWaterController {
 
             HBox row = new HBox(15);
 
+            row.getStyleClass().add("list-row");
             row.setAlignment(Pos.CENTER_LEFT);
             row.setPadding(new Insets(5, 20, 5, 10));
 

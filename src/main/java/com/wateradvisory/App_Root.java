@@ -1,21 +1,15 @@
 package com.wateradvisory;
 
-import java.io.IOException;
 import java.util.Map;
 
-import com.wateradvisory.Charlie_Root.SceneNavigator;
+import com.wateradvisory.Charlie_Root.NavShell;
 import com.wateradvisory.database.AuthService;
 import com.wateradvisory.database.HouseholdService;
 import com.wateradvisory.database.WaterRecordService;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 public class App_Root {
 
@@ -49,148 +43,37 @@ public class App_Root {
 
     @FXML
     private void handleRecordWater(ActionEvent event) {
-
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/Arjay_FXML/recordwater.fxml")
-            );
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.sizeToScene();
-            stage.centerOnScreen();
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.RECORD_WATER);
     }
 
     @FXML
     private void handleViewHousehold(ActionEvent event) {
-
-        try {
-
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource(
-                            "/Arjay_FXML/householdview.fxml"
-                    )
-            );
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.HOUSEHOLD);
     }
 
     @FXML
     private void handleViewProfile(ActionEvent event) {
-
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/Arjay_FXML/profile.fxml")
-            );
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.setScene(new Scene(root));
-
-            stage.sizeToScene();
-            stage.centerOnScreen();
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.PROFILE);
     }
 
     @FXML
     private void handleDashboard(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/Michael_FXML/TableDisplayPage.fxml")
-            );
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.setScene(new Scene(root));
-
-            stage.sizeToScene();
-            stage.centerOnScreen();
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.DATA_TABLE);
     }
 
     @FXML
     private void handleConservationTips(ActionEvent event) {
-        SceneNavigator.goTo(event, "/Charlie_FXML/ConservationTipsView.fxml");
+        NavShell.go(event, NavShell.Route.TIPS);
         System.out.println("The user wants some conservation tips!");
     }
 
     @FXML
     private void handleLeaderboard(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/Steve_FXML/LeaderboardView.fxml")
-            );
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.sizeToScene();
-            stage.centerOnScreen();
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.LEADERBOARD);
     }
 
     @FXML
     private void handleLogout(ActionEvent event) {
-        // Arjay
-        AuthService.logout();
-
-        try {
-            Parent root = FXMLLoader.load(
-                    getClass().getResource("/Arjay_FXML/login.fxml")
-            );
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.logout(event);
     }
 }

@@ -270,7 +270,7 @@ public class ChatController {
 
     @FXML
     private void onBack(ActionEvent event) {
-        SceneNavigator.goTo(event, "/Charlie_FXML/ConservationTipsView.fxml");
+        NavShell.go(event, NavShell.Route.TIPS);
     }
 
     @FXML

@@ -1,21 +1,15 @@
 package com.wateradvisory.Michael_Root;
 
+import com.wateradvisory.Charlie_Root.NavShell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 public class NotificationController {
@@ -27,36 +21,18 @@ public class NotificationController {
     private Label notificationCount;
 
     @FXML
-    private void handleReturnToMain(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/App_Root-view.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+    private void handleReturnToMain(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.HOME);
     }
 
     @FXML
-    private void handleGoToGraph(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Jainya_FXML/MainView.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+    private void handleGoToGraph(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.DAILY);
     }
 
     @FXML
-    private void handleReturnTable(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Michael_FXML/TableDisplayPage.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+    private void handleReturnTable(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.DATA_TABLE);
     }
 
     private ObservableList<Notification> notifications =
