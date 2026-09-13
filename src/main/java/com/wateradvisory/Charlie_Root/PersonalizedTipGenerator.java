@@ -150,7 +150,11 @@ public class PersonalizedTipGenerator {
         if (occurrences <= 0) {
             return;
         }
-        double weightedAvgMinutes = weightedMinutes / occurrences;   // WEIGHTED, not a naive mean
+        // WEIGHTED, not a naive mean -- verified by ShowerDurationWeightedAverageTest: a 1-shower/5min
+        // entry plus a 9-shower/20min entry weighted-averages to 18.5 (rounds to 19), NOT the naive
+        // unweighted mean of the two entries' raw durations, (5+20)/2 = 12.5 (rounds to 13), which
+        // would under-weight the 9-occurrence entry as if it were a single event like the other one.
+        double weightedAvgMinutes = weightedMinutes / occurrences;
         if (weightedAvgMinutes <= SHOWER_BENCHMARK_MINUTES) {
             return;
         }
