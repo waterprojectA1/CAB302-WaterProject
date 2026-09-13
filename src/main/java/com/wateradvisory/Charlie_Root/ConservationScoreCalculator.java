@@ -205,6 +205,11 @@ public class ConservationScoreCalculator {
      *   <li>otherwise → {@code -(percentChange * 50)}, clamped to +/-10, added to the previous score;</li>
      *   <li>final score always clamped to [0, 100].</li>
      * </ul>
+     *
+     * <p>Verified by {@code ConservationScoreCalculatorExposesAdjustmentAndPercentChangeTest} with
+     * a concrete case: previous 200.0L -> current 100.0L (a 50% reduction) from a previousScore of
+     * 50 yields {@code ScoreResult(newScore=60, adjustment=+10, percentChange=-50.0)} -- confirming
+     * all three {@link ScoreResult} fields are populated from the real formula, not just newScore.</p>
      */
     private ScoreResult applyFormula(int previousScore, Double previousUsage, Double currentUsage) {
         if (previousUsage == null || currentUsage == null) {

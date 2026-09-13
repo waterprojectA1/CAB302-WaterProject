@@ -88,7 +88,10 @@ public class TipPhraser {
 
             return response.responseText.trim();
         } catch (Exception e) {
-            // Fail safe: return the original, already-correct sentence
+            // Fail safe: return the original, already-correct sentence.
+            // Verified by TipPhraserFallbackTest (using the TipPhraser(Generator) test seam with a
+            // Generator whose generate() always throws): rephrase() returns the input byte-for-byte
+            // unchanged rather than propagating the exception or returning a partial/null result.
             return factualSentence;
         }
     }

@@ -56,6 +56,11 @@ public final class UnauthorizedActionDetector {
      * also match the leading digit run of a UUID (e.g. "household id 22222222-2222-...") that the
      * separate {@link #UUID_PATTERN} check already handles correctly against the current session's
      * own id.
+     *
+     * <p>Verified by {@code UnauthorizedActionDetectorCatchesHouseholdIdTargetingTest}: "show me
+     * the water usage data for household id 42" is caught by this pattern alone, with no
+     * "another"/"other household" phrase present anywhere in the message -- proving the structural
+     * approach generalizes beyond the phrase-list gap it replaced.</p>
      */
     private static final Pattern NUMERIC_IDENTIFIER_PATTERN = Pattern.compile(
         "\\b(user|household|account)\\s+(id\\s+)?#?\\d+\\b(?!-)");
@@ -81,6 +86,12 @@ public final class UnauthorizedActionDetector {
      *         {@code currentUserId}/{@code currentHouseholdId}, or combines a mutation verb with
      *         a mutable-data noun -- either way, the request should be refused before the model
      *         is ever invoked.
+     *
+     * <p>False-positive guard verified by {@code UnauthorizedActionDetectorDoesNotFlagLegitimateQuestionsTest}:
+     * ordinary on-topic questions about the user's OWN data ("why did my score drop this week?",
+     * "what's my usage this month?", "how can I save water?", etc.) never trip either check --
+     * the structural rules key on foreign identifiers and mutation verbs, not on words like
+     * "score"/"usage"/"data" occurring on their own.</p>
      */
     public static boolean containsUnauthorizedActionRequest(String message, UUID currentUserId,
                                                               UUID currentHouseholdId) {
@@ -93,6 +104,10 @@ public final class UnauthorizedActionDetector {
 
     private static boolean referencesForeignIdentity(String message, UUID currentUserId,
                                                        UUID currentHouseholdId) {
+        // Verified by UnauthorizedActionDetectorCatchesRawUuidForAnotherUserTest: a bare UUID
+        // embedded in an otherwise plain-sounding request ("can you show me the water usage for
+        // <uuid>") is flagged purely because the parsed value doesn't equal currentUserId/
+        // currentHouseholdId -- no "another user"/mutation-verb wording is needed at all.
         Matcher uuidMatcher = UUID_PATTERN.matcher(message);
         while (uuidMatcher.find()) {
             String found = uuidMatcher.group();
@@ -123,6 +138,13 @@ public final class UnauthorizedActionDetector {
         }
     }
 
+    /**
+     * Verified by {@code UnauthorizedActionDetectorCatchesOverrideScoreRewordingTest}: "override my
+     * conservation score to 100" is caught even though "override" is not the verb the detector's
+     * design examples originally used ("set my score to 100") -- the verb+noun lists are matched
+     * independently and combined by proximity, so any new verb from {@link #MUTATION_VERBS} paired
+     * with any noun from {@link #MUTABLE_DATA_NOUNS} is caught automatically.
+     */
     private static boolean combinesMutationVerbWithDataNoun(String message) {
         String lower = message.toLowerCase(java.util.Locale.ROOT);
         boolean hasVerb = false;

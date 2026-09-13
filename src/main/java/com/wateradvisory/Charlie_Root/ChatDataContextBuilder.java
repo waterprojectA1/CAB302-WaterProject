@@ -99,6 +99,10 @@ public final class ChatDataContextBuilder {
       + "any number that is not shown here. If these figures do not actually answer the user's "
       + "question, say so honestly rather than making something up.";
 
+    // Guarantee verified by ChatDataContextBuilderReturnsNoDataBlockForUnknownUserTest: for a
+    // data-related question about a userId with zero real dailyRecords AND zero matching seeded
+    // fallback rows, buildContext() returns exactly this block (never a fabricated score/usage
+    // line) -- the "never invent numbers" rule holds even in the total-absence-of-data case.
     private static final String NO_DATA_BLOCK =
         "User's recorded water data: none is available for this question.\n"
       + "Tell the user you do not have the recorded data needed to answer that, and do NOT invent, "
@@ -155,6 +159,12 @@ public final class ChatDataContextBuilder {
      * (or the seeded fallback when empty), exactly like {@code ConservationTipsController}.
      * This is the ONE place this class reports the score, so it can never drift from the
      * tips screen's number for the same underlying data.
+     *
+     * <p>Guarantee verified by {@code ChatDataContextBuilderMatchesScoreCalculatorTest}:
+     * for identical {@code dailyRecords} input, the {@code newScore()} embedded in the
+     * returned context string is byte-for-byte the same value an independent, separately
+     * constructed {@link ConservationScoreCalculator} call produces -- the chat surface
+     * and the tips screen can never disagree on the score for the same underlying data.</p>
      */
     private String scoreLine(int userId) {
         ConservationScoreCalculator calculator = new ConservationScoreCalculator();

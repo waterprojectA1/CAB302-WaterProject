@@ -137,7 +137,11 @@ public class PersonalizedTipGenerator {
                 continue;
             }
             if (a.getDuration() <= 0) {
-                continue;   // malformed entry -- treat as no contribution, not a negative drag on the average
+                // Malformed entry -- treat as no contribution, not a negative drag on the average.
+                // Verified by NonPositiveDurationSafetyTest: a negative-duration entry mixed in
+                // alongside a valid one is excluded entirely, so it can neither pull the weighted
+                // average below the valid entries' true value nor produce a negative litresSavedPerWeek.
+                continue;
             }
             int amount = Math.max(1, a.getAmount());
             weightedMinutes += (double) a.getDuration() * amount;
@@ -146,7 +150,11 @@ public class PersonalizedTipGenerator {
         if (occurrences <= 0) {
             return;
         }
-        double weightedAvgMinutes = weightedMinutes / occurrences;   // WEIGHTED, not a naive mean
+        // WEIGHTED, not a naive mean -- verified by ShowerDurationWeightedAverageTest: a 1-shower/5min
+        // entry plus a 9-shower/20min entry weighted-averages to 18.5 (rounds to 19), NOT the naive
+        // unweighted mean of the two entries' raw durations, (5+20)/2 = 12.5 (rounds to 13), which
+        // would under-weight the 9-occurrence entry as if it were a single event like the other one.
+        double weightedAvgMinutes = weightedMinutes / occurrences;
         if (weightedAvgMinutes <= SHOWER_BENCHMARK_MINUTES) {
             return;
         }
