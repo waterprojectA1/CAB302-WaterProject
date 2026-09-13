@@ -18,7 +18,7 @@
         <Label fx:id="notificationCount" styleClass="page-subtitle" text="0 notifications" />
     </VBox>
 
-    <ListView fx:id="notificationList" VBox.vgrow="ALWAYS" />
+    <ListView fx:id="notificationList" styleClass="notif-list" VBox.vgrow="ALWAYS" />
 
     <HBox spacing="10.0">
         <Button mnemonicParsing="false" onAction="#handleReturnToMain"

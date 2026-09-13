@@ -42,7 +42,7 @@
         </VBox>
         <VBox styleClass="metric-card" spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <Label styleClass="metric-label" text="Z SCORE" />
-            <Label fx:id="zScoreLabel" styleClass="metric-value" />
+            <Label fx:id="zScoreLabel" styleClass="role-pill" />
         </VBox>
         <VBox styleClass="metric-card" spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
             <Label styleClass="metric-label" text="ESTIMATED COST" />

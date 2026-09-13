@@ -6,11 +6,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-
+import javafx.scene.shape.Circle;
 
 import java.time.format.DateTimeFormatter;
 
@@ -69,35 +72,32 @@ public class NotificationController {
                 if (empty || notification == null) {
                     setGraphic(null);
                     setText(null);
-                } else {
-
-                    Label waterUsage = new Label(String.valueOf(notification.getWaterObject().getWaterUsage()));
-                    waterUsage.setStyle(
-                            "-fx-font-size: 16px;" +
-                                    "-fx-font-weight: bold;"
-                    );
-
-                    Label zScore = new Label(String.valueOf(notification.getzScore()));
-
-                    Label date = new Label(
-                            notification.getDateCreated().format(formatter)
-                    );
-
-                    date.setStyle("-fx-text-fill: grey;");
-
-                    VBox box = new VBox(
-                            5,
-                            waterUsage,
-                            zScore,
-                            date
-                    );
-
-                    box.setPadding(
-                            new javafx.geometry.Insets(10)
-                    );
-
-                    setGraphic(box);
+                    return;
                 }
+
+                Circle dot = new Circle(4);
+                dot.getStyleClass().add("notif-dot");
+
+                Label title = new Label(
+                        "Usage: " + notification.getWaterObject().getWaterUsage() + " L"
+                );
+                title.getStyleClass().add("notif-title");
+
+                Label subtitle = new Label("Z-score: " + notification.getzScore());
+                subtitle.getStyleClass().add("notif-sub");
+
+                VBox textBox = new VBox(2, title, subtitle);
+                HBox.setHgrow(textBox, Priority.ALWAYS);
+
+                Label date = new Label(notification.getDateCreated().format(formatter));
+                date.getStyleClass().add("notif-time");
+
+                HBox row = new HBox(14, dot, textBox, date);
+                row.setAlignment(Pos.CENTER_LEFT);
+                row.getStyleClass().add("notif-card");
+
+                setGraphic(row);
+                setText(null);
             }
         });
 
