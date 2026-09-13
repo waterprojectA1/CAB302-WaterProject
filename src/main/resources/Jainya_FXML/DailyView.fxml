@@ -18,6 +18,8 @@
         <Insets top="16" right="16" bottom="16" left="16"/>
     </padding>
 
+    <Button text="&#8592; Back to Table" onAction="#onBackToDashboard" styleClass="secondary-button"/>
+
     <BarChart fx:id="dailyChart" legendVisible="false" animated="false" prefHeight="260" styleClass="chart-panel">
         <xAxis>
             <CategoryAxis fx:id="xAxis" label="Date"/>
