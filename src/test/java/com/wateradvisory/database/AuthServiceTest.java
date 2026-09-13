@@ -39,4 +39,12 @@ public class AuthServiceTest {
         boolean result = AuthService.isValidRegistrationInput("user@gmail.com","   ","password123");
         assertFalse(result);
     }
+
+    // Test 5: Username should remove surrounding spaces
+    @Test
+    void usernameShouldRemoveSurroundingSpaces() {
+
+        String result = AuthService.normaliseUsername("  Pogoy  ");
+        assertEquals("Pogoy", result);
+    }
 }
