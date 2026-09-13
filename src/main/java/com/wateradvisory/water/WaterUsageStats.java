@@ -44,6 +44,11 @@ public class WaterUsageStats {
         }
         return biggest;
     }
+    public static String determineChangeDirection(int pctChange) {
+        if (pctChange < -1) return "down";
+        if (pctChange > 1) return "up";
+        return "flat";
+    }
     public static String validateDateRange(LocalDate start, LocalDate end) {
         if (start == null || end == null) {
             return "Please choose both a start and end date.";
