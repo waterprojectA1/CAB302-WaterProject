@@ -143,7 +143,11 @@ public final class PromptInjectionDetector {
      * would wave it through as ordinary on-topic water/usage vocabulary -- it has no concept
      * of "whose data" this message is asking for. {@code UnauthorizedDataMutationRequestBypassesFiltersTest}
      * verifies the sibling gap: "delete my last water record" is caught here (via "delete my")
-     * even though {@link TopicFilter} has no concept of "read vs. write" either.</p>
+     * even though {@link TopicFilter} has no concept of "read vs. write" either.
+     * {@code UnauthorizedScoreMutationRequestBypassesFiltersTest} verifies the third sibling gap:
+     * "set my conservation score to 100" is caught here (via "set my conservation score") -- the
+     * score must only ever be derived from recorded usage by {@code ConservationScoreCalculator},
+     * never set directly by request.</p>
      */
     public static boolean containsInjectionAttempt(String message) {
         if (message == null) {
