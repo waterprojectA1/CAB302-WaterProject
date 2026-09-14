@@ -1,10 +1,10 @@
 package com.wateradvisory.Charlie_Test;
 
-import com.wateradvisory.Charlie_Root.ConservationScoreCalculator.ScoreResult;
-import com.wateradvisory.Charlie_Root.ConservationTipsController;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.wateradvisory.Charlie_Root.ConservationScoreCalculator.ScoreResult;
+import com.wateradvisory.Charlie_Root.ConservationTipsController;
 
 public class SubtitleForScoreNegativeAdjustmentTest {
 
@@ -18,6 +18,6 @@ public class SubtitleForScoreNegativeAdjustmentTest {
 
         String subtitle = ConservationTipsController.subtitleForScore(result);
 
-        assertEquals("Down 4 points -- your usage was 18% higher than your average.", subtitle);
+        assertEquals("Down 4 points. Your usage was 18% higher than your average.", subtitle);
     }
 }

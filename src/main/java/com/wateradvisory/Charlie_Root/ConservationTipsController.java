@@ -207,9 +207,9 @@ public class ConservationTipsController {
     /** Static subtitle text for each score band -- used only when there's no real period-over-period change to explain. */
     private static String subtitleForScoreBand(int score) {
         if (score >= 80) return "Excellent! Well above average conservation";
-        if (score >= 60) return "Good! Above average for your household size";
-        if (score >= 40) return "Average, some room to improve";
-        return "Needs improvement... see tips below :(";
+        if (score >= 60) return "Good. Above average for your household size";
+        if (score >= 40) return "Average. Some room to improve";
+        return "Needs improvement... See tips below :(";
     }
 
     public void setSeasonalTip(String text) {
