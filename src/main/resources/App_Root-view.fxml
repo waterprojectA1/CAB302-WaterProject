@@ -34,46 +34,50 @@
             <Label styleClass="metric-label" text="THIS WEEK" />
             <Text fx:id="weekTotalText" styleClass="metric-value" text="0 L" />
         </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="recordWaterBtn" mnemonicParsing="false" onAction="#handleRecordWater"
+                styleClass="btn, btn-primary" text="Record water" />
     </HBox>
 
-    <VBox styleClass="card" spacing="14.0" VBox.vgrow="ALWAYS">
-        <Label styleClass="section-title" text="Jump to" />
+    <VBox spacing="14.0" VBox.vgrow="ALWAYS">
+        <Label styleClass="section-label" text="JUMP TO" />
 
-        <GridPane hgap="12.0" vgap="12.0">
+        <GridPane hgap="14.0" vgap="14.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
             </columnConstraints>
-            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                <Button fx:id="recordWaterBtn" mnemonicParsing="false" onAction="#handleRecordWater"
-                        styleClass="btn, btn-secondary, btn-block" text="Record water" />
-                <Label styleClass="page-subtitle" wrapText="true" text="Log today's activities" />
+            <VBox fx:id="myDataCard" styleClass="jump-card" spacing="3.0"
+                  GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label styleClass="jump-card-title" text="My data" />
+                <Label styleClass="jump-card-subtitle" wrapText="true" text="Daily, seasonal, compare" />
             </VBox>
-            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                <Button fx:id="dashboardBtn" mnemonicParsing="false" onAction="#handleDashboard"
-                        styleClass="btn, btn-secondary, btn-block" text="Water records" />
-                <Label styleClass="page-subtitle" wrapText="true" text="Table and detail reports" />
+            <VBox fx:id="tipsCard" styleClass="jump-card" spacing="3.0"
+                  GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label styleClass="jump-card-title" text="Conservation tips" />
+                <Label styleClass="jump-card-subtitle" wrapText="true" text="Personalised for your usage" />
             </VBox>
-            <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
-                <Button fx:id="tipsBtn" mnemonicParsing="false" onAction="#handleConservationTips"
-                        styleClass="btn, btn-secondary, btn-block" text="Conservation tips" />
-                <Label styleClass="page-subtitle" wrapText="true" text="Personalised for your usage" />
+            <VBox fx:id="leaderboardCard" styleClass="jump-card" spacing="3.0"
+                  GridPane.columnIndex="2" GridPane.rowIndex="0">
+                <Label styleClass="jump-card-title" text="Leaderboard" />
+                <Label fx:id="leaderboardCardSubtitle" styleClass="jump-card-subtitle" wrapText="true"
+                       text="Not yet available" />
             </VBox>
-            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                <Button fx:id="leaderboardBtn" mnemonicParsing="false" onAction="#handleLeaderboard"
-                        styleClass="btn, btn-secondary, btn-block" text="Leaderboard" />
-                <Label styleClass="page-subtitle" wrapText="true" text="See how your household ranks" />
+            <VBox fx:id="householdCard" styleClass="jump-card" spacing="3.0"
+                  GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <Label styleClass="jump-card-title" text="Household" />
+                <Label styleClass="jump-card-subtitle" wrapText="true" text="Members and join code" />
             </VBox>
-            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                <Button fx:id="viewHouseholdBtn" mnemonicParsing="false" onAction="#handleViewHousehold"
-                        styleClass="btn, btn-secondary, btn-block" text="Household" />
-                <Label styleClass="page-subtitle" wrapText="true" text="Members and join code" />
+            <VBox fx:id="waterRecordsCard" styleClass="jump-card" spacing="3.0"
+                  GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Label styleClass="jump-card-title" text="Water records" />
+                <Label styleClass="jump-card-subtitle" wrapText="true" text="Table and detail reports" />
             </VBox>
-            <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                <Button fx:id="viewProfileBtn" mnemonicParsing="false" onAction="#handleViewProfile"
-                        styleClass="btn, btn-secondary, btn-block" text="Profile" />
-                <Label styleClass="page-subtitle" wrapText="true" text="Your account and totals" />
+            <VBox fx:id="profileCard" styleClass="jump-card" spacing="3.0"
+                  GridPane.columnIndex="2" GridPane.rowIndex="1">
+                <Label styleClass="jump-card-title" text="Profile" />
+                <Label styleClass="jump-card-subtitle" wrapText="true" text="Your account and totals" />
             </VBox>
         </GridPane>
     </VBox>

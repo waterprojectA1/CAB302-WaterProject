@@ -363,6 +363,26 @@
 .metric-label { -fx-font-size: 10.5px; -fx-text-fill: rgba(59, 74, 78, 0.6); -fx-fill: rgba(59, 74, 78, 0.6); }
 .metric-value { -fx-font-family: "Caprasimo"; -fx-font-size: 20px; -fx-text-fill: -color-text; -fx-fill: -color-text; }
 
+/* Home page "Jump to" grid -- pill-shaped taupe cards, left-aligned two-line
+   title/subtitle, on the cream .page background (App_Root-view.fxml). */
+.jump-card {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 28;
+    -fx-padding: 18 20 18 20;
+    -fx-cursor: hand;
+}
+.jump-card:hover { -fx-background-color: derive(-color-surface, -4%); }
+.jump-card-title {
+    -fx-font-family: "Caprasimo";
+    -fx-font-size: 15px;
+    -fx-text-fill: -color-text;
+}
+.jump-card-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgba(59, 74, 78, 0.6);
+    -fx-wrap-text: true;
+}
+
 /* Auth card (login / register / postregister) */
 .auth-card {
     -fx-background-color: -color-surface;

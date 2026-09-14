@@ -106,6 +106,15 @@ public final class NavShell {
         }
     }
 
+    /**
+     * Same navigation as {@link #go(ActionEvent, Route)} but for callers that
+     * don't have an ActionEvent -- e.g. a plain Pane/VBox card driven by
+     * {@code setOnMouseClicked} rather than a Button's onAction.
+     */
+    public static void go(Node source, Route route) {
+        goFromNode(source, route);
+    }
+
     private static void goFromNode(Node source, Route route) {
         Scene scene = source.getScene();
         try {
