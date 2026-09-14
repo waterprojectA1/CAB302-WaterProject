@@ -193,23 +193,23 @@ public class ConservationTipsController {
         String usageDirection = result.percentChange() >= 0 ? "higher than" : "lower than";
         if (result.adjustment() == 0) {
             return String.format(Locale.ROOT,
-                "Roughly unchanged -- your usage was %.0f%% %s your average.",
+                "Roughly unchanged. Your usage was %.0f%% %s your average.",
                 Math.abs(result.percentChange()), usageDirection);
         }
         String direction = result.adjustment() > 0 ? "Up" : "Down";
         int absAdjustment = Math.abs(result.adjustment());
         return String.format(Locale.ROOT,
-            "%s %d point%s -- your usage was %.0f%% %s your average.",
+            "%s %d point%s. Your usage was %.0f%% %s your average.",
             direction, absAdjustment, absAdjustment == 1 ? "" : "s",
             Math.abs(result.percentChange()), usageDirection);
     }
 
     /** Static subtitle text for each score band -- used only when there's no real period-over-period change to explain. */
     private static String subtitleForScoreBand(int score) {
-        if (score >= 80) return "Excellent -- well above average conservation";
-        if (score >= 60) return "Good -- above average for your household size";
-        if (score >= 40) return "Average -- some room to improve";
-        return "Needs improvement -- see tips below";
+        if (score >= 80) return "Excellent! Well above average conservation";
+        if (score >= 60) return "Good! Above average for your household size";
+        if (score >= 40) return "Average, some room to improve";
+        return "Needs improvement... see tips below :(";
     }
 
     public void setSeasonalTip(String text) {
