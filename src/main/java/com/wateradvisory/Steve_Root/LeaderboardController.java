@@ -28,6 +28,9 @@ public class LeaderboardController {
     private Label currentPointsLabel;
 
     @FXML
+    private Label profileSymbolLabel;
+
+    @FXML
     private void initialize() {
         seasonLabel.setText(formatSeasonName(LeaderboardService.getCurrentSeason()));
         loadLeaderboard();
@@ -56,31 +59,37 @@ public class LeaderboardController {
 
             if (entry.getUserId().equals(currentUserId)) {
                 currentPointsLabel.setText(entry.getPoints() + " PTS");
+                if (!entry.getUsername().isEmpty()) {
+                    profileSymbolLabel.setText(entry.getUsername().substring(0, 1).toUpperCase());
+                }
             }
         }
     }
 
     private HBox createLeaderboardRow(int rank, LeaderboardEntry entry, String currentUserId) {
 
+        boolean isCurrentUser = entry.getUserId().equals(currentUserId);
+        boolean isTopRank = rank == 1;
+
         HBox row = new HBox();
         row.setAlignment(Pos.CENTER_LEFT);
         row.setSpacing(12);
-        row.getStyleClass().add("leaderboard-row");
+        row.getStyleClass().add(isTopRank ? "leaderboard-row-top" : "leaderboard-row");
 
-        if (entry.getUserId().equals(currentUserId)) {
+        if (isCurrentUser && !isTopRank) {
             row.getStyleClass().add("current-user-row");
         }
 
-        Label rankLabel = new Label(rank + ".");
+        Label rankLabel = new Label(String.valueOf(rank));
         rankLabel.getStyleClass().add("rank-label");
+        rankLabel.setMinWidth(20);
 
-        String displayName = entry.getUsername();
+        String initials = entry.getUsername().isEmpty()
+                ? "?" : entry.getUsername().substring(0, 1).toUpperCase();
+        Label avatar = new Label(initials);
+        avatar.getStyleClass().addAll("avatar-circle", "avatar-tint", "avatar-md");
 
-        if (entry.getUserId().equals(currentUserId)) {
-            displayName = displayName + " (You)";
-        }
-
-        Label usernameLabel = new Label(displayName);
+        Label usernameLabel = new Label(entry.getUsername());
         usernameLabel.getStyleClass().add("username-label");
 
         Region space = new Region();
@@ -90,7 +99,15 @@ public class LeaderboardController {
         pointsLabel.getStyleClass().add("points-label");
 
         row.getChildren().add(rankLabel);
+        row.getChildren().add(avatar);
         row.getChildren().add(usernameLabel);
+
+        if (isCurrentUser) {
+            Label youPill = new Label("You");
+            youPill.getStyleClass().add("pill-you");
+            row.getChildren().add(youPill);
+        }
+
         row.getChildren().add(space);
         row.getChildren().add(pointsLabel);
 
