@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
 
@@ -150,6 +151,18 @@ public class TablePageController {
                 TableView.CONSTRAINED_RESIZE_POLICY
         );
 
+        // Zebra striping -- JavaFX's TableRow has no CSS :nth-child, so the
+        // alternating style class is assigned here, keyed off each row's index.
+        tableView.setRowFactory(tv -> new TableRow<WaterData>() {
+            @Override
+            protected void updateItem(WaterData item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().remove("row-even");
+                if (!empty && getIndex() % 2 == 0) {
+                    getStyleClass().add("row-even");
+                }
+            }
+        });
     }
     private void setupRadioButtons() {
 
