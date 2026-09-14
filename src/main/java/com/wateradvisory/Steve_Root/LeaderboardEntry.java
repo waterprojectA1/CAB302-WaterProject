@@ -6,10 +6,15 @@ public class LeaderboardEntry {
     private String username;
     private int points;
 
+
     public LeaderboardEntry(String userId, String username, int points) {
         this.userId = userId;
         this.username = username;
         this.points = points;
+
+        if (points < 0) {
+            throw new IllegalArgumentException("Negative points are invalid");
+        }
     }
 
     public String getUserId() {
@@ -23,4 +28,5 @@ public class LeaderboardEntry {
     public int getPoints() {
         return points;
     }
+
 }

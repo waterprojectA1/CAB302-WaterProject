@@ -19,7 +19,7 @@
 
     <VBox spacing="0">
 
-        <!-- nav bar -->
+        <!-- Nav bar -->
         <HBox alignment="CENTER_LEFT" spacing="8" styleClass="tips-page">
             <padding>
                 <Insets top="18" right="18" bottom="12" left="18"/>
@@ -36,7 +36,7 @@
                 <Insets top="4" right="18" bottom="24" left="18"/>
             </padding>
 
-            <!-- score gauge -->
+            <!-- Score gauge -->
             <HBox alignment="CENTER_LEFT" spacing="16" styleClass="score-card">
                 <StackPane maxWidth="96" maxHeight="96" minWidth="96" minHeight="96">
                     <!-- Circle + Arc live in a plain Pane, NOT directly in the StackPane.
@@ -70,7 +70,7 @@
                 </VBox>
             </HBox>
 
-            <!-- seasonal tip -->
+            <!-- Seasonal tip -->
             <VBox styleClass="seasonal-banner">
                 <HBox spacing="10" alignment="TOP_LEFT">
                     <Label text="&#128167;" style="-fx-font-size: 16px;"/>
@@ -80,13 +80,13 @@
                 </HBox>
             </VBox>
 
-            <!-- personalised tips -->
+            <!-- Personalised tips -->
             <VBox spacing="12">
                 <Label text="PERSONALISED TIPS" styleClass="section-label"/>
                 <VBox fx:id="tipsContainer" spacing="12"/>
             </VBox>
 
-            <!-- resources -->
+            <!-- Resources -->
             <VBox spacing="12">
                 <Label text="RESOURCES" styleClass="section-label"/>
                 <HBox fx:id="resourcesContainer" spacing="12"/>

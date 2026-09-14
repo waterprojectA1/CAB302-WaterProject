@@ -93,6 +93,11 @@
     -fx-effect: dropshadow(gaussian, rgba(46,43,37,0.14), 4, 0, 0, 1);
 }
 
+/* A .card that also opens something on click (e.g. a resource card linking
+   out to an external URL) -- pointer cursor is the only visual hint needed,
+   same convention as every other clickable element in this file. */
+.clickable-card { -fx-cursor: hand; }
+
 .tag { -fx-font-size: 11px; -fx-padding: 3 10; -fx-background-radius: 12; }
 .tag-accent { -fx-background-color: -color-accent-100; -fx-text-fill: -color-accent-800; }
 .tag-accent2 { -fx-background-color: -color-accent2-100; -fx-text-fill: -color-accent2-800; }

@@ -42,3 +42,12 @@ jobs:
 
       - name: Run Charlie Test Suite (Part 2)
         run: mvn -B -Dtest=SubtitleForScoreZeroRoundedAdjustmentTest,TipPhraserFallbackTest,UnauthorizedActionDetectorCatchesHouseholdIdTargetingTest,UnauthorizedActionDetectorCatchesOverrideScoreRewordingTest,UnauthorizedActionDetectorCatchesRawUuidForAnotherUserTest,UnauthorizedActionDetectorDoesNotFlagLegitimateQuestionsTest,UnauthorizedDataAccessRequestBypassesFiltersTest,UnauthorizedDataMutationRequestBypassesFiltersTest,UnauthorizedScoreMutationRequestBypassesFiltersTest test
+
+      - name: Run Jainya Tests
+        run: mvn -B -Dtest=SeasonalAggregationTest,WaterUsageStatsTest test
+
+      - name: Run Jainya Tests
+        run: mvn -B -Dtest=SeasonalAggregationTest,WaterUsageStatsTest test
+
+      - name: Run leaderboard JUnit tests
+        run: mvn -B -Dtest=LeaderboardEntryTest test
