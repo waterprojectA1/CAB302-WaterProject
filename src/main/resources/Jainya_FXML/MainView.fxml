@@ -29,30 +29,3 @@
         </tabs>
     </TabPane>
 </VBox>
-=======
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.wateradvisory.Jainya_Root.Controllers.MainController"
-            stylesheets="@../css/style1.css, @app-extras.css"
-            styleClass="main-background"
-            prefWidth="882.0" prefHeight="516.0">
-    <top>
-        <Label text="Water Usage — Trends &amp; Seasonal Patterns" styleClass="page-title" alignment="CENTER" textAlignment="CENTER" maxWidth="Infinity" BorderPane.alignment="CENTER"/>
-    </top>
-    <center>
-        <TabPane tabClosingPolicy="UNAVAILABLE">
-            <tabs>
-                <Tab text="Daily">
-                    <fx:include source="DailyView.fxml"/>
-                </Tab>
-                <Tab text="Seasonal">
-                    <fx:include source="SeasonalView.fxml"/>
-                </Tab>
-                <Tab text="Compare">
-                    <fx:include source="CompareView.fxml"/>
-                </Tab>
-            </tabs>
-        </TabPane>
-    </center>
-</BorderPane>
-
