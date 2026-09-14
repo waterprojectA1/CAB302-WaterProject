@@ -9,7 +9,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -248,9 +247,7 @@ public final class NavShell {
                 item("Conservation tips", Route.TIPS, active, false),
                 group("HOUSEHOLD", "nav-group-household", active,
                         Route.HOUSEHOLD, Route.LEADERBOARD),
-                item("Profile", Route.PROFILE, active, false),
-                rule(),
-                logoutItem());
+                item("Profile", Route.PROFILE, active, false));
         body.setMinWidth(0);
 
         ScrollPane scroll = new ScrollPane(body);
@@ -355,22 +352,6 @@ public final class NavShell {
             }
         });
         return button;
-    }
-
-    private static Button logoutItem() {
-        Button button = new Button("Log out");
-        button.getStyleClass().addAll("nav-item", "nav-item-danger");
-        button.setMaxWidth(Double.MAX_VALUE);
-        button.setFocusTraversable(false);
-        button.setOnAction(NavShell::logout);
-        return button;
-    }
-
-    private static Region rule() {
-        Region region = new Region();
-        region.getStyleClass().add("nav-rule");
-        VBox.setMargin(region, new Insets(6, 8, 6, 8));
-        return region;
     }
 
     /* ------------------------------------------------------------------ */

@@ -86,8 +86,4 @@ public class App_Root {
         NavShell.go(event, NavShell.Route.LEADERBOARD);
     }
 
-    @FXML
-    private void handleLogout(ActionEvent event) {
-        NavShell.logout(event);
-    }
 }

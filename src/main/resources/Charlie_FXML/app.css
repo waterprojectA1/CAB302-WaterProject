@@ -401,7 +401,13 @@
    BUTTONS ; extends the existing .btn family
    ============================================================================ */
 
-.btn-primary { -fx-background-color: -color-accent-500; -fx-text-fill: white; }
+.btn-primary {
+    -fx-background-color: -color-accent-500;
+    -fx-text-fill: white;
+    -fx-border-color: -color-accent-700;
+    -fx-border-radius: 999;
+    -fx-border-width: 1.5;
+}
 .btn-primary:hover   { -fx-background-color: -color-accent-600; }
 .btn-primary:pressed { -fx-background-color: -color-accent-700; }
 
