@@ -46,7 +46,7 @@ public class App_Root {
 
         double waterTotal = WaterRecordService.getUserTotalWater();
 
-        waterTotalText.setText("Total Water Recorded: " + waterTotal + " L");
+        waterTotalText.setText("" + waterTotal + " L");
 
         Map<String, Double> summary =
                 WaterRecordService.getUserWaterSummary();
