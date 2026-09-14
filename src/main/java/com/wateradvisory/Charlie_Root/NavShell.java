@@ -54,8 +54,8 @@ public final class NavShell {
         NOTIFICATIONS("/Michael_FXML/NotificationPage.fxml", "Reports / Notifications", -1),
         TIPS("/Charlie_FXML/ConservationTipsView.fxml", "Conservation tips", -1),
         CHAT("/Charlie_FXML/ChatView.fxml", "Ripple", -1),
-        LEADERBOARD("/Steve_FXML/LeaderboardView.fxml", "Leaderboard", -1),
-        HOUSEHOLD("/Arjay_FXML/householdview.fxml", "Household", -1),
+        LEADERBOARD("/Steve_FXML/LeaderboardView.fxml", "Household / Leaderboard", -1),
+        HOUSEHOLD("/Arjay_FXML/householdview.fxml", "Household / Overview", -1),
         PROFILE("/Arjay_FXML/profile.fxml", "Profile", -1);
 
         public final String fxml;
@@ -246,8 +246,8 @@ public final class NavShell {
                 group("REPORTS", "nav-group-reports", active,
                         Route.DATA_TABLE, Route.NOTIFICATIONS),
                 item("Conservation tips", Route.TIPS, active, false),
-                item("Leaderboard", Route.LEADERBOARD, active, false),
-                item("Household", Route.HOUSEHOLD, active, false),
+                group("HOUSEHOLD", "nav-group-household", active,
+                        Route.HOUSEHOLD, Route.LEADERBOARD),
                 item("Profile", Route.PROFILE, active, false),
                 rule(),
                 logoutItem());
@@ -266,15 +266,69 @@ public final class NavShell {
         return drawer;
     }
 
+    /**
+     * A collapsible drawer section: condensed (title only) by default, expands
+     * on hover, and can be click-pinned open so it stays expanded without the
+     * mouse over it. Visually expanded whenever {@code pinned || hovering} --
+     * tracked as two independent booleans (not one flag) per the spec, since
+     * "pinned" must survive the mouse leaving.
+     *
+     * <p>If the active route lives inside this group, it starts pinned open so
+     * the user always lands on a visibly-expanded section for where they are.
+     */
     private static VBox group(String label, String tintClass, Route active, Route... routes) {
-        Label caption = new Label(label);
-        caption.getStyleClass().add("nav-group-label");
-
-        VBox box = new VBox(2, caption);
-        box.getStyleClass().addAll("nav-group", tintClass);
+        boolean containsActive = false;
         for (Route route : routes) {
-            box.getChildren().add(item(shortLabel(route), route, active, true));
+            if (route == active) {
+                containsActive = true;
+                break;
+            }
         }
+
+        Button caption = new Button(label);
+        caption.getStyleClass().addAll("nav-group-label", "nav-group-caption");
+        caption.setMaxWidth(Double.MAX_VALUE);
+        caption.setFocusTraversable(false);
+        caption.setAlignment(Pos.CENTER_LEFT);
+
+        VBox items = new VBox(2);
+        items.getStyleClass().add("nav-group-items");
+        for (Route route : routes) {
+            items.getChildren().add(item(shortLabel(route), route, active, true));
+        }
+        items.setVisible(false);
+        items.setManaged(false);
+
+        VBox box = new VBox(2, caption, items);
+        box.getStyleClass().addAll("nav-group", tintClass);
+
+        boolean[] pinned = {containsActive};
+        boolean[] hovering = {false};
+        Runnable applyState = () -> {
+            boolean expanded = pinned[0] || hovering[0];
+            items.setVisible(expanded);
+            items.setManaged(expanded);
+            if (pinned[0]) {
+                caption.getStyleClass().add("nav-group-caption-pinned");
+            } else {
+                caption.getStyleClass().remove("nav-group-caption-pinned");
+            }
+        };
+        applyState.run();
+
+        caption.setOnMouseEntered(e -> {
+            hovering[0] = true;
+            applyState.run();
+        });
+        caption.setOnMouseExited(e -> {
+            hovering[0] = false;
+            applyState.run();
+        });
+        caption.setOnAction(e -> {
+            pinned[0] = !pinned[0];
+            applyState.run();
+        });
+
         return box;
     }
 

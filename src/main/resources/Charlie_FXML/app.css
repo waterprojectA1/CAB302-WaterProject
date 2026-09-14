@@ -280,10 +280,24 @@
 }
 .nav-drawer-sub { -fx-font-size: 11.5px; -fx-text-fill: rgba(59, 74, 78, 0.55); -fx-padding: 0 0 8 10; }
 
-.nav-group         { -fx-background-radius: 18; -fx-padding: 8 6 8 6; }
-.nav-group-data    { -fx-background-color: -color-accent2-100; }
-.nav-group-reports { -fx-background-color: -color-accent-100; }
-.nav-group-label   { -fx-font-size: 10px; -fx-text-fill: rgba(59, 74, 78, 0.6); -fx-padding: 0 0 4 12; }
+.nav-group           { -fx-background-radius: 18; -fx-padding: 8 6 8 6; }
+.nav-group-data      { -fx-background-color: -color-accent2-100; }
+.nav-group-reports   { -fx-background-color: -color-accent-100; }
+.nav-group-household { -fx-background-color: -color-accent2-100; }
+.nav-group-label     { -fx-font-size: 10px; -fx-text-fill: rgba(59, 74, 78, 0.6); -fx-padding: 0 0 4 12; }
+
+/* Collapsible group header (NavShell.group()) -- a Button styled to look like
+   the plain nav-group-label it replaces, so condensed/expanded/pinned states
+   are purely visual and don't disturb the existing label look. */
+.nav-group-caption {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+}
+.nav-group-caption:hover        { -fx-background-color: rgba(59, 74, 78, 0.06); }
+.nav-group-caption-pinned       { -fx-text-fill: -color-accent-700; }
+.nav-group-items    { -fx-padding: 2 0 0 0; }
 
 .nav-item {
     -fx-background-color: transparent;
