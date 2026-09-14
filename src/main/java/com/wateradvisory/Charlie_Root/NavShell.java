@@ -245,6 +245,7 @@ public final class NavShell {
                 group("REPORTS", "nav-group-reports", active,
                         Route.DATA_TABLE, Route.NOTIFICATIONS),
                 item("Conservation tips", Route.TIPS, active, false),
+                item("Ripple (chat)", Route.CHAT, active, false),
                 group("HOUSEHOLD", "nav-group-household", active,
                         Route.HOUSEHOLD, Route.LEADERBOARD),
                 item("Profile", Route.PROFILE, active, false));
