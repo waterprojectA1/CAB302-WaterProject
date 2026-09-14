@@ -48,3 +48,6 @@ jobs:
 
       - name: Run Jainya Tests
         run: mvn -B -Dtest=SeasonalAggregationTest,WaterUsageStatsTest test
+
+      - name: Run leaderboard JUnit tests
+        run: mvn -B -Dtest=LeaderboardEntryTest test
