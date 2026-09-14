@@ -28,4 +28,5 @@ public class LeaderboardEntry {
     public int getPoints() {
         return points;
     }
+
 }
