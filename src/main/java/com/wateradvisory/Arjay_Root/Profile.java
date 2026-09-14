@@ -11,6 +11,7 @@ import com.wateradvisory.Charlie_Root.NavShell;
 // displaying text, handling events, and navigating between pages.
 import java.util.Map;
 import javafx.scene.text.Text;
+import javafx.scene.control.Label;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
@@ -21,6 +22,9 @@ public class Profile {
 
     @FXML
     private Text emailText;
+
+    @FXML
+    private Label profileAvatarLabel;
 
     @FXML
     private Text dailyTotalText;
@@ -37,6 +41,10 @@ public class Profile {
 
         String username = AuthService.getUsername();
         String email = AuthService.getUserEmail();
+
+        if (username != null && !username.isBlank()) {
+            profileAvatarLabel.setText(username.substring(0, 1).toUpperCase());
+        }
 
         usernameText.setText(
                 "Username: " + username
@@ -75,5 +83,11 @@ public class Profile {
     @FXML
     private void handleReturnToMain(ActionEvent event) {
         NavShell.go(event, NavShell.Route.HOME);
+    }
+
+    // Jumps from the profile page straight to the household screen.
+    @FXML
+    private void handleViewHousehold(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.HOUSEHOLD);
     }
 }

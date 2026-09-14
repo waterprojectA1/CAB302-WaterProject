@@ -22,10 +22,16 @@
 
             <Label styleClass="page-title" text="User profile" />
 
-            <VBox styleClass="card" spacing="6.0" maxWidth="420.0">
-                <Text fx:id="usernameText" styleClass="section-title" text="Username: NULL" />
-                <Text fx:id="emailText" styleClass="form-label" text="Email: NULL" />
-            </VBox>
+            <HBox styleClass="stat-strip" spacing="18.0" alignment="CENTER_LEFT">
+                <Label fx:id="profileAvatarLabel" styleClass="avatar-circle, avatar-tint, avatar-xl" text="U" />
+                <VBox spacing="1.0" HBox.hgrow="ALWAYS">
+                    <Text fx:id="usernameText" styleClass="section-title" text="Username: NULL" />
+                    <Text fx:id="emailText" styleClass="page-subtitle" text="Email: NULL" />
+                </VBox>
+                <Button fx:id="viewHouseholdFromProfileBtn" mnemonicParsing="false"
+                        onAction="#handleViewHousehold" styleClass="btn, btn-secondary"
+                        text="View household &#8594;" />
+            </HBox>
 
             <Label styleClass="section-title" text="Water summary" />
 
