@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.NotificationController">
+<BorderPane prefHeight="520.0" prefWidth="888.0" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.NotificationController">
 
     <top>
         <VBox spacing="5">
@@ -19,14 +19,14 @@
     </top>
 
     <center>
-        <ListView fx:id="notificationList" prefHeight="500" prefWidth="600" />
+        <ListView fx:id="notificationList" prefHeight="500" prefWidth="600" styleClass="context-menu" />
     </center>
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Back" onAction="#handleReturnToMain"/>
-            <Button mnemonicParsing="false" text="Graph" onAction="#handleGoToGraph"/>
-            <Button mnemonicParsing="false" text="List" onAction="#handleReturnTable"/>
+            <Button mnemonicParsing="false" onAction="#handleReturnToMain" styleClass="primary-button" text="Back" />
+            <Button mnemonicParsing="false" onAction="#handleGoToGraph" styleClass="primary-button" text="Graph" />
+            <Button mnemonicParsing="false" onAction="#handleReturnTable" styleClass="primary-button" text="List" />
          </children>
       </HBox>
    </bottom>
