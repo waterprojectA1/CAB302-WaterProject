@@ -11,8 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.wateradvisory.Jainya_Root.Controllers.SeasonalController"
       styleClass="card" spacing="12">
     <padding>
@@ -24,7 +23,8 @@
         <ToggleButton fx:id="avgToggle" text="Average / day" styleClass="toggle-btn"/>
     </HBox>
 
-    <BarChart fx:id="seasonChart" legendVisible="false" animated="false" prefHeight="260" styleClass="chart-panel">
+    <BarChart fx:id="seasonChart" legendVisible="false" animated="false" prefHeight="240"
+              styleClass="chart-panel" VBox.vgrow="ALWAYS">
         <xAxis>
             <CategoryAxis label="Season"/>
         </xAxis>
@@ -35,13 +35,13 @@
 
     <Label fx:id="rangeLabel" styleClass="range-label"/>
 
-    <TitledPane text="Custom Date Range" expanded="true">
-        <HBox spacing="8" alignment="CENTER_LEFT">
-            <Label text="Start:" styleClass="form-label"/>
+    <TitledPane text="Custom date range" expanded="false">
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Start" styleClass="form-label"/>
             <DatePicker fx:id="startPicker"/>
-            <Label text="End:" styleClass="form-label"/>
+            <Label text="End" styleClass="form-label"/>
             <DatePicker fx:id="endPicker"/>
-            <Button text="Apply" onAction="#onApplyRange" styleClass="primary-button"/>
+            <Button text="Apply" onAction="#onApplyRange" styleClass="btn, btn-primary, btn-sm"/>
         </HBox>
     </TitledPane>
     <Label fx:id="errorLabel" styleClass="error-label" wrapText="true"/>

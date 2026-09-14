@@ -1,9 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
+<VBox prefHeight="516.0" prefWidth="882.0" spacing="12.0" styleClass="root, page"
+      stylesheets="@../Charlie_FXML/app.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.wateradvisory.Jainya_Root.Controllers.MainController">
+
+    <VBox spacing="2.0">
+        <Label styleClass="page-title" text="Water usage" />
+        <Label styleClass="page-subtitle" text="Trends and seasonal patterns" />
+    </VBox>
+
+    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <tabs>
+            <Tab text="Daily">
+                <fx:include source="DailyView.fxml" />
+            </Tab>
+            <Tab text="Seasonal">
+                <fx:include source="SeasonalView.fxml" />
+            </Tab>
+            <Tab text="Compare">
+                <fx:include source="CompareView.fxml" />
+            </Tab>
+        </tabs>
+    </TabPane>
+</VBox>
+=======
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.wateradvisory.Jainya_Root.Controllers.MainController"
@@ -29,3 +55,4 @@
         </TabPane>
     </center>
 </BorderPane>
+

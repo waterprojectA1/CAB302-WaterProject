@@ -5,20 +5,15 @@ package com.wateradvisory.Arjay_Root;
 // Project services used to retrieve account details and water usage information.
 import com.wateradvisory.database.AuthService;
 import com.wateradvisory.database.WaterRecordService;
+import com.wateradvisory.Charlie_Root.NavShell;
 
 // Java and JavaFX imports used for storing summary data,
 // displaying text, handling events, and navigating between pages.
 import java.util.Map;
 import javafx.scene.text.Text;
+import javafx.scene.control.Label;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class Profile {
 
@@ -27,6 +22,9 @@ public class Profile {
 
     @FXML
     private Text emailText;
+
+    @FXML
+    private Label profileAvatarLabel;
 
     @FXML
     private Text dailyTotalText;
@@ -43,6 +41,10 @@ public class Profile {
 
         String username = AuthService.getUsername();
         String email = AuthService.getUserEmail();
+
+        if (username != null && !username.isBlank()) {
+            profileAvatarLabel.setText(username.substring(0, 1).toUpperCase());
+        }
 
         usernameText.setText(
                 "Username: " + username
@@ -80,24 +82,19 @@ public class Profile {
     // Returns the user from the profile page to the main application screen.
     @FXML
     private void handleReturnToMain(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.HOME);
+    }
 
-        try {
-            Parent root = FXMLLoader.load(
-                    getClass().getResource("/App_Root-view.fxml")
-            );
+    // Jumps from the profile page straight to the household screen.
+    @FXML
+    private void handleViewHousehold(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.HOUSEHOLD);
+    }
 
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.setScene(new Scene(root));
-
-            stage.sizeToScene();
-            stage.centerOnScreen();
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    // Signs the user out. Logout now lives only on this page (removed from
+    // Home and the nav drawer), so this is the app's one remaining entry point.
+    @FXML
+    private void handleLogout(ActionEvent event) {
+        NavShell.logout(event);
     }
 }

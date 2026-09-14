@@ -1,18 +1,17 @@
 package com.wateradvisory.Michael_Root;
 import com.wateradvisory.database.UserSession;
+import com.wateradvisory.Charlie_Root.NavShell;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -53,35 +52,17 @@ public class TablePageController {
     private RadioButton monthlyRadio;
 
     @FXML
-    private void handleReturnToMain(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/App_Root-view.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+    private void handleReturnToMain(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.HOME);
     }
     @FXML
-    private void handleGoToNotification(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Michael_FXML/NotificationPage.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+    private void handleGoToNotification(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.NOTIFICATIONS);
     }
 
     @FXML
-    private void handleGoToGraph(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Jainya_FXML/MainView.fxml"));
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+    private void handleGoToGraph(ActionEvent event) {
+        NavShell.go(event, NavShell.Route.DAILY);
     }
 
 
@@ -170,6 +151,18 @@ public class TablePageController {
                 TableView.CONSTRAINED_RESIZE_POLICY
         );
 
+        // Zebra striping -- JavaFX's TableRow has no CSS :nth-child, so the
+        // alternating style class is assigned here, keyed off each row's index.
+        tableView.setRowFactory(tv -> new TableRow<WaterData>() {
+            @Override
+            protected void updateItem(WaterData item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().remove("row-even");
+                if (!empty && getIndex() % 2 == 0) {
+                    getStyleClass().add("row-even");
+                }
+            }
+        });
     }
     private void setupRadioButtons() {
 
@@ -223,14 +216,7 @@ public class TablePageController {
 
             controller.setWaterData(aqua);
 
-            Stage stage = (Stage) tableView.getScene().getWindow();
-
-            stage.setScene(
-                    new Scene(root, 500, 400)
-            );
-
-            stage.setTitle("Details");
-
+            tableView.getScene().setRoot(NavShell.wrap(root, NavShell.Route.DETAIL));
 
         } catch (IOException e) {
             e.printStackTrace();

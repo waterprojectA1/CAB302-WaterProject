@@ -5,24 +5,23 @@ package com.wateradvisory.Arjay_Root;
 // Project services used for household management and household water usage data.
 import com.wateradvisory.database.HouseholdService;
 import com.wateradvisory.database.WaterRecordService;
+import com.wateradvisory.Charlie_Root.NavShell;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-// Java imports used for error handling and storing household data.
-import java.io.IOException;
+// Java imports used for storing household data.
 import java.util.Map;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Alert;
@@ -237,22 +236,7 @@ public class ViewHousehold {
     // Returns the user from the household page to the main application screen.
     @FXML
     private void handleReturnToMain(ActionEvent event) {
-        // return to main interface
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/App_Root-view.fxml")
-            );
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavShell.go(event, NavShell.Route.HOME);
     }
 
     // Loads household members and displays each member's total water usage.
@@ -263,17 +247,39 @@ public class ViewHousehold {
         Map<String, Double> memberTotals =
                 WaterRecordService.getHouseholdMemberTotals();
 
+        String owner = HouseholdService.getHouseholdOwner();
+
         for (Map.Entry<String, Double> member
                 : memberTotals.entrySet()) {
 
             String username = member.getKey();
             double totalWater = member.getValue();
 
-            Label memberLabel = new Label(
-                    username + "     " + totalWater + " L"
+            Label avatar = new Label(
+                    username.isEmpty() ? "?" : username.substring(0, 1).toUpperCase()
             );
+            avatar.getStyleClass().addAll("avatar-circle", "avatar-tint", "avatar-sm");
 
-            memberListBox.getChildren().add(memberLabel);
+            Label nameLabel = new Label(username);
+            nameLabel.setStyle("-fx-font-weight: bold;");
+            HBox.setHgrow(nameLabel, Priority.ALWAYS);
+            nameLabel.setMaxWidth(Double.MAX_VALUE);
+
+            Label totalLabel = new Label(totalWater + " L");
+            totalLabel.getStyleClass().add("row-value");
+
+            HBox row = new HBox(10, avatar, nameLabel);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.getStyleClass().add("list-row");
+
+            if (username.equals(owner)) {
+                Label ownerPill = new Label("Owner");
+                ownerPill.getStyleClass().add("pill-you");
+                row.getChildren().add(ownerPill);
+            }
+            row.getChildren().add(totalLabel);
+
+            memberListBox.getChildren().add(row);
         }
 
         householdTotalText.setText(

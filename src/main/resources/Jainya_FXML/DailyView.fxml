@@ -10,50 +10,45 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.wateradvisory.Jainya_Root.Controllers.DailyController"
       styleClass="card" spacing="12">
     <padding>
         <Insets top="16" right="16" bottom="16" left="16"/>
     </padding>
 
-    <Button text="&#8592; Back to Table" onAction="#onBackToDashboard" styleClass="secondary-button"/>
-
-    <BarChart fx:id="dailyChart" legendVisible="false" animated="false" prefHeight="260" styleClass="chart-panel">
-        <xAxis>
-            <CategoryAxis fx:id="xAxis" label="Date"/>
-        </xAxis>
-        <yAxis>
-            <NumberAxis label="Litres (L)"/>
-        </yAxis>
+    <BarChart fx:id="dailyChart" legendVisible="false" animated="false" prefHeight="240"
+              styleClass="chart-panel" VBox.vgrow="ALWAYS">
+        <xAxis><CategoryAxis fx:id="xAxis" label="Date"/></xAxis>
+        <yAxis><NumberAxis label="Litres (L)"/></yAxis>
     </BarChart>
 
     <Label fx:id="rangeLabel" styleClass="range-label"/>
 
-    <HBox spacing="8">
-        <VBox styleClass="stat-card, stat-avg" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="0">
-            <Label text="Average" styleClass="stat-label" maxWidth="Infinity" alignment="CENTER"/>
-            <Label fx:id="avgValue" text="–" styleClass="stat-value"/>
+    <HBox spacing="10">
+        <VBox styleClass="stat-card, stat-avg" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="2">
+            <Label text="AVERAGE" styleClass="stat-label" maxWidth="Infinity" alignment="CENTER"/>
+            <Label fx:id="avgValue" text="&#8211;" styleClass="stat-value"/>
         </VBox>
-        <VBox styleClass="stat-card, stat-high" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="0">
-            <Label text="Highest" styleClass="stat-label" maxWidth="Infinity" alignment="CENTER"/>
-            <Label fx:id="highValue" text="–" styleClass="stat-value"/>
+        <VBox styleClass="stat-card, stat-high" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="2">
+            <Label text="HIGHEST" styleClass="stat-label" maxWidth="Infinity" alignment="CENTER"/>
+            <Label fx:id="highValue" text="&#8211;" styleClass="stat-value"/>
         </VBox>
-        <VBox styleClass="stat-card, stat-low" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="0">
-            <Label text="Lowest" styleClass="stat-label" maxWidth="Infinity" alignment="CENTER"/>
-            <Label fx:id="lowValue" text="–" styleClass="stat-value"/>
+        <VBox styleClass="stat-card, stat-low" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="2">
+            <Label text="LOWEST" styleClass="stat-label" maxWidth="Infinity" alignment="CENTER"/>
+            <Label fx:id="lowValue" text="&#8211;" styleClass="stat-value"/>
         </VBox>
     </HBox>
 
-    <TitledPane text="Custom Date Range" expanded="true">
-        <HBox spacing="8" alignment="CENTER_LEFT">
-            <Label text="Start:" styleClass="form-label"/>
+    <TitledPane text="Custom date range" expanded="false">
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Start" styleClass="form-label"/>
             <DatePicker fx:id="startPicker"/>
-            <Label text="End:" styleClass="form-label"/>
+            <Label text="End" styleClass="form-label"/>
             <DatePicker fx:id="endPicker"/>
-            <Button text="Apply" onAction="#onApplyRange" styleClass="primary-button"/>
+            <Button text="Apply" onAction="#onApplyRange" styleClass="btn, btn-primary, btn-sm"/>
         </HBox>
     </TitledPane>
+
     <Label fx:id="errorLabel" styleClass="error-label" wrapText="true"/>
 </VBox>

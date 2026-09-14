@@ -1,62 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefHeight="520.0" prefWidth="888.0" styleClass="root" stylesheets="@../css/style1.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wateradvisory.Michael_Root.DetailPageController">
-   <children>
-      <HBox alignment="CENTER" prefHeight="180.0" prefWidth="800.0" spacing="30.0">
-         <children>
-            <VBox prefHeight="200.0" prefWidth="410.0" styleClass="context-menu">
-               <children>
-                    <Label fx:id="sDateLabel" styleClass="tag-accent" textFill="WHITE">
-                     <VBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                     </VBox.margin></Label>
-                    <Label fx:id="eDateLabel" styleClass="tag-accent" text="test" textFill="WHITE">
-                     <VBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                     </VBox.margin></Label>
-                    <Label fx:id="timeSpanLabel" styleClass="tag-accent" textFill="WHITE">
-                     <VBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                     </VBox.margin></Label>
-                    <Label fx:id="usageLabel" styleClass="tag-accent" textFill="WHITE">
-                     <VBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                     </VBox.margin></Label>
-                    <Label fx:id="zScoreLabel" styleClass="tag-accent" textFill="WHITE">
-                     <VBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                     </VBox.margin></Label>
-                    <Label fx:id="costLabel" styleClass="tag-accent" textFill="WHITE">
-                     <VBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                     </VBox.margin></Label>
-               </children>
-            </VBox>
-            <VBox prefHeight="24.0" prefWidth="410.0" styleClass="context-menu" />
-         </children>
-         <VBox.margin>
-            <Insets bottom="30.0" left="20.0" right="20.0" top="20.0" />
-         </VBox.margin>
-      </HBox>
-      <Pane prefHeight="160.0" prefWidth="800.0" styleClass="context-menu">
-         <VBox.margin>
-            <Insets bottom="20.0" left="20.0" right="20.0" />
-         </VBox.margin>
-         <children>
-             <Label fx:id="reportLabel" styleClass="tag-accent" text="test" textFill="WHITE">
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding></Label>
-         </children>
-      </Pane>
+<VBox prefHeight="516.0" prefWidth="882.0" spacing="14.0" styleClass="root, page"
+      stylesheets="@../Charlie_FXML/app.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.wateradvisory.Michael_Root.DetailPageController">
 
-      <Button mnemonicParsing="false" onAction="#handleReturnTable" styleClass="primary-button" text="Back">
-         <VBox.margin>
-            <Insets bottom="20.0" />
-         </VBox.margin></Button>
-   </children>
+    <Label styleClass="page-title" text="Record detail" />
+
+    <GridPane hgap="12.0" vgap="12.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
+        </columnConstraints>
+
+        <VBox styleClass="metric-card" spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label styleClass="metric-label" text="START DATE" />
+            <Label fx:id="sDateLabel" styleClass="metric-value" />
+        </VBox>
+        <VBox styleClass="metric-card" spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label styleClass="metric-label" text="END DATE" />
+            <Label fx:id="eDateLabel" styleClass="metric-value" />
+        </VBox>
+        <VBox styleClass="metric-card" spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <Label styleClass="metric-label" text="TIME SPAN" />
+            <Label fx:id="timeSpanLabel" styleClass="metric-value" />
+        </VBox>
+
+        <VBox styleClass="metric-card" spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label styleClass="metric-label" text="WATER USE" />
+            <Label fx:id="usageLabel" styleClass="metric-value" />
+        </VBox>
+        <VBox styleClass="metric-card" spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label styleClass="metric-label" text="Z SCORE" />
+            <Label fx:id="zScoreLabel" styleClass="metric-value" />
+        </VBox>
+        <VBox styleClass="metric-card" spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <Label styleClass="metric-label" text="ESTIMATED COST" />
+            <Label fx:id="costLabel" styleClass="metric-value" />
+        </VBox>
+    </GridPane>
+
+    <VBox styleClass="card" spacing="6.0" VBox.vgrow="ALWAYS">
+        <Label styleClass="section-title" text="Report" />
+        <Label fx:id="reportLabel" styleClass="body-text" wrapText="true" maxWidth="Infinity" />
+    </VBox>
+
+    <HBox>
+        <Button mnemonicParsing="false" onAction="#handleReturnTable"
+                styleClass="btn, btn-secondary" text="Back to records" />
+    </HBox>
 </VBox>
