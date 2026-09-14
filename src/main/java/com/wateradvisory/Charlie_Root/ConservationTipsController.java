@@ -1,5 +1,9 @@
 package com.wateradvisory.Charlie_Root;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -83,8 +87,8 @@ public class ConservationTipsController {
      */
     @FXML
     public void initialize() {
-        // --- Resolve the signed-in user + pull their real history once. --------
-        UUID userId = parseUuid(UserSession.getUserId());   // null when not signed in
+        //Resolve the signed-in user + pull their real history once
+        UUID userId = parseUuid(UserSession.getUserId());   //null when not signed in
         LocalDate today = LocalDate.now();
         List<DailyWaterRecord> dailyRecords = (userId == null)
             ? List.of()
@@ -92,9 +96,9 @@ public class ConservationTipsController {
                   userId, today.minusMonths(HISTORY_MONTHS).withDayOfMonth(1), today);
         boolean haveRealData = !dailyRecords.isEmpty();
 
-        WaterDataList fallbackData = new WaterDataList();   // seeded; used only when haveRealData == false
+        WaterDataList fallbackData = new WaterDataList();   //Fake/seeded; used only when haveRealData == false
 
-        // 1. Conservation score -- real day-over-day comparison via record_date,
+        //Conservation score -- real day-over-day comparison via record_date,
         //    or the seeded fallback when there is no real history yet.
         ConservationScoreCalculator scoreCalculator = new ConservationScoreCalculator();
         ConservationScoreCalculator.ScoreResult scoreResult = haveRealData
@@ -104,11 +108,11 @@ public class ConservationTipsController {
                   FALLBACK_USER_ID, ConservationScoreCalculator.STARTING_SCORE, fallbackData);
         setConservationScore(scoreResult.newScore(), subtitleForScore(scoreResult));
 
-        // 3. Seasonal tip -- deterministic, rotates once per calendar day (never random).
+        //Seasonal tip -> deterministic, rotates once per calendar day (never random).
         SeasonalTipProvider seasonalTips = new SeasonalTipProvider(USER_REGION);
         setSeasonalTip("Seasonal tip: " + seasonalTips.getTipForToday(USER_REGION));
 
-        // 2. Personalised tips -- from the real DailyWaterRecords (+ household size
+        // Personalised tips -- from the real DailyWaterRecords (+ household size
         //    for "for a household of N" framing), or the seeded fallback. NO
         //    time-of-day tip: record_date is date-only, so 7-8am-style patterns
         //    still can't be derived (it's missing TIME data, not date data).
@@ -127,8 +131,30 @@ public class ConservationTipsController {
                     tip.litresSavedPerWeek(), tip.costSavedPerWeek()));
         }
 
-        addResource("Leak checklist", "A 5-minute self-audit for common fixtures.", leakChecklistIcon());
-        addResource("Rebate finder", "Local rebates for water-efficient fixtures.", rebateFinderIcon());
+        addResource("Leak checklist", "A 5-minute self-audit for common fixtures.", leakChecklistIcon(),
+            () -> openUrlInBrowser("https://www.seqwater.com.au/files/2020-09/home%20audit.pdf"));
+        addResource("Rebate finder", "Local rebates for water-efficient fixtures.", rebateFinderIcon(),
+            () -> openUrlInBrowser("https://www.concessionsfinder.services.qld.gov.au/"));
+    }
+
+    /**
+     * Opens {@code urlString} in the user's system default browser. Never
+     * throws and never shows a dialog -- a broken link here is not worth
+     * interrupting the conservation-tips flow over, so failures are just
+     * logged to stderr.
+     */
+    private void openUrlInBrowser(String urlString) {
+        try {
+            Desktop desktop = Desktop.getDesktop();
+            if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                desktop.browse(new URI(urlString));
+            } else {
+                System.err.println("Desktop browse is not supported on this system");
+            }
+        } catch (IOException | URISyntaxException | SecurityException e) {
+            System.err.println("Failed to open URL: " + urlString);
+            e.printStackTrace();
+        }
     }
 
     /** Parses the session's user id string to a {@link UUID}, or null if absent / not a uuid. */
@@ -327,11 +353,20 @@ public class ConservationTipsController {
 
     /** Adds one resource card (guide, regulation, or product link). */
     public void addResource(String title, String body) {
-        addResource(title, body, null);
+        addResource(title, body, null, null);
     }
 
     /** Adds one resource card with a leading icon (guide, regulation, or product link). */
     public void addResource(String title, String body, Node icon) {
+        addResource(title, body, icon, null);
+    }
+
+    /**
+     * Adds one resource card with a leading icon and, optionally, a click
+     * action (e.g. opening an external URL in the system browser). Passing
+     * a null onClick keeps the card static, same as the two-arg overload.
+     */
+    public void addResource(String title, String body, Node icon, Runnable onClick) {
         Label titleLabel = new Label(title);
         titleLabel.getStyleClass().add("resource-title");
 
@@ -347,6 +382,11 @@ public class ConservationTipsController {
         card.getChildren().addAll(titleLabel, bodyLabel);
         card.setPrefWidth(150);
         card.setMinWidth(150);
+
+        if (onClick != null) {
+            card.getStyleClass().add("clickable-card");
+            card.setOnMouseClicked(event -> onClick.run());
+        }
 
         resourcesContainer.getChildren().add(card);
     }
