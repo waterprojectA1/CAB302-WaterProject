@@ -52,9 +52,12 @@
 
             <Region VBox.vgrow="ALWAYS" />
 
-            <HBox>
+            <HBox spacing="10.0">
                 <Button fx:id="goBackBtn" mnemonicParsing="false" onAction="#handleReturnToMain"
                         styleClass="btn, btn-secondary" text="Back to home" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="logoutBtn" mnemonicParsing="false" onAction="#handleLogout"
+                        styleClass="btn, btn-danger" text="Log out" />
             </HBox>
         </VBox>
     </AnchorPane>

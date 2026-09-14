@@ -90,4 +90,11 @@ public class Profile {
     private void handleViewHousehold(ActionEvent event) {
         NavShell.go(event, NavShell.Route.HOUSEHOLD);
     }
+
+    // Signs the user out. Logout now lives only on this page (removed from
+    // Home and the nav drawer), so this is the app's one remaining entry point.
+    @FXML
+    private void handleLogout(ActionEvent event) {
+        NavShell.logout(event);
+    }
 }
