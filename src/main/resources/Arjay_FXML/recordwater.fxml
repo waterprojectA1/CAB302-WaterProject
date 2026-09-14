@@ -33,6 +33,7 @@
 
             <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <Label styleClass="section-title" text="Reported water usage (today)" />
+                <Label fx:id="todayDateLabel" styleClass="page-subtitle" text="" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Button fx:id="activityBtn" mnemonicParsing="false" onAction="#handleActivityBtn"
                         styleClass="btn, btn-primary" text="Add an activity" />

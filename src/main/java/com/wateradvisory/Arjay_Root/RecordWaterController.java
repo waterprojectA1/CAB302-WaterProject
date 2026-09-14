@@ -19,7 +19,6 @@ import javafx.scene.text.Text;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.Priority;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
@@ -68,6 +67,12 @@ public class RecordWaterController {
     @FXML
     private VBox activityListBox;
 
+    @FXML
+    private Label todayDateLabel;
+
+    private static final java.time.format.DateTimeFormatter TODAY_DATE_FORMAT =
+            java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy");
+
     // Sets up the Record Water page and loads today's saved water activities.
     @FXML
     private void initialize() {
@@ -77,6 +82,8 @@ public class RecordWaterController {
 
         activityRecord.setVisible(false);
         activityRecord.setManaged(false);
+
+        todayDateLabel.setText(java.time.LocalDate.now().format(TODAY_DATE_FORMAT));
 
         setupActivityMenu();
 
@@ -314,19 +321,22 @@ public class RecordWaterController {
 
         for (WaterActivityEntry entry : pendingActivities) {
 
-            String text =
-                    entry.getActivity()
-                            + " | "
-                            + entry.getDuration()
-                            + " min × "
-                            + entry.getAmount()
-                            + " | "
-                            + entry.getLitres()
-                            + " L";
+            Label nameLabel = new Label(entry.getActivity());
+            nameLabel.setStyle("-fx-font-weight: bold;");
+            HBox.setHgrow(nameLabel, Priority.ALWAYS);
+            nameLabel.setMaxWidth(Double.MAX_VALUE);
 
-            Label activityLabel = new Label(text);
+            String detail = entry.getAmount() > 1
+                    ? entry.getDuration() + " min × " + entry.getAmount()
+                    : entry.getDuration() + " min";
+            Label detailLabel = new Label(detail);
+            detailLabel.getStyleClass().add("text-muted");
+
+            Label litresLabel = new Label(entry.getLitres() + " L");
+            litresLabel.getStyleClass().add("row-value");
 
             Button removeButton = new Button("Remove");
+            removeButton.getStyleClass().addAll("btn", "btn-secondary", "btn-sm");
 
             removeButton.setOnAction(event -> {
                 pendingActivities.remove(entry);
@@ -335,12 +345,6 @@ public class RecordWaterController {
                 refreshActivityList();
             });
 
-            // row set up
-
-            Region spacer = new Region();
-
-            HBox.setHgrow(spacer, Priority.ALWAYS);
-
             HBox row = new HBox(15);
 
             row.getStyleClass().add("list-row");
@@ -348,8 +352,9 @@ public class RecordWaterController {
             row.setPadding(new Insets(5, 20, 5, 10));
 
             row.getChildren().addAll(
-                    activityLabel,
-                    spacer,
+                    nameLabel,
+                    detailLabel,
+                    litresLabel,
                     removeButton
             );
 
