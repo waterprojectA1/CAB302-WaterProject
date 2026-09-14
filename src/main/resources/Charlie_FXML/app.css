@@ -339,6 +339,11 @@
     -fx-fill: -color-text;
 }
 
+/* Tinted stat strip -- e.g. App_Root's Total/Today/This-week row, a wider
+   accent2-tinted sibling of .metric-card for a page's single lead metric. */
+.stat-strip     { -fx-background-color: -color-accent2-100; -fx-background-radius: 24; -fx-padding: 16 18 16 18; }
+.stat-strip-div { -fx-background-color: rgba(59, 74, 78, 0.14); -fx-min-width: 1; -fx-max-width: 1; }
+
 /* Metric readout, e.g. profile totals and household water total */
 .metric-card  { -fx-background-color: -color-neutral-100; -fx-background-radius: 18; -fx-padding: 12 16 14 16; }
 .metric-label { -fx-font-size: 10.5px; -fx-text-fill: rgba(59, 74, 78, 0.6); -fx-fill: rgba(59, 74, 78, 0.6); }
@@ -348,9 +353,34 @@
 .auth-card {
     -fx-background-color: -color-surface;
     -fx-background-radius: 26;
-    -fx-padding: 28 30 28 30;
-    -fx-max-width: 400;
+    -fx-padding: 26 28 26 28;
+    -fx-max-width: 380;
     -fx-effect: dropshadow(gaussian, rgba(46, 43, 37, 0.14), 6, 0, 0, 2);
+}
+
+/* Initials avatar circle -- household/leaderboard/profile member identity.
+   Three sizes; pair with .avatar-tint (accent2-100, the common case) or
+   .avatar-solid (accent-500 fill + white text, for "this is you" emphasis). */
+.avatar-circle {
+    -fx-background-radius: 999;
+    -fx-alignment: CENTER;
+    -fx-font-family: "Caprasimo";
+}
+.avatar-tint  { -fx-background-color: -color-accent2-100; -fx-text-fill: -color-accent2-800; }
+.avatar-solid { -fx-background-color: -color-accent-500; -fx-text-fill: white; }
+.avatar-sm { -fx-min-width: 26; -fx-min-height: 26; -fx-max-width: 26; -fx-max-height: 26; -fx-font-size: 11px; }
+.avatar-md { -fx-min-width: 30; -fx-min-height: 30; -fx-max-width: 30; -fx-max-height: 30; -fx-font-size: 12px; }
+.avatar-lg { -fx-min-width: 70; -fx-min-height: 70; -fx-max-width: 70; -fx-max-height: 70; -fx-font-size: 26px; }
+.avatar-xl { -fx-min-width: 60; -fx-min-height: 60; -fx-max-width: 60; -fx-max-height: 60; -fx-font-size: 24px; }
+
+/* "You" pill, next to a username in a member/leaderboard list. */
+.pill-you {
+    -fx-background-color: -color-accent-100;
+    -fx-text-fill: -color-accent-800;
+    -fx-background-radius: 999;
+    -fx-padding: 2 8 2 8;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
 }
 
 /* ============================================================================
@@ -522,6 +552,9 @@
     -fx-background-radius: 16;
     -fx-padding: 10 14 10 14;
 }
+/* Compact right-aligned numeric readout inside a .list-row -- activity
+   litres, per-member water totals, and similar row-trailing figures. */
+.row-value { -fx-font-family: "Caprasimo"; -fx-font-size: 14px; -fx-text-fill: -color-text; -fx-min-width: 64; -fx-alignment: CENTER_RIGHT; }
 
 /* ============================================================================
    TABLE / LIST
@@ -552,6 +585,9 @@
     -fx-border-width: 0 0 0.5 0;
     -fx-cell-size: 31;
 }
+/* Zebra striping -- assigned in TablePageController's row factory (JavaFX has
+   no :nth-child selector), one row style per alternate index. */
+.table-view .table-row-cell.row-even { -fx-background-color: -color-neutral-100; }
 .table-view .table-row-cell:hover    { -fx-background-color: -color-accent-100; }
 .table-view .table-row-cell:selected { -fx-background-color: -color-accent-200; }
 .table-view .table-cell {
@@ -581,23 +617,31 @@
    TABS / TITLED PANE
    ============================================================================ */
 
+/* Segmented pill control -- the header row itself is the pill "track"
+   (surface-tinted, fully rounded), each tab a pill segment inside it,
+   the active one filled solid accent. Matches the mockup's ".seg" control. */
 .tab-pane > .tab-header-area > .tab-header-background { -fx-background-color: transparent; }
-.tab-pane > .tab-header-area { -fx-padding: 4 0 0 4; }
+.tab-pane > .tab-header-area {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 999;
+    -fx-padding: 4;
+}
 .tab-pane > .tab-header-area > .headers-region > .tab {
     -fx-background-color: transparent;
-    -fx-background-radius: 16 16 0 0;
-    -fx-padding: 7 18 7 18;
+    -fx-background-radius: 999;
+    -fx-padding: 6 16 6 16;
 }
 .tab-pane > .tab-header-area > .headers-region > .tab .tab-label {
-    -fx-font-size: 12.5px;
+    -fx-font-size: 12px;
     -fx-text-fill: rgba(59, 74, 78, 0.62);
 }
-.tab-pane > .tab-header-area > .headers-region > .tab:hover { -fx-background-color: rgba(59, 74, 78, 0.05); }
-.tab-pane > .tab-header-area > .headers-region > .tab:selected { -fx-background-color: -color-surface; }
+.tab-pane > .tab-header-area > .headers-region > .tab:hover { -fx-background-color: rgba(59, 74, 78, 0.08); }
+.tab-pane > .tab-header-area > .headers-region > .tab:selected { -fx-background-color: -color-accent-500; }
 .tab-pane > .tab-header-area > .headers-region > .tab:selected .tab-label {
     -fx-font-family: "Caprasimo";
-    -fx-text-fill: -color-text;
+    -fx-text-fill: white;
 }
+.tab-pane > .tab-header-area > .headers-region > .tab:selected:hover { -fx-background-color: -color-accent-600; }
 .tab-pane > .tab-header-area > .headers-region > .tab:selected .focus-indicator { -fx-border-width: 0; }
 .tab-pane > .tab-content-area { -fx-background-color: transparent; }
 
@@ -711,6 +755,15 @@
     -fx-border-width: 1;
     -fx-border-radius: 18;
 }
+/* 1st place gets a heavier accent-bordered card instead of the plain tint row. */
+.leaderboard-row-top {
+    -fx-background-color: -color-accent-100;
+    -fx-background-radius: 20;
+    -fx-border-color: -color-accent-500;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+    -fx-padding: 12 16 12 16;
+}
 .rank-label     { -fx-font-family: "Caprasimo"; -fx-font-size: 14px; -fx-text-fill: -color-accent-700; }
 .username-label { -fx-font-size: 13px; -fx-text-fill: -color-text; }
 .points-label   { -fx-font-family: "Caprasimo"; -fx-font-size: 13px; -fx-text-fill: -color-text; }
@@ -731,6 +784,29 @@
     -fx-alignment: CENTER;
 }
 .current-points-label { -fx-font-family: "Caprasimo"; -fx-font-size: 20px; -fx-text-fill: -color-text; }
+
+/* ============================================================================
+   NOTIFICATIONS (NotificationController's ListView cell rows)
+   ============================================================================ */
+
+.notif-row {
+    -fx-background-color: -color-accent2-100;
+    -fx-background-radius: 20;
+    -fx-padding: 14 16 14 16;
+}
+.notif-dot   { -fx-fill: -color-accent-500; }
+.notif-title { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-text; }
+.notif-meta  { -fx-font-size: 11px; -fx-text-fill: rgba(59, 74, 78, 0.55); }
+
+/* The ListView's own cell chrome is transparent -- .notif-row is the only
+   visible card, so it doesn't nest inside the default .list-cell surface card. */
+.notif-list.list-view { -fx-background-color: transparent; }
+.notif-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0 0 8 0;
+    -fx-padding: 0;
+}
+.notif-list .list-cell:empty { -fx-background-color: transparent; }
 
 /* ============================================================================
    ALERTS ; controllers use javafx.scene.control.Alert in several places
