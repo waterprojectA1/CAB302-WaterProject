@@ -1,6 +1,5 @@
 package com.wateradvisory.Charlie_Root;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.time.LocalDate;
@@ -12,9 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.github.tjake.jlama.model.AbstractModel;
-import com.github.tjake.jlama.model.ModelSupport;
 import com.github.tjake.jlama.model.functions.Generator;
-import com.github.tjake.jlama.safetensors.DType;
 import com.github.tjake.jlama.safetensors.prompt.PromptContext;
 
 import com.vladsch.flexmark.ast.BlockQuote;
@@ -141,11 +138,6 @@ public class ChatController {
     /** Latched desired visibility, so a fade can be reversed mid-flight without losing intent. */
     private boolean scrollButtonWanted = false;
     private FadeTransition scrollButtonFade;
-
-    // Point this at whichever model folder jlama list showed you --
-    // e.g. the quantized one used by TipPhraser. Models stayed put,
-    // so this relative path is unaffected by the folder restructuring.
-    private static final String MODEL_DIR = "./models/Qwen_Qwen2.5-1.5B-Instruct-JQ4";
 
     /** Whose recorded data the grounding context is built from (matches ConservationTipsController). */
     private static final String CURRENT_USER_ID = "1";
@@ -340,7 +332,7 @@ public class ChatController {
             maybeAddWelcome();
             sendButton.setDisable(false);
         } else {
-            loadModelAsync();
+            attachToModelLoad();
         }
     }
 
@@ -375,40 +367,40 @@ public class ChatController {
         }
     }
 
-    /** Part 3: first-visit model load. On later visits {@link ChatSession} already holds the model. */
-    private void loadModelAsync() {
+    /**
+     * Part 3 (+ Home pre-warm): joins whichever model load is current, instead of
+     * always starting its own. {@link ChatSession#ensureModelLoading()} starts a
+     * new background load only if none has started/finished yet -- if the Home
+     * dashboard already kicked one off, this just attaches completion handlers to
+     * that SAME {@link Task} via {@code addEventHandler}, so the model is never
+     * loaded twice. If reached directly (Home never visited), the behaviour is
+     * identical to the old {@code loadModelAsync()}: this call is what starts the
+     * load, and this controller sees its own handlers fire when it finishes.
+     */
+    private void attachToModelLoad() {
         loadingRow = addSystemMessage(LOADING_MSG);
         sendButton.setDisable(true);
 
-        Task<AbstractModel> loadTask = new Task<>() {
-            @Override
-            protected AbstractModel call() throws Exception {
-                return ModelSupport.loadModel(new File(MODEL_DIR), DType.F32, DType.I8);
-            }
-        };
-
-        loadTask.setOnSucceeded(e -> {
-            this.model = loadTask.getValue();
-            session.setModel(this.model);
-            removeLoadingRow();
-            maybeAddWelcome();
-            sendButton.setDisable(false);
-        });
-
-        loadTask.setOnFailed(e -> {
-            Throwable ex = loadTask.getException();
-            Throwable cause = (ex != null && ex.getCause() != null) ? ex.getCause() : ex;
-            if (cause != null) {
-                cause.printStackTrace();
-            }
-            removeLoadingRow();
-            // Not remembered: leaving it out of the transcript means a later revisit retries the load.
-            addSystemMessage("Failed to load Ripple: "
-                + (cause == null ? "unknown error"
-                   : cause.getClass().getSimpleName() + ": " + cause.getMessage()));
-        });
-
-        new Thread(loadTask).start();
+        session.ensureModelLoading(
+            e -> {
+                this.model = session.getModel();
+                removeLoadingRow();
+                maybeAddWelcome();
+                sendButton.setDisable(false);
+            },
+            e -> {
+                Task<?> failedTask = (Task<?>) e.getSource();
+                Throwable ex = failedTask.getException();
+                Throwable cause = (ex != null && ex.getCause() != null) ? ex.getCause() : ex;
+                if (cause != null) {
+                    cause.printStackTrace();
+                }
+                removeLoadingRow();
+                // Not remembered: leaving it out of the transcript means a later revisit retries the load.
+                addSystemMessage("Failed to load Ripple: "
+                    + (cause == null ? "unknown error"
+                       : cause.getClass().getSimpleName() + ": " + cause.getMessage()));
+            });
     }
 
     private void removeLoadingRow() {

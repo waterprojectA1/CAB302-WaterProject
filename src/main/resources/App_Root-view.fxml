@@ -3,17 +3,21 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox prefHeight="516.0" prefWidth="882.0" spacing="18.0" styleClass="root, page"
+<StackPane fx:id="homeStack" prefHeight="516.0" prefWidth="882.0" styleClass="root, page"
       stylesheets="@Charlie_FXML/app.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.wateradvisory.App_Root">
+
+<VBox spacing="18.0">
 
     <VBox spacing="2.0">
         <Text fx:id="usernameText" styleClass="page-title" text="Welcome back, User" />
@@ -82,3 +86,15 @@
         </GridPane>
     </VBox>
 </VBox>
+
+    <HBox fx:id="chatbotPrewarmBar" styleClass="chatbot-prewarm-bar" spacing="8.0"
+          alignment="CENTER" managed="false" visible="false"
+          StackPane.alignment="BOTTOM_CENTER">
+        <StackPane.margin>
+            <Insets bottom="16.0" />
+        </StackPane.margin>
+        <ProgressIndicator styleClass="chatbot-prewarm-spinner" maxWidth="14.0" maxHeight="14.0" />
+        <Label styleClass="chatbot-prewarm-label" text="Preparing chatbot..." />
+    </HBox>
+
+</StackPane>

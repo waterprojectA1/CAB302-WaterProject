@@ -3,6 +3,7 @@ package com.wateradvisory;
 import java.util.List;
 import java.util.Map;
 
+import com.wateradvisory.Charlie_Root.ChatSession;
 import com.wateradvisory.Charlie_Root.NavShell;
 import com.wateradvisory.Steve_Root.LeaderboardEntry;
 import com.wateradvisory.Steve_Root.LeaderboardService;
@@ -11,19 +12,28 @@ import com.wateradvisory.database.HouseholdService;
 import com.wateradvisory.database.UserSession;
 import com.wateradvisory.database.WaterRecordService;
 
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public class App_Root {
+
+    /** Same subtle fade duration ChatController uses for its "scroll to latest" button. */
+    private static final Duration PREWARM_FADE = Duration.millis(180);
 
     @FXML
     private Text usernameText;
 
     @FXML
     private Text householdText;
+
+    @FXML
+    private HBox chatbotPrewarmBar;
 
     @FXML
     private Text waterTotalText;
@@ -89,6 +99,54 @@ public class App_Root {
         householdCard.setOnMouseClicked(e -> NavShell.go(householdCard, NavShell.Route.HOUSEHOLD));
         waterRecordsCard.setOnMouseClicked(e -> NavShell.go(waterRecordsCard, NavShell.Route.DATA_TABLE));
         profileCard.setOnMouseClicked(e -> NavShell.go(profileCard, NavShell.Route.PROFILE));
+
+        prewarmChatbot();
+    }
+
+    /**
+     * Kicks off the Ripple chatbot's model load in the background as soon as Home
+     * appears, so a later visit to the chat page finds it already loaded (or
+     * loading) instead of starting cold. Purely a nicety -- Home stays fully
+     * usable throughout; only a small bottom-docked "Preparing chatbot..." pill
+     * (spinner + label) reflects the in-flight load, and it fades out on its own
+     * once the model is ready.
+     *
+     * <p>Uses {@link ChatSession#ensureModelLoading()} rather than any bespoke
+     * loading logic, so this can never race {@code ChatController}'s own
+     * load-on-demand fallback: whichever screen calls it first actually starts
+     * the load, and the other one just observes the same {@link javafx.concurrent.Task}.</p>
+     */
+    private void prewarmChatbot() {
+        ChatSession session = ChatSession.getInstance();
+        if (session.getModel() != null) {
+            return;  // already loaded (e.g. a previous Home/Chat visit this run) -- never shown
+        }
+
+        chatbotPrewarmBar.setManaged(true);
+        chatbotPrewarmBar.setVisible(true);
+        chatbotPrewarmBar.setOpacity(1.0);
+
+        session.ensureModelLoading(
+            e -> fadeOutPrewarmBar(),
+            e -> fadeOutPrewarmBar());
+    }
+
+    /**
+     * Both success and failure fade the bar out the same way -- either way, the
+     * load attempt is over. Reuses the same subtle 180ms fade
+     * {@code ChatController}'s "scroll to latest" button uses; only once the fade
+     * finishes is the bar fully removed from layout ({@code setVisible(false)} +
+     * {@code setManaged(false)}), so it never leaves reserved empty space behind.
+     */
+    private void fadeOutPrewarmBar() {
+        FadeTransition fade = new FadeTransition(PREWARM_FADE, chatbotPrewarmBar);
+        fade.setFromValue(chatbotPrewarmBar.getOpacity());
+        fade.setToValue(0.0);
+        fade.setOnFinished(e -> {
+            chatbotPrewarmBar.setVisible(false);
+            chatbotPrewarmBar.setManaged(false);
+        });
+        fade.play();
     }
 
     /**

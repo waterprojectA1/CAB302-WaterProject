@@ -388,6 +388,21 @@
     -fx-wrap-text: true;
 }
 
+/* Home page chatbot pre-warm indicator -- small pill docked at the bottom of
+   the page (StackPane.alignment="BOTTOM_CENTER" in App_Root-view.fxml) while
+   the Ripple model loads in the background. */
+.chatbot-prewarm-bar {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 999;
+    -fx-padding: 8 16 8 14;
+}
+.chatbot-prewarm-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgba(59, 74, 78, 0.6);
+}
+.chatbot-prewarm-spinner .percentage { -fx-fill: transparent; }
+.chatbot-prewarm-spinner .indicator  { -fx-background-color: -color-accent2-600; }
+
 /* Auth card (login / register / postregister) */
 .auth-card {
     -fx-background-color: -color-surface;
