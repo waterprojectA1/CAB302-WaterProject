@@ -16,16 +16,27 @@
       fx:controller="com.wateradvisory.App_Root">
 
     <VBox spacing="2.0">
-        <Text fx:id="usernameText" styleClass="page-title" text="Welcome: User not found" />
-        <Text fx:id="householdText" styleClass="page-subtitle" text="Household: None" />
+        <Text fx:id="usernameText" styleClass="page-title" text="Welcome back, User" />
+        <Text fx:id="householdText" styleClass="page-subtitle" text="No household yet" />
     </VBox>
 
-    <VBox styleClass="metric-card" spacing="4.0" maxWidth="Infinity">
-        <Label styleClass="metric-label" text="TOTAL WATER RECORDED" />
-        <Text fx:id="waterTotalText" styleClass="metric-value" text="Water Total: NaN" />
-    </VBox>
+    <HBox styleClass="stat-strip" spacing="22.0" alignment="CENTER_LEFT">
+        <VBox spacing="2.0">
+            <Label styleClass="metric-label" text="TOTAL WATER RECORDED" />
+            <Text fx:id="waterTotalText" styleClass="metric-value" text="Water Total: NaN" />
+        </VBox>
+        <Region styleClass="stat-strip-div" />
+        <VBox spacing="2.0">
+            <Label styleClass="metric-label" text="TODAY" />
+            <Text fx:id="todayTotalText" styleClass="metric-value" text="0 L" />
+        </VBox>
+        <VBox spacing="2.0">
+            <Label styleClass="metric-label" text="THIS WEEK" />
+            <Text fx:id="weekTotalText" styleClass="metric-value" text="0 L" />
+        </VBox>
+    </HBox>
 
-    <Label styleClass="section-title" text="Jump to" />
+    <Label styleClass="section-label" text="JUMP TO" />
 
     <GridPane hgap="12.0" vgap="12.0">
         <columnConstraints>
@@ -33,24 +44,36 @@
             <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
             <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
         </columnConstraints>
-        <Button fx:id="recordWaterBtn" mnemonicParsing="false" onAction="#handleRecordWater"
-                styleClass="btn, btn-primary, btn-block" text="Record water"
-                GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <Button fx:id="dashboardBtn" mnemonicParsing="false" onAction="#handleDashboard"
-                styleClass="btn, btn-secondary, btn-block" text="My data"
-                GridPane.columnIndex="1" GridPane.rowIndex="0" />
-        <Button fx:id="tipsBtn" mnemonicParsing="false" onAction="#handleConservationTips"
-                styleClass="btn, btn-secondary, btn-block" text="Conservation tips"
-                GridPane.columnIndex="2" GridPane.rowIndex="0" />
-        <Button fx:id="leaderboardBtn" mnemonicParsing="false" onAction="#handleLeaderboard"
-                styleClass="btn, btn-secondary, btn-block" text="Leaderboard"
-                GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <Button fx:id="viewHouseholdBtn" mnemonicParsing="false" onAction="#handleViewHousehold"
-                styleClass="btn, btn-secondary, btn-block" text="Household"
-                GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Button fx:id="viewProfileBtn" mnemonicParsing="false" onAction="#handleViewProfile"
-                styleClass="btn, btn-secondary, btn-block" text="Profile"
-                GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Button fx:id="recordWaterBtn" mnemonicParsing="false" onAction="#handleRecordWater"
+                    styleClass="btn, btn-primary, btn-block" text="Record water" />
+            <Label styleClass="page-subtitle" wrapText="true" text="Log today's activities" />
+        </VBox>
+        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Button fx:id="dashboardBtn" mnemonicParsing="false" onAction="#handleDashboard"
+                    styleClass="btn, btn-secondary, btn-block" text="Water records" />
+            <Label styleClass="page-subtitle" wrapText="true" text="Table and detail reports" />
+        </VBox>
+        <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <Button fx:id="tipsBtn" mnemonicParsing="false" onAction="#handleConservationTips"
+                    styleClass="btn, btn-secondary, btn-block" text="Conservation tips" />
+            <Label styleClass="page-subtitle" wrapText="true" text="Personalised for your usage" />
+        </VBox>
+        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Button fx:id="leaderboardBtn" mnemonicParsing="false" onAction="#handleLeaderboard"
+                    styleClass="btn, btn-secondary, btn-block" text="Leaderboard" />
+            <Label styleClass="page-subtitle" wrapText="true" text="See how your household ranks" />
+        </VBox>
+        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Button fx:id="viewHouseholdBtn" mnemonicParsing="false" onAction="#handleViewHousehold"
+                    styleClass="btn, btn-secondary, btn-block" text="Household" />
+            <Label styleClass="page-subtitle" wrapText="true" text="Members and join code" />
+        </VBox>
+        <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <Button fx:id="viewProfileBtn" mnemonicParsing="false" onAction="#handleViewProfile"
+                    styleClass="btn, btn-secondary, btn-block" text="Profile" />
+            <Label styleClass="page-subtitle" wrapText="true" text="Your account and totals" />
+        </VBox>
     </GridPane>
 
     <Region VBox.vgrow="ALWAYS" />

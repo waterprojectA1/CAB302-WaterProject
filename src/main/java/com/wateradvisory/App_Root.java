@@ -23,13 +23,26 @@ public class App_Root {
     private Text waterTotalText;
 
     @FXML
+    private Text todayTotalText;
+
+    @FXML
+    private Text weekTotalText;
+
+    @FXML
     private void initialize() {
 
         String username = AuthService.getUsername();
-        String householdName = HouseholdService.getHouseholdName();
 
-        usernameText.setText("Welcome: " + username);
-        householdText.setText(householdName);
+        usernameText.setText("Welcome back, " + username);
+
+        if (HouseholdService.hasHousehold()) {
+            String householdName = HouseholdService.getHouseholdName();
+            int memberCount = HouseholdService.getHouseholdMembers().size();
+            householdText.setText(householdName + "  \u00B7  " + memberCount
+                    + (memberCount == 1 ? " member" : " members"));
+        } else {
+            householdText.setText("No household yet");
+        }
 
         double waterTotal = WaterRecordService.getUserTotalWater();
 
@@ -38,7 +51,8 @@ public class App_Root {
         Map<String, Double> summary =
                 WaterRecordService.getUserWaterSummary();
 
-        System.out.println(summary);
+        todayTotalText.setText(summary.getOrDefault("today", 0.0) + " L");
+        weekTotalText.setText(summary.getOrDefault("week", 0.0) + " L");
     }
 
     @FXML
