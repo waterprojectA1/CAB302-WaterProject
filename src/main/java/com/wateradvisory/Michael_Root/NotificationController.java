@@ -5,10 +5,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 
 import java.time.format.DateTimeFormatter;
 
@@ -69,32 +73,30 @@ public class NotificationController {
                     setText(null);
                 } else {
 
-                    Label waterUsage = new Label(String.valueOf(notification.getWaterObject().getWaterUsage()));
-                    waterUsage.setStyle(
-                            "-fx-font-size: 16px;" +
-                                    "-fx-font-weight: bold;"
-                    );
+                    Circle dot = new Circle(4);
+                    dot.getStyleClass().add("notif-dot");
 
-                    Label zScore = new Label(String.valueOf(notification.getzScore()));
+                    Label title = new Label(
+                            notification.getWaterObject().getWaterUsage() + " L logged"
+                    );
+                    title.getStyleClass().add("notif-title");
+
+                    Label meta = new Label("Z-score " + notification.getzScore());
+                    meta.getStyleClass().add("notif-meta");
+
+                    VBox textBox = new VBox(2, title, meta);
+                    HBox.setHgrow(textBox, Priority.ALWAYS);
 
                     Label date = new Label(
                             notification.getDateCreated().format(formatter)
                     );
+                    date.getStyleClass().add("notif-meta");
 
-                    date.setStyle("-fx-text-fill: grey;");
+                    HBox row = new HBox(14, dot, textBox, date);
+                    row.setAlignment(Pos.CENTER_LEFT);
+                    row.getStyleClass().add("notif-row");
 
-                    VBox box = new VBox(
-                            5,
-                            waterUsage,
-                            zScore,
-                            date
-                    );
-
-                    box.setPadding(
-                            new javafx.geometry.Insets(10)
-                    );
-
-                    setGraphic(box);
+                    setGraphic(row);
                 }
             }
         });
